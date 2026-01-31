@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.lens-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: all 0.8s ease-in-out;
+}
+
+.lens-active {
+  backdrop-filter: saturate(1.5) contrast(1.2);
+  animation: lensReveal 1.5s ease-in-out;
+}
+
+@keyframes lensReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.map-container {
+  height: 600px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+.pulse-marker {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.custom-marker {
+  animation: markerAppear 0.5s ease-out;
+}
+
+@keyframes markerAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Elegant map interactions */
+.alliance-line {
+  transition: all 0.3s ease;
+}
+
+.alliance-line:hover {
+  opacity: 1 !important;
+  stroke-width: 3;
+}
+
+.trade-route {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.trade-route:hover {
+  opacity: 0.9 !important;
+  stroke-width: 4;
+}
+
+.sphere-influence {
+  transition: all 0.3s ease;
+}
+
+.sphere-influence:hover {
+  fill-opacity: 0.15 !important;
+}
+
+.attack-vector {
+  transition: all 0.3s ease;
+}
+
+.attack-vector:hover {
+  opacity: 0.8 !important;
+  stroke-width: 3;
+}
+
+/* Elegant tooltips */
+.leaflet-tooltip.elegant-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: Georgia, serif;
+  padding: 4px 8px;
+}
+
+/* Elegant popups */
+.leaflet-popup.elegant-popup .leaflet-popup-content-wrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0;
+}
+
+.leaflet-popup.elegant-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 16px;
+  font-family: Georgia, serif;
+}
+
+.leaflet-popup-close-button {
+  color: #6B7280 !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #374151 !important;
+}
+
+/* Cold War Realism Side-by-Side Layout - Page Scroll */
+.timeline-col {
+  overflow: visible;
+}
+
+.map-col {
+  overflow: hidden;
+}
+
+/* Country highlight animations */
+.country-highlight-marker {
+  animation: country-pulse 2s ease-in-out infinite;
+}
+
+@keyframes country-pulse {
+  0%, 100% {
+    r: 20;
+  }
+  50% {
+    r: 23;
+  }
+}
+
+.country-pulse-circle {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    r: 35;
+    opacity: 0.6;
+  }
+  50% {
+    r: 40;
+    opacity: 0.2;
+  }
+  100% {
+    r: 35;
+    opacity: 0.6;
+  }
+}
+
+/* Timeline event pulse animations */
+.timeline-event-pulse {
+  animation: event-pulse 1.5s ease-in-out 3;
+}
+
+@keyframes event-pulse {
+  0%, 100% {
+    r: 25;
+    fill-opacity: 0.4;
+  }
+  50% {
+    r: 28;
+    fill-opacity: 0.7;
+  }
+}
+
+.timeline-event-glow {
+  animation: event-glow 1s ease-in-out infinite;
+}
+
+@keyframes event-glow {
+  0%, 100% {
+    r: 30;
+    stroke-opacity: 0.6;
+  }
+  50% {
+    r: 35;
+    stroke-opacity: 0.3;
+  }
+}
+

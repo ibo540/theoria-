@@ -1,0 +1,25 @@
+{
+  "id": "world-war 1",
+  "title": "World war 1",
+  "description": "New event description...",
+  "period": {
+    "startYear": 1900,
+    "endYear": 2000
+  },
+  "timelinePoints": [
+    {
+      "year": "1900",
+      "date": "January 1900",
+      "title": "New Event",
+      "description": "fzdbzdfbeabg",
+      "focusLocation": [
+        60.4774984274211,
+        40.557599125584744
+      ]
+    }
+  ],
+  "highlightedCountries": [
+    "Russia",
+    "Saudi Arabia"
+  ]
+}

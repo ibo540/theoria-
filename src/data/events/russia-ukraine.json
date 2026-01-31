@@ -1,0 +1,489 @@
+{
+    "id": "russia-ukraine",
+    "title": "Russian-Ukrainian War",
+    "kind": "war",
+    "period": {
+        "startYear": 1991,
+        "endYear": 2024,
+        "startDate": "1991",
+        "endDate": "Present"
+    },
+    "date": "1991 - Present",
+    "summary": "An ongoing international conflict between Russia and Ukraine, evolving from the collapse of the Soviet Union to a full-scale invasion.",
+    "description": "Following the collapse of the Soviet Union, Ukraine's independence created a strategic dilemma for Russia. Over decades, NATO expansion and Ukraine's drift toward the West escalated tensions, leading to the annexation of Crimea in 2014 and a full-scale invasion in 2022.",
+    "fullDescription": "The Russo-Ukrainian War is an ongoing international conflict between Russia and Ukraine. It began in February 2014 following the Ukrainian Revolution of Dignity, but its roots trace back to the collapse of the Soviet Union in 1991. Russia viewed Ukraine's independence and subsequent Western alignment as a strategic threat. The conflict escalated with the annexation of Crimea, the war in Donbas, and eventually the full-scale invasion in February 2022.",
+    "category": "conflict",
+    "domains": [
+        "military",
+        "political",
+        "economic"
+    ],
+    "primaryLocation": {
+        "lat": 48.3794,
+        "lng": 31.1656,
+        "label": "Ukraine"
+    },
+    "zoom": 4,
+    "actors": [
+        "Russia",
+        "Ukraine",
+        "United States of America",
+        "United Kingdom",
+        "France",
+        "Germany",
+        "Poland",
+        "Belarus",
+        "nato-bloc",
+        "European Union",
+        "China",
+        "India",
+        "Turkey"
+    ],
+    "highlightedCountries": [
+        "Ukraine",
+        "Russia",
+        "Belarus",
+        "Poland"
+    ],
+    "connections": [],
+    "unifiedAreas": [],
+    "stats": [
+        {
+            "label": "Casualties (Est.)",
+            "value": "500,000+"
+        },
+        {
+            "label": "Displaced People",
+            "value": "14 Million"
+        },
+        {
+            "label": "Front Line Length",
+            "value": "1,000 km"
+        }
+    ],
+    "overviewTimeline": [
+        {
+            "year": 1991,
+            "label": "Soviet Collapse"
+        },
+        {
+            "year": 2004,
+            "label": "Orange Revolution"
+        },
+        {
+            "year": 2014,
+            "label": "Maidan & Crimea"
+        },
+        {
+            "year": 2022,
+            "label": "Full-Scale Invasion"
+        }
+    ],
+    "timelinePoints": [
+        {
+            "id": "ru-1",
+            "year": 1991,
+            "date": "1991–early 2000s",
+            "label": "Soviet Collapse",
+            "position": 0,
+            "icon": "flag",
+            "description": "When the Soviet Union disappeared, Russia did not only lose territory. Russia lost strategic depth. States that once absorbed pressure on its western frontier became independent overnight. Ukraine mattered more than any other. Geography placed it between Russia and Europe. Population, industry, and access to the Black Sea made it too important to ignore.",
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine",
+                "United States of America"
+            ],
+            "isTurningPoint": true,
+            "focusLocation": [
+                50.4501,
+                30.5234
+            ],
+            "focusZoom": 5,
+            "mapData": {}
+        },
+        {
+            "id": "ru-2",
+            "year": 1999,
+            "date": "Late 1990s–2004",
+            "label": "NATO Expansion",
+            "position": 15,
+            "icon": "shield",
+            "description": "As Russia struggled internally, NATO expanded eastward. Former Warsaw Pact states joined one by one. Each step reduced Russia’s buffer. Western leaders described this as defensive. Realists focus on outcomes, not intentions. Military alliances close space regardless of rhetoric. Ukraine now stood out. It was large, exposed, and undecided.",
+            "highlightedCountries": [
+                "Russia",
+                "Poland",
+                "Ukraine"
+            ],
+            "focusLocation": [
+                52.237,
+                21.017
+            ],
+            "focusZoom": 5,
+            "mapData": {
+                "areas": [
+                    {
+                        "id": "nato-exp",
+                        "countries": [
+                            "Poland",
+                            "Czechia",
+                            "Hungary"
+                        ],
+                        "label": "NATO Expansion"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ru-3",
+            "year": 2004,
+            "date": "2004",
+            "label": "Orange Revolution",
+            "position": 25,
+            "icon": "flag",
+            "description": "The Orange Revolution did not alarm Russia because of democracy. It alarmed Russia because power inside Ukraine shifted. A leadership more open to Europe replaced one tied to Moscow. From a realist lens, this was an alignment shock in a core security zone. At this point, Russia learned an important lesson. Influence in Ukraine could not be taken for granted.",
+            "highlightedCountries": [
+                "Ukraine",
+                "Russia",
+                "United States of America"
+            ],
+            "isTurningPoint": true,
+            "focusLocation": [
+                50.4501,
+                30.5234
+            ],
+            "focusZoom": 6,
+            "mapData": {}
+        },
+        {
+            "id": "ru-4",
+            "year": 2008,
+            "date": "2008",
+            "label": "NATO Bucharest Summit",
+            "position": 35,
+            "icon": "file-text",
+            "description": "In 2008, NATO announced that Ukraine would eventually become a member. No date was given. For realists, dates do not matter. Direction does. This told Russia that waiting was dangerous. Time no longer favored Moscow. Ukraine’s neutrality, once possible, began to look temporary.",
+            "highlightedCountries": [
+                "Ukraine",
+                "Russia"
+            ],
+            "focusLocation": [
+                44.4268,
+                26.1025
+            ],
+            "focusZoom": 5,
+            "mapData": {}
+        },
+        {
+            "id": "ru-5",
+            "year": 2014,
+            "date": "Feb 2014",
+            "label": "Maidan Revolution",
+            "position": 48,
+            "icon": "flame",
+            "description": "When protests removed Ukraine’s president in 2014, Russia saw a decisive shift. Ukraine was no longer balancing. It was choosing. From a realist view, Russia faced a closing window. If Ukraine fully integrated into Western institutions, reversing that outcome later would be far more costly. Russia responded immediately where it mattered most.",
+            "highlightedCountries": [
+                "Ukraine",
+                "Russia"
+            ],
+            "isTurningPoint": true,
+            "focusLocation": [
+                50.4501,
+                30.5234
+            ],
+            "focusZoom": 7,
+            "mapData": {}
+        },
+        {
+            "id": "ru-6",
+            "year": 2014,
+            "date": "Mar 2014",
+            "label": "Annexation of Crimea",
+            "position": 52,
+            "icon": "target",
+            "description": "Russia seized Crimea to secure the Black Sea Fleet and deny NATO access to a strategic naval position. Sanctions followed. From a realist perspective, sanctions were a known cost. Losing Crimea would have been a permanent strategic loss. Russia accepted economic punishment to lock in military advantage.",
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine",
+                "United States of America"
+            ],
+            "isTurningPoint": true,
+            "focusLocation": [
+                44.9521,
+                34.1024
+            ],
+            "focusZoom": 7,
+            "mapData": {
+                "areas": [
+                    {
+                        "id": "crimea-occ",
+                        "countries": [
+                            "Russia"
+                        ],
+                        "label": "Annexation"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ru-7",
+            "year": 2014,
+            "date": "2014–2021",
+            "label": "War in Donbas",
+            "position": 60,
+            "icon": "swords",
+            "description": "Instead of full occupation, Russia supported limited conflict in eastern Ukraine. This achieved two goals. It weakened Ukraine internally and made NATO membership riskier. A country at war does not join alliances easily. The conflict stayed unresolved on purpose.",
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine",
+                "Germany",
+                "France"
+            ],
+            "focusLocation": [
+                48.0159,
+                37.8028
+            ],
+            "focusZoom": 7,
+            "mapData": {
+                "areas": [
+                    {
+                        "id": "donbas-sep",
+                        "countries": [
+                            "Russia"
+                        ],
+                        "label": "Separatist Control"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ru-8",
+            "year": 2021,
+            "date": "2021",
+            "label": "Russian Buildup",
+            "position": 75,
+            "icon": "crosshair",
+            "description": "By 2021, Ukraine continued to arm and cooperate with NATO. Diplomatic pressure no longer shifted Kyiv’s path. From a realist angle, Russia faced a familiar dilemma. Accept strategic decline or impose a new reality. Troop buildups were meant to coerce first. War followed when coercion failed.",
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine",
+                "United States of America"
+            ],
+            "focusLocation": [
+                50.0,
+                36.0
+            ],
+            "focusZoom": 6,
+            "mapData": {}
+        },
+        {
+            "id": "ru-9",
+            "year": 2022,
+            "date": "Feb 2022",
+            "label": "Full-Scale Invasion",
+            "position": 85,
+            "icon": "skull",
+            "description": "Russia invaded expecting rapid collapse. Ukraine resisted. Western states chose indirect involvement. This decision transformed the war. Ukraine became the frontline. Russia faced not Ukraine alone, but a coalition operating through it. The war shifted from control to endurance.",
+            "isTurningPoint": true,
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine",
+                "United States of America",
+                "United Kingdom"
+            ],
+            "focusLocation": [
+                50.4501,
+                30.5234
+            ],
+            "focusZoom": 5.5,
+            "mapData": {
+                "movements": [
+                    {
+                        "from": [
+                            52.4862,
+                            31.1656
+                        ],
+                        "to": [
+                            50.4501,
+                            30.5234
+                        ],
+                        "label": "Northern Thrust"
+                    },
+                    {
+                        "from": [
+                            50.111,
+                            36.4
+                        ],
+                        "to": [
+                            49.9935,
+                            36.2304
+                        ],
+                        "label": "Eastern Thrust"
+                    },
+                    {
+                        "from": [
+                            46.0,
+                            34.0
+                        ],
+                        "to": [
+                            46.6354,
+                            32.6169
+                        ],
+                        "label": "Southern Thrust"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ru-10",
+            "year": 2022,
+            "date": "2022–2023",
+            "label": "Global Impact",
+            "position": 92,
+            "icon": "flag",
+            "description": "Sanctions, energy shocks, and arms flows globalized the conflict. Many states avoided choosing sides. They adjusted trade, not loyalties. The international system fragmented quietly. Power competition widened without direct escalation.",
+            "highlightedCountries": [
+                "China",
+                "India",
+                "Turkey"
+            ],
+            "focusLocation": [
+                48.0,
+                31.0
+            ],
+            "focusZoom": 4,
+            "mapData": {}
+        },
+        {
+            "id": "ru-11",
+            "year": 2023,
+            "date": "2023–Present",
+            "label": "War of Attrition",
+            "position": 98,
+            "icon": "shield",
+            "description": "Frontlines hardened. Neither side achieved decisive dominance. Ukraine depends on continued external support. Russia relies on manpower and strategic patience. The war now tests which coalition sustains pressure longer. From a realist view, outcomes will be shaped by exhaustion, not ideals.",
+            "highlightedCountries": [
+                "Russia",
+                "Ukraine"
+            ],
+            "focusLocation": [
+                47.9,
+                37.5
+            ],
+            "focusZoom": 6,
+            "mapData": {}
+        }
+    ],
+    "interpretations": {
+        "realism": {
+            "text": "Realists view this war as a result of the security dilemma. Russia viewed NATO expansion as an existential threat to its sphere of influence and acted to secure its border and strategic depth.",
+            "keyPoints": [
+                "NATO Expansion perceived as threat",
+                "Strategic value of Crimea (Black Sea Fleet)",
+                "Great Power competition"
+            ],
+            "visualAnalysis": {
+                "title": "Military Power Asymmetry (2022)",
+                "type": "bar",
+                "description": "Comparison of active military personnel, showing the sheer numerical advantage of the Russian Federation at the onset of the invasion.",
+                "dataKeys": [
+                    {
+                        "key": "personnel",
+                        "color": "#ef4444",
+                        "name": "Active Personnel"
+                    },
+                    {
+                        "key": "reserve",
+                        "color": "#f59e0b",
+                        "name": "Reserve Personnel"
+                    }
+                ],
+                "data": [
+                    {
+                        "name": "Russia",
+                        "personnel": 900000,
+                        "reserve": 2000000
+                    },
+                    {
+                        "name": "Ukraine",
+                        "personnel": 196600,
+                        "reserve": 900000
+                    },
+                    {
+                        "name": "NATO (Deployment Force)",
+                        "personnel": 40000,
+                        "reserve": 100000
+                    }
+                ]
+            }
+        },
+        "liberalism": {
+            "text": "Liberals argue the war is a failure of international institutions and economic interdependence to prevent conflict. They emphasize the response: unprecedented sanctions and the strengthening of the Western alliance.",
+            "keyPoints": [
+                "Violation of International Law",
+                "Role of Economic Sanctions",
+                "Democratic vs Authoritarian regimes"
+            ],
+            "visualAnalysis": {
+                "title": "Russian GDP Growth % (Sanctions Impact)",
+                "type": "line",
+                "description": "Annual GDP growth rate showing the economic volatility caused by international sanctions following the 2014 and 2022 escalations.",
+                "dataKeys": [
+                    {
+                        "key": "gdp",
+                        "color": "#3b82f6",
+                        "name": "GDP Growth %"
+                    }
+                ],
+                "data": [
+                    {
+                        "name": "2013",
+                        "gdp": 1.8
+                    },
+                    {
+                        "name": "2014",
+                        "gdp": 0.7
+                    },
+                    {
+                        "name": "2015",
+                        "gdp": -2.0
+                    },
+                    {
+                        "name": "2016",
+                        "gdp": 0.2
+                    },
+                    {
+                        "name": "2017",
+                        "gdp": 1.8
+                    },
+                    {
+                        "name": "2018",
+                        "gdp": 2.8
+                    },
+                    {
+                        "name": "2019",
+                        "gdp": 2.2
+                    },
+                    {
+                        "name": "2020",
+                        "gdp": -2.7
+                    },
+                    {
+                        "name": "2021",
+                        "gdp": 5.6
+                    },
+                    {
+                        "name": "2022",
+                        "gdp": -2.1
+                    },
+                    {
+                        "name": "2023",
+                        "gdp": 3.6
+                    }
+                ]
+            }
+        }
+    },
+    "countryPerspectives": [],
+    "relatedScholars": [],
+    "relatedScenarios": []
+}

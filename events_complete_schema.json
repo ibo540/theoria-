@@ -1,0 +1,2453 @@
+{
+  "schema": {
+    "version": "1.0",
+    "description": "Unified historical events schema for International Relations theory analysis",
+    "eventStructure": {
+      "id": "string (unique identifier)",
+      "name": "string (display name)",
+      "year": "string (year or year range)",
+      "description": "string (overview)",
+      "eventType": "string (military|diplomatic|economic|ideological)",
+      "location": { "lat": "number", "lng": "number" },
+      "zoom": "number (map zoom level)",
+      "actors": ["array of country/organization names"],
+      "timeline": [
+        {
+          "year": "string",
+          "date": "string",
+          "title": "string",
+          "description": "string",
+          "eventType": "string",
+          "isTurningPoint": "boolean",
+          "relevantTheories": ["array"],
+          "icon": "string",
+          "focusLocation": ["lat", "lng"],
+          "focusZoom": "number",
+          "mapData": {}
+        }
+      ],
+      "data": {
+        "militaryPower": {},
+        "economicPower": {},
+        "alliances": [],
+        "timeline": []
+      },
+      "interpretations": {
+        "theoryId": {
+          "interpretation": "string",
+          "keyPoints": ["array"],
+          "visualElements": [],
+          "limitations": {}
+        }
+      },
+      "countryPerspectives": {
+        "countryName": { "role": "string", "perspectives": {} }
+      },
+      "mapData": {
+        "militaryBases": [],
+        "troops": [],
+        "movements": [],
+        "influence": [],
+        "conflicts": [],
+        "alliances": []
+      },
+      "relatedScholars": ["array of scholar names"],
+      "relatedScenarios": ["array of scenario ids"]
+    }
+  },
+  "theories": [
+    {
+      "id": "classical-realism",
+      "name": "Classical Realism",
+      "shortName": "Realism",
+      "color": "#8B0000",
+      "description": "Focuses on power, national interest, and the inherent conflict in international relations. States are the primary actors driven by self-interest and survival.",
+      "keyPrinciples": [
+        "States are primary actors in international relations",
+        "International system is anarchic (no overarching authority)",
+        "States act rationally in pursuit of national interest",
+        "Power is the primary currency in international relations",
+        "Morality is subordinate to survival and security"
+      ],
+      "keyThinkers": [
+        "Hans Morgenthau",
+        "E.H. Carr",
+        "Thucydides",
+        "Machiavelli",
+        "John Herz"
+      ]
+    },
+    {
+      "id": "structural-realism",
+      "name": "Structural Realism (Neorealism)",
+      "shortName": "Neorealism",
+      "color": "#B22222",
+      "description": "Emphasizes the structure of the international system rather than human nature. The distribution of power determines state behavior.",
+      "keyPrinciples": [
+        "International system structure determines state behavior",
+        "Balance of power is crucial for stability",
+        "States seek security through self-help",
+        "Relative gains matter more than absolute gains",
+        "Bipolar or multipolar systems affect stability differently"
+      ],
+      "keyThinkers": ["Kenneth Waltz", "John Mearsheimer"]
+    },
+    {
+      "id": "liberalism",
+      "name": "Liberalism",
+      "shortName": "Liberalism",
+      "color": "#1E90FF",
+      "description": "Emphasizes cooperation, international institutions, democracy, and economic interdependence as paths to peace.",
+      "keyPrinciples": [
+        "Democratic peace theory - democracies rarely fight each other",
+        "International institutions facilitate cooperation",
+        "Economic interdependence reduces conflict",
+        "Non-state actors play important roles",
+        "Possibility of absolute gains through cooperation"
+      ],
+      "keyThinkers": [
+        "Immanuel Kant",
+        "Woodrow Wilson",
+        "Michael Doyle",
+        "Robert Keohane"
+      ]
+    },
+    {
+      "id": "neoliberalism",
+      "name": "Neoliberal Institutionalism",
+      "shortName": "Neoliberalism",
+      "color": "#4169E1",
+      "description": "Accepts realist assumptions about anarchy but argues that international institutions can facilitate cooperation and mitigate conflict.",
+      "keyPrinciples": [
+        "Institutions reduce transaction costs",
+        "Regimes create expectations and reduce uncertainty",
+        "Cooperation possible even under anarchy",
+        "Information sharing promotes trust",
+        "Iteration and reciprocity encourage cooperation"
+      ],
+      "keyThinkers": ["Robert Keohane", "Joseph Nye", "Robert Axelrod"]
+    },
+    {
+      "id": "english-school",
+      "name": "The English School",
+      "shortName": "English School",
+      "color": "#2E8B57",
+      "description": "Focuses on international society, shared norms, and the balance between order and justice in the international system.",
+      "keyPrinciples": [
+        "International society exists beyond mere system",
+        "Shared norms and values shape state behavior",
+        "Balance between pluralism and solidarism",
+        "Importance of diplomacy and international law",
+        "Great powers have special responsibilities"
+      ],
+      "keyThinkers": ["Hedley Bull", "Martin Wight", "Adam Watson"]
+    },
+    {
+      "id": "constructivism",
+      "name": "Constructivism",
+      "shortName": "Constructivism",
+      "color": "#FFD700",
+      "description": "Emphasizes that international relations are socially constructed through ideas, identities, and norms rather than material forces alone.",
+      "keyPrinciples": [
+        "Interests and identities are socially constructed",
+        "Ideas and norms shape state behavior",
+        "Anarchy is what states make of it",
+        "Change is possible through social interaction",
+        "Culture and identity matter in IR"
+      ],
+      "keyThinkers": ["Alexander Wendt", "Martha Finnemore", "Nicholas Onuf"]
+    }
+  ],
+  "events": [
+    {
+      "id": "cold-war",
+      "name": "The Cold War",
+      "year": "1947-1991",
+      "description": "A period of geopolitical tension between the United States and the Soviet Union and their respective allies, characterized by proxy wars, arms races, ideological conflict, and nuclear deterrence.",
+      "eventType": "ideological",
+      "location": { "lat": 52.52, "lng": 13.405 },
+      "zoom": 3,
+      "actors": [
+        "United States",
+        "Soviet Union",
+        "NATO",
+        "Warsaw Pact",
+        "China",
+        "Non-Aligned Movement"
+      ],
+      "data": {
+        "militaryPower": {
+          "United States": 85,
+          "Soviet Union": 80,
+          "NATO Allies": 65,
+          "Warsaw Pact": 60
+        },
+        "economicPower": {
+          "United States": 90,
+          "Soviet Union": 65,
+          "Western Europe": 75,
+          "Eastern Europe": 45
+        },
+        "alliances": [
+          "NATO (1949)",
+          "Warsaw Pact (1955)",
+          "Non-Aligned Movement"
+        ],
+        "timeline": [
+          { "date": "1947", "event": "Truman Doctrine announced" },
+          { "date": "1949", "event": "NATO formed" },
+          { "date": "1955", "event": "Warsaw Pact formed" },
+          { "date": "1962", "event": "Cuban Missile Crisis" },
+          { "date": "1989", "event": "Fall of Berlin Wall" },
+          { "date": "1991", "event": "Soviet Union dissolves" }
+        ]
+      },
+      "timeline": [
+        {
+          "year": "1947",
+          "date": "March 1947",
+          "title": "Truman Doctrine Announced",
+          "description": "Realists argue that the Cold War began when the United States announced the Truman Doctrine in 1947. They saw it as a move to contain Soviet power. The goal was not moral defense of democracy but to stop a rival from expanding its sphere of influence. This policy set the logic of containment that guided U.S. actions for decades.",
+          "eventType": "diplomatic",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "shield",
+          "focusLocation": [39.0, 22.0],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Kremlin",
+                "country": "USSR",
+                "size": 10
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2000000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 1800000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1948",
+          "date": "April 1948",
+          "title": "Marshall Plan Implemented",
+          "description": "As a result, the Marshall Plan in 1948 became the economic arm of containment. The U.S. rebuilt Western Europe to prevent Soviet influence through economic dependence. Realists interpret it as strategic aid to strengthen allies and stabilize the balance of power.",
+          "eventType": "economic",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism", "liberalism"],
+          "icon": "trending-up",
+          "focusLocation": [48.8566, 2.3522],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [48.8566, 2.3522],
+                "name": "Paris",
+                "country": "France",
+                "size": 8
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2100000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 1900000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1949",
+          "date": "April 1949",
+          "title": "NATO Founded",
+          "description": "The success of containment led to the formation of NATO in 1949. The alliance institutionalized collective defense to counter Soviet military strength. Realists viewed it as a clear example of balancing behavior among states facing a common threat.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": [
+            "classical-realism",
+            "liberalism",
+            "neoliberalism"
+          ],
+          "icon": "users",
+          "focusLocation": [50.0, 10.0],
+          "focusZoom": 4,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [51.5074, -0.1278],
+                "name": "London HQ",
+                "country": "UK",
+                "size": 8
+              },
+              {
+                "position": [48.8566, 2.3522],
+                "name": "Paris HQ",
+                "country": "France",
+                "size": 8
+              },
+              {
+                "position": [52.52, 13.405],
+                "name": "Berlin (West)",
+                "country": "West Germany",
+                "size": 7
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              }
+            ],
+            "movements": [
+              {
+                "from": [38.9072, -77.0369],
+                "to": [51.5074, -0.1278],
+                "type": "alliance",
+                "label": "NATO Alliance"
+              },
+              {
+                "from": [38.9072, -77.0369],
+                "to": [48.8566, 2.3522],
+                "type": "alliance",
+                "label": "NATO Alliance"
+              },
+              {
+                "from": [51.5074, -0.1278],
+                "to": [48.8566, 2.3522],
+                "type": "alliance",
+                "label": "NATO Alliance"
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2200000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2000000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1950",
+          "date": "June 1950",
+          "title": "Korean War Begins",
+          "description": "The next escalation came with the Korean War (1950-1953). It tested U.S. willingness to defend its containment policy by force. For realists, this was a limited war to preserve credibility and prevent communist dominance in Asia.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "sword",
+          "focusLocation": [37.5665, 126.978],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [37.5665, 126.978],
+                "name": "Seoul",
+                "country": "South Korea",
+                "size": 8
+              },
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [38.0, 127.0],
+                "name": "Korean War",
+                "intensity": 9
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2150000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2100000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1952",
+          "date": "November 1952",
+          "title": "First Hydrogen Bomb Test",
+          "description": "In response, both sides sought deterrence through weapons. The hydrogen bomb development (1952-1953) created mutual fear and strategic balance. Realists explain this as survival logic under anarchy, where security depends on deterrence.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["structural-realism"],
+          "icon": "zap",
+          "focusLocation": [11.55, 162.35],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2200000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2150000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1955",
+          "date": "May 1955",
+          "title": "Warsaw Pact Established",
+          "description": "To counter NATO, the Soviet Union established the Warsaw Pact in 1955. This formalized the division of Europe into two armed camps. Realists saw it as the mirror image of NATO, reinforcing the bipolar balance.",
+          "eventType": "military",
+          "isTurningPoint": false,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "shield",
+          "focusLocation": [52.2297, 21.0122],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [51.5074, -0.1278],
+                "name": "London",
+                "country": "UK",
+                "size": 8
+              },
+              {
+                "position": [48.8566, 2.3522],
+                "name": "Paris",
+                "country": "France",
+                "size": 8
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              },
+              {
+                "position": [52.2297, 21.0122],
+                "name": "Warsaw",
+                "country": "Poland",
+                "size": 7
+              },
+              {
+                "position": [50.0755, 14.4378],
+                "name": "Prague",
+                "country": "Czechoslovakia",
+                "size": 6
+              },
+              {
+                "position": [47.4979, 19.0402],
+                "name": "Budapest",
+                "country": "Hungary",
+                "size": 6
+              }
+            ],
+            "movements": [
+              {
+                "from": [55.7558, 37.6173],
+                "to": [52.2297, 21.0122],
+                "type": "alliance",
+                "label": "Warsaw Pact"
+              },
+              {
+                "from": [55.7558, 37.6173],
+                "to": [50.0755, 14.4378],
+                "type": "alliance",
+                "label": "Warsaw Pact"
+              },
+              {
+                "from": [55.7558, 37.6173],
+                "to": [47.4979, 19.0402],
+                "type": "alliance",
+                "label": "Warsaw Pact"
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2300000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2300000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1956",
+          "date": "October 1956",
+          "title": "Suez Crisis",
+          "description": "Power politics soon extended beyond Europe. The Suez Crisis of 1956 revealed U.S. dominance over Britain and France and Soviet influence in the Middle East. Realists saw it as a shift in hierarchy within the Western bloc, proving the U.S. as the new global leader.",
+          "eventType": "diplomatic",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism"],
+          "icon": "globe",
+          "focusLocation": [30.0444, 31.2357],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [30.0444, 31.2357],
+                "name": "Suez Canal Zone",
+                "country": "Egypt",
+                "size": 8
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [30.0444, 31.2357],
+                "name": "Suez Crisis",
+                "intensity": 8
+              }
+            ]
+          }
+        },
+        {
+          "year": "1957",
+          "date": "October 1957",
+          "title": "Sputnik Launched",
+          "description": "The launch of Sputnik in 1957 demonstrated Soviet technological and strategic reach. Realists viewed space competition as a new domain for power projection and psychological warfare. It intensified the arms race.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["structural-realism"],
+          "icon": "zap",
+          "focusLocation": [45.92, 63.34],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [45.92, 63.34],
+                "name": "Baikonur Cosmodrome",
+                "country": "USSR",
+                "size": 9
+              }
+            ]
+          }
+        },
+        {
+          "year": "1962",
+          "date": "October 1962",
+          "title": "Cuban Missile Crisis",
+          "description": "The Cuban Missile Crisis in 1962 marked the peak of confrontation. Realists saw it as a near-war that proved deterrence works when both sides act rationally. Each preserved survival through calculated restraint.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["structural-realism", "english-school"],
+          "icon": "zap",
+          "focusLocation": [23.1136, -82.3666],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [25.7617, -80.1918],
+                "name": "Homestead AFB",
+                "country": "USA",
+                "size": 9
+              },
+              {
+                "position": [23.1136, -82.3666],
+                "name": "Soviet Missile Sites",
+                "country": "USSR",
+                "size": 8
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              }
+            ],
+            "movements": [
+              {
+                "from": [55.7558, 37.6173],
+                "to": [23.1136, -82.3666],
+                "type": "military",
+                "label": "Soviet Missiles"
+              },
+              {
+                "from": [38.9072, -77.0369],
+                "to": [23.1136, -82.3666],
+                "type": "blockade",
+                "label": "US Naval Blockade"
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [23.1136, -82.3666],
+                "name": "Cuban Missile Crisis",
+                "intensity": 10
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2400000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2400000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1972",
+          "date": "February 1972",
+          "title": "Nixon Visits China",
+          "description": "This division enabled the U.S.-China rapprochement in 1972. Nixon used the Sino-Soviet split to balance against the USSR. Realists consider it a successful strategic move that reshaped the global power structure.",
+          "eventType": "diplomatic",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "users",
+          "focusLocation": [39.9042, 116.4074],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [39.9042, 116.4074],
+                "name": "Beijing",
+                "country": "China",
+                "size": 9
+              }
+            ],
+            "movements": [
+              {
+                "from": [38.9072, -77.0369],
+                "to": [39.9042, 116.4074],
+                "type": "diplomacy",
+                "label": "US-China Rapprochement"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1975",
+          "date": "April 1975",
+          "title": "Fall of Saigon",
+          "description": "Vietnam War ends. Communist victory in Southeast Asia expands Soviet influence.",
+          "eventType": "military",
+          "isTurningPoint": false,
+          "relevantTheories": ["classical-realism", "constructivism"],
+          "icon": "flag",
+          "focusLocation": [10.8231, 106.6297],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              },
+              {
+                "position": [10.8231, 106.6297],
+                "name": "Saigon (Ho Chi Minh)",
+                "country": "Vietnam",
+                "size": 7
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [10.8231, 106.6297],
+                "name": "Vietnam War Ends",
+                "intensity": 8
+              }
+            ],
+            "movements": [
+              {
+                "from": [55.7558, 37.6173],
+                "to": [10.8231, 106.6297],
+                "type": "support",
+                "label": "Soviet Support"
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2200000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2600000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1979",
+          "date": "December 1979",
+          "title": "Soviet Invasion of Afghanistan",
+          "description": "USSR invades Afghanistan. US provides support to Mujahideen fighters.",
+          "eventType": "military",
+          "isTurningPoint": false,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "sword",
+          "focusLocation": [34.5553, 69.2075],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 10
+              },
+              {
+                "position": [34.5553, 69.2075],
+                "name": "Kabul",
+                "country": "Afghanistan",
+                "size": 8
+              }
+            ],
+            "troops": [
+              {
+                "position": [34.5553, 69.2075],
+                "name": "Soviet Forces",
+                "strength": 100000
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [34.5553, 69.2075],
+                "name": "Soviet-Afghan War",
+                "intensity": 9
+              }
+            ],
+            "movements": [
+              {
+                "from": [55.7558, 37.6173],
+                "to": [34.5553, 69.2075],
+                "type": "invasion",
+                "label": "Soviet Invasion"
+              },
+              {
+                "from": [38.9072, -77.0369],
+                "to": [34.5553, 69.2075],
+                "type": "support",
+                "label": "US Support to Mujahideen"
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2300000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2700000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1985",
+          "date": "March 1985",
+          "title": "Gorbachev Comes to Power",
+          "description": "Mikhail Gorbachev becomes Soviet leader. Begins Glasnost and Perestroika reforms.",
+          "eventType": "ideological",
+          "isTurningPoint": true,
+          "relevantTheories": ["constructivism", "liberalism"],
+          "icon": "lightbulb",
+          "focusLocation": [55.7558, 37.6173],
+          "focusZoom": 6,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow (Reforming)",
+                "country": "USSR",
+                "size": 10
+              }
+            ],
+            "movements": [
+              {
+                "from": [55.7558, 37.6173],
+                "to": [38.9072, -77.0369],
+                "type": "diplomacy",
+                "label": "New Thinking"
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2400000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2500000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1989",
+          "date": "November 1989",
+          "title": "Fall of Berlin Wall",
+          "description": "The fall of the Berlin Wall in 1989 showed Soviet loss of control over Eastern Europe. Realists interpreted it as the outcome of economic and military decline, not a triumph of liberal ideas.",
+          "eventType": "ideological",
+          "isTurningPoint": true,
+          "relevantTheories": [
+            "constructivism",
+            "liberalism",
+            "english-school"
+          ],
+          "icon": "wall",
+          "focusLocation": [52.52, 13.405],
+          "focusZoom": 7,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [52.52, 13.405],
+                "name": "Berlin (Reunifying)",
+                "country": "Germany",
+                "size": 9
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow",
+                "country": "USSR",
+                "size": 9
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [52.52, 13.405],
+                "name": "Peaceful Revolution",
+                "intensity": 3
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 2600000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 2000000,
+                "country": "USSR"
+              }
+            ]
+          }
+        },
+        {
+          "year": "1991",
+          "date": "December 1991",
+          "title": "Soviet Union Dissolves",
+          "description": "By 1991, the Soviet Union dissolved. Realists saw the end of bipolarity as a consequence of overextension and power imbalance. The United States remained dominant because it sustained its economic and military capacity. From a realist view, the Cold War was a continuous chain of actions driven by security, competition, and balance of power. Each event shaped the next through shifts in military strength, alliances, and national interest.",
+          "eventType": "ideological",
+          "isTurningPoint": true,
+          "relevantTheories": [
+            "constructivism",
+            "structural-realism",
+            "liberalism"
+          ],
+          "icon": "alert-circle",
+          "focusLocation": [55.7558, 37.6173],
+          "focusZoom": 5,
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [38.9072, -77.0369],
+                "name": "Pentagon",
+                "country": "USA",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "Moscow (Russia)",
+                "country": "Russia",
+                "size": 7
+              }
+            ],
+            "influence": [
+              {
+                "center": [38.9072, -77.0369],
+                "radius": 3000000,
+                "country": "USA"
+              },
+              {
+                "center": [55.7558, 37.6173],
+                "radius": 1500000,
+                "country": "Russia"
+              }
+            ]
+          }
+        }
+      ],
+      "interpretations": {
+        "classical-realism": {
+          "interpretation": "The Cold War exemplifies realist principles of power politics and security competition. Two superpowers competed for dominance in an anarchic international system, each seeking to maximize their power and security while minimizing threats.",
+          "keyPoints": [
+            "Bipolar balance of power between US and USSR",
+            "Security dilemma: each side's defensive measures increased the other's insecurity",
+            "Zero-sum competition for influence and allies",
+            "Nuclear weapons as ultimate power capability",
+            "Ideological rhetoric masked pure power calculations"
+          ],
+          "visualElements": [
+            {
+              "type": "circle",
+              "coordinates": [[38.9072, -77.0369]],
+              "label": "US Power Center",
+              "color": "#FF0000"
+            },
+            {
+              "type": "circle",
+              "coordinates": [[55.7558, 37.6173]],
+              "label": "Soviet Power Center",
+              "color": "#CC0000"
+            }
+          ],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "minor",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "structural-realism": {
+          "interpretation": "Neorealism sees the Cold War as a product of bipolar system structure. The distribution of capabilities created a stable balance where two superpowers dominated, reducing uncertainty but creating intense competition.",
+          "keyPoints": [
+            "Bipolar structure created stability through clarity",
+            "Balance of power through nuclear deterrence (MAD)",
+            "System structure determined behavior more than ideology",
+            "Self-help through military buildups and alliances",
+            "Relative gains concerns drove arms race"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "liberalism": {
+          "interpretation": "Liberalism explains Cold War tensions through lack of democratic peace and absence of strong international institutions between the blocs. The eventual end came through increasing interdependence and institutional cooperation.",
+          "keyPoints": [
+            "Democratic peace absent - USSR was authoritarian",
+            "Limited institutions for cooperation (UN Security Council deadlock)",
+            "Economic isolation prevented interdependence benefits",
+            "Eventual cooperation through arms control treaties",
+            "End facilitated by Gorbachev's liberalization"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "minor",
+            "blindSpots": [
+              "Underestimates how ideological divide prevented cooperation early on",
+              "Assumes institutions and trade could have prevented conflict (but ideological incompatibility was strong)",
+              "Democratic peace doesn't apply when one side (USSR) is authoritarian"
+            ],
+            "whatItMisses": [
+              "The structural conflict between superpowers regardless of ideology",
+              "Security competition as primary driver in early Cold War",
+              "Why economic interdependence failed to develop between blocs"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Structural Realism",
+                "reason": "Better explains early Cold War bipolar competition"
+              },
+              {
+                "theoryId": "Constructivism",
+                "reason": "Captures how identity change (Gorbachev) ended Cold War"
+              }
+            ]
+          }
+        },
+        "neoliberalism": {
+          "interpretation": "Neoliberal institutionalism sees arms control regimes and international organizations as crucial mechanisms that enabled limited cooperation even during intense rivalry.",
+          "keyPoints": [
+            "Arms control treaties (SALT, START) reduced uncertainty",
+            "UN provided forum for limited cooperation",
+            "Helsinki Accords created norms of human rights",
+            "International institutions persisted despite rivalry",
+            "Regimes enabled eventual détente"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "moderate",
+            "blindSpots": [
+              "Institutions were weak during early Cold War (UN Security Council deadlocked)",
+              "No trade between blocs meant economic interdependence couldn't work",
+              "Ideological incompatibility prevented regime formation"
+            ],
+            "whatItMisses": [
+              "Why institutions failed to prevent proxy wars",
+              "How ideological divide prevented meaningful cooperation until late 1980s",
+              "The primacy of security competition over institutional cooperation"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Constructivism",
+                "reason": "Better explains how identity change (Gorbachev) ended Cold War"
+              }
+            ]
+          }
+        },
+        "english-school": {
+          "interpretation": "The English School views the Cold War as a managed rivalry within an international society. Despite ideological differences, both superpowers recognized shared interests in avoiding nuclear war and maintaining basic order.",
+          "keyPoints": [
+            "Maintenance of international society despite ideological divide",
+            "Shared norms against nuclear weapon use",
+            "Great power management of international order",
+            "Diplomacy and communication channels maintained",
+            "Balance between conflict and cooperation"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "constructivism": {
+          "interpretation": "Constructivism explains the Cold War's end through identity transformation. Gorbachev's 'New Thinking' changed Soviet identity from revolutionary expansionist to normal state seeking integration.",
+          "keyPoints": [
+            "Cold War sustained by mutually constituted enemy identities",
+            "US identity as 'leader of free world'",
+            "Soviet identity as revolutionary state",
+            "Gorbachev's identity shift crucial to ending conflict",
+            "Ideas and norms mattered as much as material power"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        }
+      },
+      "countryPerspectives": {
+        "United States": {
+          "role": "Superpower, Western bloc leader",
+          "perspectives": {
+            "realism": "Superpower pursuing global hegemony. Power maximizer using NATO and nuclear deterrence.",
+            "liberalism": "Leader of liberal international order. Promotes democracy, free trade, institutions.",
+            "neoliberalism": "Hegemon providing public goods. Uses regimes to manage cooperation.",
+            "constructivism": "Identity as 'leader of free world'. Spreads democratic norms.",
+            "structural-realism": "Pole in bipolar system. Structure determines must balance Soviet power."
+          }
+        },
+        "Soviet Union": {
+          "role": "Superpower, Eastern bloc leader",
+          "perspectives": {
+            "realism": "Rival superpower competing for influence. Seeks security through buffer states and power.",
+            "liberalism": "Authoritarian limiting cooperation. Lack of democracy prevents engagement.",
+            "constructivism": "Revolutionary identity drives behavior. 1985+ identity shift (Gorbachev) ends Cold War.",
+            "structural-realism": "Second pole. Must compete due to structure, not ideology."
+          }
+        },
+        "China": {
+          "role": "Communist power, Sino-Soviet split",
+          "perspectives": {
+            "realism": "Sino-Soviet split shows security trumps ideology. China feared Soviet power more than shared communism. Aligned with U.S. (1970s) against USSR despite ideological difference. Pure balance of power.",
+            "liberalism": "Authoritarian regime limiting cooperation. Economic opening (1980s) brought integration into global economy. Shows economic incentives can overcome ideology.",
+            "constructivism": "Distinct Chinese communist identity vs. Soviet model. Maoism as unique ideology. Cultural Revolution showed ideational factors. Identity as Middle Kingdom persisted through communism.",
+            "structural-realism": "Balanced against proximate threat (USSR) by aligning with distant power (U.S.). Classic external balancing. Shows system structure determines behavior more than ideology."
+          }
+        },
+        "West Germany": {
+          "role": "Divided frontline state, Western anchor",
+          "perspectives": {
+            "realism": "Divided nation on Cold War frontline. Hosted NATO troops as buffer. Feared Soviet invasion. Total dependence on U.S. security. Geography determined vulnerability.",
+            "liberalism": "Democratic transformation post-WWII. Deeply integrated in Western institutions (NATO, EEC). Economic miracle through trade. Democratic peace with former enemies (France). Model of liberal success.",
+            "constructivism": "Identity transformation from Nazi aggression to peaceful democracy. Vergangenheitsbewältigung (coming to terms with past). European identity adoption. Constitutional pacifism norm.",
+            "neoliberalism": "Used institutions to overcome WWII legacy. European integration locked in peaceful identity. Regained legitimacy through institutional embeddedness."
+          }
+        },
+        "Cuba": {
+          "role": "Soviet ally in Western hemisphere",
+          "perspectives": {
+            "realism": "Small state seeking Soviet protection against U.S. threat (90 miles away). Rational balancing despite geographic distance. Missile crisis showed risks of superpower proxy.",
+            "liberalism": "Castro's authoritarianism prevented cooperation with Western hemisphere institutions. Excluded from OAS. Isolation drove Soviet dependence.",
+            "constructivism": "Revolutionary identity as anti-imperialist. Castro's charisma built new Cuban identity. Solidarity with Third World movements. Identity more important than material costs of U.S. embargo."
+          }
+        },
+        "India": {
+          "role": "Non-Aligned Movement leader",
+          "perspectives": {
+            "realism": "Large power pursuing strategic autonomy. Non-alignment maximized aid from both sides. Played superpowers against each other. Realist behavior disguised as moralistic non-alignment.",
+            "liberalism": "Democratic but pragmatic. Founder of Non-Aligned Movement. Used institutions for voice. Shows democracy doesn't automatically mean Western alignment.",
+            "constructivism": "Post-colonial identity of independence and non-alignment. Moral leadership aspiration. Nehru's vision of Third World solidarity. Identity as bridge between blocs, not as subordinate.",
+            "english-school": "Great power in regional context. Leader in creating non-aligned as distinct international society. Promoted new norms of decolonization and development."
+          }
+        }
+      },
+      "relatedScholars": [
+        "Hans Morgenthau",
+        "Kenneth Waltz",
+        "E.H. Carr",
+        "Robert Keohane",
+        "Joseph Nye",
+        "Alexander Wendt",
+        "Hedley Bull",
+        "John Mearsheimer"
+      ],
+      "relatedScenarios": ["china-south-china-sea", "ukraine-war"]
+    },
+    {
+      "id": "wwi",
+      "name": "World War I Outbreak",
+      "year": "1914",
+      "description": "The assassination of Archduke Franz Ferdinand triggered a chain of alliance commitments leading to global war. The conflict demonstrated the dangers of rigid alliance systems, security dilemmas, and multipolar instability.",
+      "eventType": "military",
+      "location": { "lat": 48.2082, "lng": 16.3738 },
+      "zoom": 4,
+      "actors": [
+        "Austria-Hungary",
+        "Serbia",
+        "Germany",
+        "Russia",
+        "France",
+        "Britain"
+      ],
+      "data": {
+        "militaryPower": {
+          "Germany": 85,
+          "Austria-Hungary": 65,
+          "Russia": 75,
+          "France": 70,
+          "Britain": 80
+        },
+        "alliances": [
+          "Triple Alliance (Germany, Austria-Hungary, Italy)",
+          "Triple Entente (Britain, France, Russia)"
+        ],
+        "timeline": [
+          {
+            "date": "June 28, 1914",
+            "event": "Assassination of Franz Ferdinand"
+          },
+          {
+            "date": "July 28, 1914",
+            "event": "Austria-Hungary declares war on Serbia"
+          },
+          {
+            "date": "August 1, 1914",
+            "event": "Germany declares war on Russia"
+          },
+          {
+            "date": "August 3, 1914",
+            "event": "Germany declares war on France"
+          },
+          {
+            "date": "August 4, 1914",
+            "event": "Britain declares war on Germany"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "year": "1914",
+          "date": "June 28, 1914",
+          "title": "Assassination of Archduke Franz Ferdinand",
+          "description": "Austrian Archduke assassinated in Sarajevo by Serbian nationalist.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism"],
+          "icon": "alert-circle",
+          "mapData": {
+            "conflicts": [
+              {
+                "position": [43.8564, 18.4131],
+                "name": "Assassination Site",
+                "intensity": 10
+              }
+            ],
+            "militaryBases": [
+              {
+                "position": [48.2082, 16.3738],
+                "name": "Vienna",
+                "country": "Austria-Hungary",
+                "size": 9
+              },
+              {
+                "position": [44.7866, 20.4489],
+                "name": "Belgrade",
+                "country": "Serbia",
+                "size": 6
+              }
+            ]
+          }
+        },
+        {
+          "year": "1914",
+          "date": "July 28, 1914",
+          "title": "Austria-Hungary Declares War on Serbia",
+          "description": "First declaration of war. Alliance system begins to activate.",
+          "eventType": "military",
+          "isTurningPoint": false,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "sword",
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [48.2082, 16.3738],
+                "name": "Vienna",
+                "country": "Austria-Hungary",
+                "size": 9
+              },
+              {
+                "position": [44.7866, 20.4489],
+                "name": "Belgrade",
+                "country": "Serbia",
+                "size": 6
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "St. Petersburg",
+                "country": "Russia",
+                "size": 10
+              }
+            ],
+            "movements": [
+              {
+                "from": [48.2082, 16.3738],
+                "to": [44.7866, 20.4489],
+                "type": "invasion",
+                "label": "War Declaration"
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [44.7866, 20.4489],
+                "name": "Serbian Front",
+                "intensity": 7
+              }
+            ]
+          }
+        },
+        {
+          "year": "1914",
+          "date": "August 1-4, 1914",
+          "title": "Mobilization Cascades Across Europe",
+          "description": "Germany, Russia, France, and Britain enter the war through alliance commitments.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism", "structural-realism"],
+          "icon": "users",
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [52.52, 13.405],
+                "name": "Berlin",
+                "country": "Germany",
+                "size": 10
+              },
+              {
+                "position": [48.8566, 2.3522],
+                "name": "Paris",
+                "country": "France",
+                "size": 10
+              },
+              {
+                "position": [51.5074, -0.1278],
+                "name": "London",
+                "country": "Britain",
+                "size": 10
+              },
+              {
+                "position": [55.7558, 37.6173],
+                "name": "St. Petersburg",
+                "country": "Russia",
+                "size": 10
+              },
+              {
+                "position": [48.2082, 16.3738],
+                "name": "Vienna",
+                "country": "Austria-Hungary",
+                "size": 9
+              }
+            ],
+            "movements": [
+              {
+                "from": [52.52, 13.405],
+                "to": [55.7558, 37.6173],
+                "type": "war",
+                "label": "Germany vs Russia"
+              },
+              {
+                "from": [52.52, 13.405],
+                "to": [48.8566, 2.3522],
+                "type": "invasion",
+                "label": "Schlieffen Plan"
+              },
+              {
+                "from": [51.5074, -0.1278],
+                "to": [52.52, 13.405],
+                "type": "war",
+                "label": "Britain vs Germany"
+              }
+            ],
+            "troops": [
+              {
+                "position": [50.8503, 4.3517],
+                "name": "German Forces",
+                "strength": 1500000
+              },
+              {
+                "position": [49.4432, 1.0993],
+                "name": "French Forces",
+                "strength": 1300000
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [50.8503, 4.3517],
+                "name": "Battle of Belgium",
+                "intensity": 9
+              }
+            ]
+          }
+        },
+        {
+          "year": "1914",
+          "date": "September 1914",
+          "title": "Battle of the Marne",
+          "description": "German advance stopped at Paris. Trench warfare begins.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["classical-realism"],
+          "icon": "sword",
+          "mapData": {
+            "militaryBases": [
+              {
+                "position": [48.8566, 2.3522],
+                "name": "Paris (Saved)",
+                "country": "France",
+                "size": 10
+              },
+              {
+                "position": [52.52, 13.405],
+                "name": "Berlin",
+                "country": "Germany",
+                "size": 10
+              }
+            ],
+            "troops": [
+              {
+                "position": [48.9597, 3.3419],
+                "name": "Allied Forces",
+                "strength": 1082000
+              },
+              {
+                "position": [49.0369, 3.7589],
+                "name": "German Forces",
+                "strength": 1485000
+              }
+            ],
+            "conflicts": [
+              {
+                "position": [48.9597, 3.3419],
+                "name": "Battle of the Marne",
+                "intensity": 10
+              }
+            ],
+            "movements": [
+              {
+                "from": [52.52, 13.405],
+                "to": [48.9597, 3.3419],
+                "type": "offensive",
+                "label": "German Offensive Halted"
+              }
+            ]
+          }
+        }
+      ],
+      "interpretations": {
+        "classical-realism": {
+          "interpretation": "WWI demonstrates how alliance systems and power calculations in an anarchic system can lead to catastrophic conflict. States pursued their national interests through alliances, which then dragged them into a massive war.",
+          "keyPoints": [
+            "Alliance systems created automatic war triggers",
+            "Security dilemma: Germany's rise threatened Britain and France",
+            "Balance of power logic failed to prevent war",
+            "Arms races reflected power competition",
+            "Each state acted rationally but collectively produced disaster"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "structural-realism": {
+          "interpretation": "Neorealism explains WWI as a result of multipolar system instability. Unlike bipolar systems (Cold War), multipolar systems create uncertainty about who will ally with whom, leading to miscalculations and war.",
+          "keyPoints": [
+            "Multipolar systems are unstable",
+            "Uncertainty about alliances caused miscalculations",
+            "Offensive military technology favored first strike",
+            "Chain-ganging through alliance commitments",
+            "System structure made war likely"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "liberalism": {
+          "interpretation": "Liberalism struggles to explain WWI. Economic interdependence between great powers failed to prevent war. Lack of strong international institutions and incomplete democratization allowed security concerns to dominate.",
+          "keyPoints": [
+            "Economic ties insufficient without institutions",
+            "No League of Nations or similar organization yet",
+            "Some states democratic but not all",
+            "Nationalist ideologies overrode economic rationality",
+            "Democratic peace doesn't apply to limited democracies"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": false,
+            "weaknessLevel": "critical",
+            "blindSpots": [
+              "Cannot explain why democracies (Britain, France) went to war so easily",
+              "Overestimates the power of economic interdependence (trade didn't prevent war)",
+              "Ignores security competition and alliance dynamics",
+              "Assumes institutions could prevent war (but they didn't exist yet)"
+            ],
+            "whatItMisses": [
+              "The role of military alliances in automatic escalation",
+              "How national security fears overrode economic interests",
+              "Why democratic publics enthusiastically supported war",
+              "The absence of strong international institutions in 1914",
+              "Power politics and arms races as primary drivers"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Classical Realism",
+                "reason": "Explains alliance politics, security dilemma, and arms races that caused WWI"
+              },
+              {
+                "theoryId": "Structural Realism",
+                "reason": "Shows how multipolar system instability led to war"
+              }
+            ]
+          }
+        },
+        "constructivism": {
+          "interpretation": "Constructivism emphasizes how nationalism, honor cultures, and identity shaped WWI. State identities as great powers and national honor made backing down politically impossible.",
+          "keyPoints": [
+            "Nationalist ideologies mobilized publics for war",
+            "Honor cultures made compromise difficult",
+            "Identity as great power required showing strength",
+            "Pan-Slavic identity drove Russian support for Serbia",
+            "Social construction of threats"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "moderate",
+            "blindSpots": [
+              "Focuses on nationalism and identity but doesn't explain the timing",
+              "Downplays material factors like alliance systems and military mobilization plans",
+              "Cannot fully explain why war escalated so quickly"
+            ],
+            "whatItMisses": [
+              "The role of military technology (railroads, machine guns) in escalation",
+              "Rigid alliance commitments creating automatic war",
+              "Security dilemma and first-strike advantages",
+              "How mobilization schedules left no time for diplomacy"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Classical Realism",
+                "reason": "Alliance dynamics and security dilemma better explain escalation"
+              },
+              {
+                "theoryId": "Structural Realism",
+                "reason": "Multipolar system instability explains outbreak"
+              }
+            ]
+          }
+        }
+      },
+      "countryPerspectives": {
+        "Germany": {
+          "role": "Central Powers leader, rising power",
+          "perspectives": {
+            "realism": "Rising power creating fear through growth. Surrounded by hostile alliances (encirclement). Arms buildup for defense appeared aggressive. Classic security dilemma.",
+            "liberalism": "Limited democracy. Militaristic culture. Economic ties with Britain/France failed to prevent security domination.",
+            "constructivism": "National identity of greatness and honor. Perceived encirclement created threat regardless of actual intentions. Weltpolitik ideology."
+          }
+        },
+        "France": {
+          "role": "Triple Entente member, invaded",
+          "perspectives": {
+            "realism": "Sought security through alliances against Germany. Feared German power after 1871 defeat. Alliance with Russia for balance.",
+            "liberalism": "Democratic republic but security fears overrode liberal values. Economic interdependence with Germany insufficient to prevent war.",
+            "constructivism": "Identity shaped by 1871 defeat and desire for revanche. National honor drove alliance choices and war support."
+          }
+        },
+        "Britain": {
+          "role": "Triple Entente member, naval power",
+          "perspectives": {
+            "realism": "Balanced against German power. Naval supremacy threatened by German buildup. Entered war to prevent German hegemony.",
+            "liberalism": "Liberal democracy. Belgian neutrality violation triggered intervention (norm-based). Alliance commitments binding.",
+            "constructivism": "Identity as empire and naval power. German naval challenge seen as existential threat to British identity."
+          }
+        },
+        "Russia": {
+          "role": "Triple Entente member, Eastern Front",
+          "perspectives": {
+            "realism": "Empire seeking Balkan influence. Alliance with Serbia and France to balance Germany/Austria. Mobilization triggered war.",
+            "liberalism": "Autocracy limiting cooperation. No democratic constraints on war. Mobilization caused automatic escalation.",
+            "constructivism": "Pan-Slavic identity. Protector of Slavic peoples. Serbian cause became Russian honor issue."
+          }
+        }
+      },
+      "relatedScholars": [
+        "Hans Morgenthau",
+        "Kenneth Waltz",
+        "E.H. Carr",
+        "Thucydides"
+      ],
+      "relatedScenarios": []
+    },
+    {
+      "id": "eu-formation",
+      "name": "European Union Formation",
+      "year": "1951-1993",
+      "description": "The transformation from European Coal and Steel Community to the European Union, creating unprecedented economic and political integration. A triumph of liberal internationalism and institutional cooperation.",
+      "eventType": "diplomatic",
+      "location": { "lat": 50.8503, "lng": 4.3517 },
+      "zoom": 4,
+      "actors": [
+        "France",
+        "Germany",
+        "Italy",
+        "Belgium",
+        "Netherlands",
+        "Luxembourg"
+      ],
+      "data": {
+        "economicPower": {
+          "Germany": 85,
+          "France": 80,
+          "Italy": 70,
+          "UK": 85,
+          "Spain": 60
+        },
+        "timeline": [
+          {
+            "date": "1951",
+            "event": "European Coal and Steel Community formed"
+          },
+          { "date": "1957", "event": "Treaty of Rome - EEC created" },
+          { "date": "1992", "event": "Maastricht Treaty signed" },
+          { "date": "1993", "event": "European Union officially formed" },
+          { "date": "2002", "event": "Euro introduced as currency" }
+        ]
+      },
+      "timeline": [],
+      "interpretations": {
+        "liberalism": {
+          "interpretation": "The EU is a triumph of liberal principles: economic interdependence, democratic peace, and institutional cooperation have made war between member states unthinkable.",
+          "keyPoints": [
+            "Economic integration created mutual dependence",
+            "Democratic peace among all member states",
+            "Institutions (Commission, Parliament, Court) facilitate cooperation",
+            "Absolute gains from trade benefit all members",
+            "Spillover effect from economic to political integration"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "neoliberalism": {
+          "interpretation": "Neoliberal institutionalism sees the EU as proof that institutions can enable cooperation even while states remain self-interested. Institutions reduce uncertainty and enforcement costs.",
+          "keyPoints": [
+            "Treaties created binding commitments and reduced uncertainty",
+            "Common market reduced transaction costs",
+            "European Court ensures compliance",
+            "Repeated interactions built trust",
+            "Information sharing through institutions"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "classical-realism": {
+          "interpretation": "Realism struggles to explain the EU. States voluntarily surrendered sovereignty and prioritized cooperation over competition, contradicting realist assumptions about state behavior.",
+          "keyPoints": [
+            "Cannot explain sovereignty pooling",
+            "Relative gains concerns should have prevented cooperation",
+            "Institutions matter more than realism predicts",
+            "France-Germany cooperation defies power politics",
+            "Peace despite anarchy"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": false,
+            "weaknessLevel": "critical",
+            "blindSpots": [
+              "Cannot explain why states voluntarily gave up sovereignty",
+              "Misses how economic cooperation created peace",
+              "Ignores the role of institutions in binding states together",
+              "Assumes states only care about relative gains (but EU shows absolute gains work)"
+            ],
+            "whatItMisses": [
+              "Why France and Germany, historical enemies, became integrated partners",
+              "How institutions reduced uncertainty and built trust",
+              "The power of economic interdependence in preventing conflict",
+              "Democratic peace effect - no EU wars between member democracies",
+              "Supranational institutions constraining state behavior"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Liberalism",
+                "reason": "Perfectly explains EU through democratic peace, institutions, and economic interdependence"
+              },
+              {
+                "theoryId": "Neoliberal Institutionalism",
+                "reason": "Shows how institutions facilitated cooperation even among self-interested states"
+              }
+            ]
+          }
+        },
+        "structural-realism": {
+          "interpretation": "Neorealism also struggles with the EU. System structure alone cannot explain why states would create supranational authority and accept constraints on their sovereignty.",
+          "keyPoints": [
+            "System structure doesn't predict regional integration",
+            "States should worry about relative gains",
+            "Cannot explain voluntary sovereignty surrender",
+            "Anarchy should prevent deep cooperation",
+            "Institutions shouldn't override security concerns"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": false,
+            "weaknessLevel": "critical",
+            "blindSpots": [
+              "System structure alone cannot explain regional integration",
+              "Relative gains concerns should have prevented EU cooperation",
+              "Predicts states wouldn't surrender sovereignty voluntarily",
+              "Cannot account for supranational authority"
+            ],
+            "whatItMisses": [
+              "Domestic politics and democratic governance as drivers",
+              "Economic motivations beyond security",
+              "How trust was built through repeated interactions",
+              "The normative commitment to peace after WWII",
+              "Role of non-state actors (businesses, civil society)"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Liberalism",
+                "reason": "Economic interdependence and democratic peace explain EU success"
+              },
+              {
+                "theoryId": "Constructivism",
+                "reason": "European identity and peace norms drove integration"
+              }
+            ]
+          }
+        },
+        "constructivism": {
+          "interpretation": "Constructivism emphasizes how European identity was constructed after WWII. Norms of peace, cooperation, and 'never again' drove integration beyond material interests.",
+          "keyPoints": [
+            "Post-WWII identity transformation from nationalism to Europeanism",
+            "Norms of peace and cooperation internalized",
+            "Schuman Declaration showed ideational change",
+            "European identity constructed through integration",
+            "Social learning through institutions"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        }
+      },
+      "countryPerspectives": {
+        "France": {
+          "role": "Founding member and integration leader",
+          "perspectives": {
+            "liberalism": "Democratic peace vision with Germany. Economic interdependence prevents war. Genuine institutional commitment.",
+            "neoliberalism": "Strategic institution-builder. Uses EU regimes to amplify power beyond material capabilities. Common Agricultural Policy benefits France.",
+            "constructivism": "Post-WWII identity shift from nationalism to European cooperation. Schuman Declaration showed ideational change."
+          }
+        },
+        "Germany": {
+          "role": "Economic powerhouse, reformed democracy",
+          "perspectives": {
+            "liberalism": "Democratic transformation enabled EU integration. Economic interdependence with France. Model of peaceful change.",
+            "neoliberalism": "Economic strength through EU single market. Institutional embeddedness overcame past. Dominant economy in Europe.",
+            "constructivism": "Complete identity transformation. From Nazi aggression to peaceful multilateralism. European identity genuinely internalized."
+          }
+        }
+      },
+      "relatedScholars": [
+        "Immanuel Kant",
+        "Robert Keohane",
+        "Joseph Nye",
+        "Michael Doyle"
+      ],
+      "relatedScenarios": []
+    },
+    {
+      "id": "cuban-missile-crisis",
+      "name": "Cuban Missile Crisis",
+      "year": "1962",
+      "description": "A 13-day confrontation between the United States and Soviet Union over Soviet ballistic missiles in Cuba. The closest the world came to nuclear war, resolved through a combination of deterrence, diplomacy, and compromise.",
+      "eventType": "military",
+      "location": { "lat": 23.1136, "lng": -82.3666 },
+      "zoom": 5,
+      "actors": ["United States", "Soviet Union", "Cuba"],
+      "data": {
+        "militaryPower": {
+          "United States": 90,
+          "Soviet Union": 85,
+          "Cuba": 30
+        },
+        "timeline": [
+          {
+            "date": "October 14, 1962",
+            "event": "U-2 spy plane photographs missile sites"
+          },
+          {
+            "date": "October 22, 1962",
+            "event": "Kennedy announces naval blockade"
+          },
+          {
+            "date": "October 24, 1962",
+            "event": "Soviet ships approach blockade"
+          },
+          {
+            "date": "October 27, 1962",
+            "event": "Peak of crisis - U-2 shot down"
+          },
+          {
+            "date": "October 28, 1962",
+            "event": "Khrushchev agrees to remove missiles"
+          }
+        ]
+      },
+      "timeline": [],
+      "interpretations": {
+        "structural-realism": {
+          "interpretation": "The crisis demonstrates nuclear deterrence and balance of power. Both superpowers had to consider the catastrophic consequences of war, leading to a negotiated settlement that maintained the strategic balance.",
+          "keyPoints": [
+            "Nuclear weapons created mutual assured destruction",
+            "Balance of power maintained through compromise",
+            "Rationality prevailed due to system pressures",
+            "Security competition nearly led to war",
+            "System structure constrained both sides"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "classical-realism": {
+          "interpretation": "Realism sees the crisis as a test of wills between great powers. The US defended its sphere of influence (Monroe Doctrine) while the USSR attempted to change the strategic balance. Power politics at its purest.",
+          "keyPoints": [
+            "Great power competition for strategic advantage",
+            "US defending hemisphere sphere of influence",
+            "Soviet attempt to change power balance cheaply",
+            "Nuclear weapons as ultimate power capability",
+            "Realpolitik over ideology"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "english-school": {
+          "interpretation": "The English School emphasizes how both sides respected basic norms of international society even during the crisis. The US didn't invade Cuba, and negotiations were conducted through diplomatic channels.",
+          "keyPoints": [
+            "Norms of diplomacy maintained during crisis",
+            "Both sides avoided crossing red lines",
+            "International society rules constrained behavior",
+            "Great power management of crisis",
+            "Sovereignty norms respected (no Cuba invasion)"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "moderate",
+            "blindSpots": [
+              "Overestimates how much norms constrained behavior during peak crisis",
+              "Diplomacy nearly failed - it was very close to war",
+              "International society norms were weak compared to survival instincts"
+            ],
+            "whatItMisses": [
+              "How close the crisis came to nuclear war despite norms",
+              "Role of nuclear deterrence in preventing escalation",
+              "That crisis management was as much luck as skill",
+              "Material power balance was more important than norms"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Structural Realism",
+                "reason": "Nuclear deterrence logic better explains crisis resolution"
+              }
+            ]
+          }
+        },
+        "constructivism": {
+          "interpretation": "Constructivism can explain some elements but struggles with the material reality of nuclear weapons. Identity mattered, but the immediate threat was physical missiles.",
+          "keyPoints": [
+            "US identity as hemisphere protector",
+            "Soviet identity as superpower seeking parity",
+            "Cuban revolutionary identity",
+            "Cold War enemy identities shaped perceptions",
+            "Kennedy's identity as strong leader"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "moderate",
+            "blindSpots": [
+              "Downplays the very real nuclear weapons that could destroy civilization",
+              "Identity hadn't changed by 1962 - both sides still saw each other as enemies",
+              "Overemphasizes ideas when material reality (nukes) was dominant factor"
+            ],
+            "whatItMisses": [
+              "The immediate material threat of nuclear annihilation",
+              "How power balance calculations drove both sides' decisions",
+              "Why Kennedy chose blockade over diplomacy-first approach",
+              "The role of military capabilities in limiting options"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Structural Realism",
+                "reason": "Nuclear balance and deterrence logic better explains the crisis resolution"
+              },
+              {
+                "theoryId": "Classical Realism",
+                "reason": "Power politics and survival instincts drove decision-making"
+              }
+            ]
+          }
+        }
+      },
+      "countryPerspectives": {
+        "United States": {
+          "role": "Superpower defending hemisphere",
+          "perspectives": {
+            "realism": "Defending Monroe Doctrine sphere. Soviet missiles unacceptable power shift. Naval blockade forced removal.",
+            "structural-realism": "Maintaining nuclear balance. Deterrence logic prevented escalation despite crisis.",
+            "english-school": "Respected norms (no Cuba invasion) while defending interests. Crisis management through diplomacy."
+          }
+        },
+        "Soviet Union": {
+          "role": "Superpower challenging U.S.",
+          "perspectives": {
+            "realism": "Attempting cheap strategic balance change. Testing U.S. resolve.",
+            "structural-realism": "Inferior position. Cuba missiles offset U.S. Turkey missiles. Balance of power.",
+            "english-school": "Pushed norms to limit but respected crisis management. Backed down to avoid war."
+          }
+        },
+        "Cuba": {
+          "role": "Trigger of nuclear confrontation",
+          "perspectives": {
+            "realism": "Small state caught between superpowers. Used by USSR for strategic gain. Endangered by being proxy. Shows costs of superpower alliance for small states.",
+            "structural-realism": "Geographic proximity to U.S. made it strategic asset for USSR. Attempt to change nuclear balance. Structure of bipolar system drove crisis.",
+            "english-school": "Sovereignty respected even by U.S. (no invasion). Great powers negotiated over Cuba without Cuban input. Shows great power management excluding small powers."
+          }
+        }
+      },
+      "relatedScholars": ["Kenneth Waltz", "John Mearsheimer", "Hedley Bull"],
+      "relatedScenarios": []
+    },
+    {
+      "id": "un-formation",
+      "name": "United Nations Formation",
+      "year": "1945",
+      "description": "Creation of the United Nations after WWII to maintain international peace and security through collective action. Represented an attempt to create a liberal international order based on international law and institutions.",
+      "eventType": "diplomatic",
+      "location": { "lat": 37.7749, "lng": -122.4194 },
+      "zoom": 2,
+      "actors": [
+        "United States",
+        "Soviet Union",
+        "United Kingdom",
+        "France",
+        "China"
+      ],
+      "data": {
+        "timeline": [
+          {
+            "date": "June 26, 1945",
+            "event": "UN Charter signed in San Francisco"
+          },
+          { "date": "October 24, 1945", "event": "UN officially established" },
+          { "date": "1948", "event": "Universal Declaration of Human Rights" },
+          { "date": "1950", "event": "First major intervention - Korean War" }
+        ]
+      },
+      "timeline": [
+        {
+          "year": "1945",
+          "date": "June 26, 1945",
+          "title": "UN Charter Signed",
+          "description": "50 nations sign the UN Charter in San Francisco, establishing the United Nations.",
+          "eventType": "diplomatic",
+          "isTurningPoint": true,
+          "relevantTheories": ["liberalism", "neoliberalism", "english-school"],
+          "icon": "users",
+          "mapData": { "militaryBases": [] }
+        },
+        {
+          "year": "1945",
+          "date": "October 24, 1945",
+          "title": "UN Officially Established",
+          "description": "United Nations officially comes into existence with 51 founding members.",
+          "eventType": "diplomatic",
+          "isTurningPoint": true,
+          "relevantTheories": ["liberalism", "neoliberalism", "english-school"],
+          "icon": "shield",
+          "mapData": { "militaryBases": [] }
+        },
+        {
+          "year": "1948",
+          "date": "December 10, 1948",
+          "title": "Universal Declaration of Human Rights",
+          "description": "UN General Assembly adopts UDHR, establishing international human rights norms.",
+          "eventType": "ideological",
+          "isTurningPoint": true,
+          "relevantTheories": [
+            "liberalism",
+            "constructivism",
+            "english-school"
+          ],
+          "icon": "lightbulb",
+          "mapData": { "militaryBases": [] }
+        },
+        {
+          "year": "1950",
+          "date": "June 25, 1950",
+          "title": "Korean War - First UN Military Action",
+          "description": "UN authorizes military intervention in Korea. First major collective security action.",
+          "eventType": "military",
+          "isTurningPoint": true,
+          "relevantTheories": ["neoliberalism", "english-school"],
+          "icon": "shield",
+          "mapData": { "militaryBases": [] }
+        }
+      ],
+      "interpretations": {
+        "neoliberalism": {
+          "interpretation": "The UN represents an institutional approach to managing anarchy. By creating rules, norms, and mechanisms for collective action, it reduces uncertainty and facilitates cooperation on shared challenges.",
+          "keyPoints": [
+            "Institutions reduce costs of cooperation",
+            "Security Council provides forum for conflict resolution",
+            "Charter establishes norms against aggression",
+            "Specialized agencies address global problems",
+            "Even imperfect institutions better than pure anarchy"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "english-school": {
+          "interpretation": "The UN embodies international society's shared values and commitment to order. It represents great powers' recognition of their responsibility to maintain international order while respecting sovereignty.",
+          "keyPoints": [
+            "Codifies norms of international society",
+            "Great power responsibility through Security Council",
+            "Balance between order and justice",
+            "Sovereignty as foundational principle",
+            "Diplomatic culture and shared procedures"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "liberalism": {
+          "interpretation": "Liberalism sees the UN as embodying Wilsonian idealism - the belief that international institutions, law, and collective security can prevent war and promote cooperation among democracies and non-democracies alike.",
+          "keyPoints": [
+            "Collective security replaces balance of power",
+            "International law constrains aggression",
+            "Forum for peaceful dispute resolution",
+            "Promotes democracy and human rights",
+            "Economic and social cooperation through specialized agencies"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "none",
+            "blindSpots": [],
+            "whatItMisses": [],
+            "betterAlternatives": []
+          }
+        },
+        "classical-realism": {
+          "interpretation": "Realism is skeptical of the UN's effectiveness. The Security Council reflects power realities (P5 veto), and the UN often fails to prevent conflicts when great power interests clash. It's a tool of the powerful, not a constraint.",
+          "keyPoints": [
+            "UN reflects power politics (P5 veto)",
+            "Cannot act when great powers disagree",
+            "Failed to prevent many wars",
+            "Institutions don't change underlying anarchy",
+            "Great powers use UN when convenient"
+          ],
+          "visualElements": [],
+          "limitations": {
+            "canExplain": true,
+            "weaknessLevel": "moderate",
+            "blindSpots": [
+              "Skeptical about institutions actually mattering (but UN does matter for many issues)",
+              "Focuses only on great power politics, ignores humanitarian and development work",
+              "Assumes UN is just a tool of powerful states (partially true, but incomplete)"
+            ],
+            "whatItMisses": [
+              "How UN specialized agencies solve global problems (WHO, UNICEF)",
+              "Peacekeeping operations that prevented conflicts",
+              "Human rights norms that spread through UN",
+              "Small states using UN as platform for voice"
+            ],
+            "betterAlternatives": [
+              {
+                "theoryId": "Neoliberal Institutionalism",
+                "reason": "Better explains how UN facilitates cooperation on shared problems"
+              },
+              {
+                "theoryId": "English School",
+                "reason": "Captures how UN embodies international society norms"
+              }
+            ]
+          }
+        }
+      },
+      "countryPerspectives": {
+        "United States": {
+          "role": "Hegemon and institutional founder",
+          "perspectives": {
+            "liberalism": "Democratic leader building Wilsonian liberal order. UN embodies ideals of collective security.",
+            "neoliberalism": "Hegemon creating institutions for order management. Provides public goods (security, monetary system).",
+            "english-school": "Great power accepting responsibility for order. Security Council reflects great power concert."
+          }
+        },
+        "Soviet Union": {
+          "role": "Great power, Security Council member",
+          "perspectives": {
+            "neoliberalism": "Uses institutions strategically. Veto protects interests.",
+            "english-school": "Recognizes international society need. Shares basic norms despite ideology."
+          }
+        }
+      },
+      "relatedScholars": [
+        "Woodrow Wilson",
+        "Robert Keohane",
+        "Hedley Bull",
+        "Martin Wight"
+      ],
+      "relatedScenarios": []
+    }
+  ],
+  "scholars": [
+    {
+      "name": "Hans Morgenthau",
+      "lifespan": "1904–1980",
+      "nationality": "German-American",
+      "theory": "Classical Realism",
+      "keyWorks": [
+        "Politics Among Nations (1948)",
+        "Scientific Man vs. Power Politics (1946)",
+        "In Defense of the National Interest (1951)"
+      ],
+      "mainContributions": [
+        "Founder of modern realist theory in IR",
+        "Developed six principles of political realism",
+        "Emphasized power and national interest as core concepts",
+        "Distinguished between moral principles and political necessity",
+        "Advocated for prudent statecraft based on national interest"
+      ],
+      "famousQuote": "International politics, like all politics, is a struggle for power.",
+      "background": "Fled Nazi Germany, became leading American IR theorist at University of Chicago. His work dominated post-WWII IR scholarship.",
+      "legacy": "Most influential realist scholar of 20th century. Politics Among Nations remains foundational text in IR theory."
+    },
+    {
+      "name": "Kenneth Waltz",
+      "lifespan": "1924–2013",
+      "nationality": "American",
+      "theory": "Structural Realism (Neorealism)",
+      "keyWorks": [
+        "Theory of International Politics (1979)",
+        "Man, the State, and War (1959)",
+        "The Spread of Nuclear Weapons (1981)"
+      ],
+      "mainContributions": [
+        "Created structural realism/neorealism",
+        "Three levels of analysis framework (individual, state, system)",
+        "System structure determines state behavior",
+        "Bipolar systems are more stable than multipolar",
+        "Nuclear weapons promote stability through deterrence"
+      ],
+      "famousQuote": "The structure of the system shapes the behavior of states.",
+      "background": "Professor at UC Berkeley and Columbia. Revolutionized IR theory with systemic approach.",
+      "legacy": "Theory of International Politics (1979) is one of most cited works in political science. Created modern neorealism."
+    },
+    {
+      "name": "Immanuel Kant",
+      "lifespan": "1724–1804",
+      "nationality": "German (Prussian)",
+      "theory": "Liberalism",
+      "keyWorks": [
+        "Perpetual Peace: A Philosophical Sketch (1795)",
+        "Critique of Pure Reason (1781)",
+        "Groundwork of the Metaphysics of Morals (1785)"
+      ],
+      "mainContributions": [
+        "Philosophical foundation for liberal peace theory",
+        "Democratic peace hypothesis: Republics don't fight each other",
+        "Commercial interdependence promotes peace",
+        "International law and organizations can prevent war",
+        "Moral imperative for peaceful international relations"
+      ],
+      "famousQuote": "Perpetual peace is guaranteed by no less an authority than the great artist Nature herself.",
+      "background": "Enlightenment philosopher in Königsberg. Never traveled far but wrote about global peace.",
+      "legacy": "Democratic peace theory traces to his work. EU and UN embody his ideals of institutional cooperation."
+    },
+    {
+      "name": "Robert Keohane",
+      "lifespan": "1941–present",
+      "nationality": "American",
+      "theory": "Neoliberal Institutionalism",
+      "keyWorks": [
+        "After Hegemony (1984)",
+        "Power and Interdependence (1977, with Joseph Nye)",
+        "Neorealism and Its Critics (1986)"
+      ],
+      "mainContributions": [
+        "Developed neoliberal institutionalism",
+        "Showed how institutions enable cooperation under anarchy",
+        "Complex interdependence theory",
+        "Institutions reduce transaction costs and uncertainty",
+        "Bridged realism and liberalism"
+      ],
+      "famousQuote": "Cooperation is possible even when states are self-interested.",
+      "background": "Professor at Princeton, Harvard, Duke. Leading liberal IR theorist engaging with realist critics.",
+      "legacy": "After Hegemony showed cooperation possible without hegemon. Most cited living IR scholar."
+    },
+    {
+      "name": "Alexander Wendt",
+      "lifespan": "1958–present",
+      "nationality": "American",
+      "theory": "Constructivism",
+      "keyWorks": [
+        "Social Theory of International Politics (1999)",
+        "Anarchy is What States Make of It (1992)",
+        "Quantum Mind and Social Science (2015)"
+      ],
+      "mainContributions": [
+        "Founded social constructivism in IR",
+        "Anarchy is what states make of it - famous argument",
+        "Interests and identities are socially constructed",
+        "Material forces matter, but ideas give them meaning",
+        "Three cultures of anarchy: Hobbesian, Lockean, Kantian"
+      ],
+      "famousQuote": "Anarchy is what states make of it.",
+      "background": "Professor at Ohio State. Challenged materialist assumptions of realism and liberalism.",
+      "legacy": "Made constructivism a major IR theory. Showed how ideas and norms shape international politics."
+    },
+    {
+      "name": "Hedley Bull",
+      "lifespan": "1932–1985",
+      "nationality": "Australian-British",
+      "theory": "English School",
+      "keyWorks": [
+        "The Anarchical Society (1977)",
+        "The Control of the Arms Race (1961)",
+        "Justice in International Relations (1983)"
+      ],
+      "mainContributions": [
+        "Developed English School of IR theory",
+        "International society vs. international system distinction",
+        "Balance between order and justice",
+        "Great power management of international order",
+        "Pluralism vs. solidarism debate"
+      ],
+      "famousQuote": "Order is the first value of international society.",
+      "background": "Professor at Oxford and Australian National University. Leader of English School alongside Martin Wight.",
+      "legacy": "The Anarchical Society established English School as distinct theoretical tradition between realism and liberalism."
+    },
+    {
+      "name": "John Mearsheimer",
+      "lifespan": "1947–present",
+      "nationality": "American",
+      "theory": "Offensive Realism",
+      "keyWorks": [
+        "The Tragedy of Great Power Politics (2001)",
+        "The Israel Lobby and U.S. Foreign Policy (2007)",
+        "The Great Delusion (2018)"
+      ],
+      "mainContributions": [
+        "Created offensive realism variant",
+        "States seek to maximize power, not just security",
+        "Hegemony is ultimate goal for great powers",
+        "Geography and stopping power of water matter",
+        "Predicted Russia-Ukraine conflict"
+      ],
+      "famousQuote": "The best guarantee of survival is to be a regional hegemon.",
+      "background": "Professor at University of Chicago. Former US Air Force officer. Known for controversial but rigorous arguments.",
+      "legacy": "Leading contemporary realist. Applies realism to current events (Ukraine, China, Middle East)."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "china-south-china-sea",
+      "title": "China in the South China Sea (2024)",
+      "description": "Real-world territorial dispute and rising power dynamics",
+      "situation": "China has built artificial islands with military installations in the South China Sea, claimed by multiple nations (Philippines, Vietnam, Malaysia). China asserts historical rights through the nine-dash line, while the US conducts freedom of navigation operations. ASEAN countries are divided on how to respond. As a regional policymaker, what is your approach?",
+      "options": [
+        {
+          "text": "Build military alliances (AUKUS, Quad) and increase naval presence to balance Chinese power. Military deterrence is essential to prevent further expansion.",
+          "theoryAlignment": "Realism/Neorealism",
+          "explanation": "Realist response: Balance rising power through alliances and military buildup. AUKUS (Australia-UK-US) and Quad (US-Japan-India-Australia) are classic balancing coalitions. Security competition in anarchic system requires hard power deterrence."
+        },
+        {
+          "text": "Strengthen ASEAN institutions and international law (UNCLOS). Encourage Chinese economic integration while using trade leverage and institutional pressure for rule-based behavior.",
+          "theoryAlignment": "Liberalism/Neoliberalism",
+          "explanation": "Liberal approach: Use institutions (ASEAN, UNCLOS) and economic interdependence. Trade ties make conflict costly. International law provides legitimate framework. Institutional engagement can socialize China into cooperative norms."
+        },
+        {
+          "text": "Work to reshape Chinese threat perception through dialogue and confidence-building. Emphasize common Asian identity and mutual development rather than zero-sum competition.",
+          "theoryAlignment": "Constructivism",
+          "explanation": "Constructivist view: Threats are socially constructed. By changing narratives, emphasizing shared regional identity, and building trust, security dilemma can be transformed. Ideas and identity matter more than material power alone."
+        },
+        {
+          "text": "Accept Chinese regional leadership as inevitable given power shifts. Negotiate accommodation while protecting core interests. Don't fight against structural changes in power distribution.",
+          "theoryAlignment": "Offensive Realism",
+          "explanation": "Offensive realist logic: Recognize power realities. China seeks regional hegemony (rational for great powers). Resisting may be costly. Better to accommodate power shifts while securing vital interests through negotiated spheres of influence."
+        }
+      ]
+    },
+    {
+      "id": "syria-civil-war",
+      "title": "Syria Civil War and Humanitarian Crisis (2023-2024)",
+      "description": "Ongoing conflict with humanitarian catastrophe",
+      "situation": "Syria's civil war continues with 500,000+ dead and millions displaced. Assad regime, backed by Russia and Iran, has regained control. Chemical weapons were used against civilians. Turkey occupies northern Syria. UN Security Council remains deadlocked (Russian veto). Refugee crisis affects Europe. How should the international community respond?",
+      "options": [
+        {
+          "text": "Recognize that Assad won through Russian/Iranian support. Syria is in their sphere of influence. Accept reality and focus on refugee management and preventing spillover to our allies.",
+          "theoryAlignment": "Classical Realism",
+          "explanation": "Realist logic: Assad regime survived due to great power backing. Syria is effectively in Russian sphere. Intervening against Russia's ally is too costly. Humanitarian concerns don't override power realities and national interests."
+        },
+        {
+          "text": "Pressure through sanctions and ICC prosecution while providing massive humanitarian aid. Use EU leverage to demand accountability. Support civil society and eventual democratic transition.",
+          "theoryAlignment": "Liberalism",
+          "explanation": "Liberal approach: Use institutions (UN, ICC), sanctions, and aid. Support human rights norms and civil society. Long-term democratic change through international pressure and support for liberal forces, even if gradual."
+        },
+        {
+          "text": "Accept that sovereignty norms conflict with R2P (Responsibility to Protect). Work through UN for consensus. Provide aid while respecting that Syria is part of international society despite violations.",
+          "theoryAlignment": "English School",
+          "explanation": "English School balances order and justice. Sovereignty remains foundational even when violated. Prefer working through international society institutions. Humanitarian aid without overthrowing order principle."
+        },
+        {
+          "text": "Recognize that Western vs. Assad framing is identity-based. Work on reshaping regional narratives. Build new norms around civilian protection through persuasion rather than military intervention.",
+          "theoryAlignment": "Constructivism",
+          "explanation": "Constructivist view: Conflict driven by identity (Sunni vs. Alawite, West vs. East). Norms of intervention are contested. Focus on norm diffusion and identity transformation rather than material force."
+        }
+      ]
+    },
+    {
+      "id": "ukraine-war",
+      "title": "Ukraine War and NATO Expansion (2022-2024)",
+      "description": "Ongoing war in Europe with great power implications",
+      "situation": "Russia invaded Ukraine in February 2022, citing NATO expansion as a security threat. Ukraine seeks full NATO membership and EU integration. The war has caused 100,000+ casualties, massive destruction, and global food/energy crises. Finland and Sweden joined NATO in response. Russia threatens nuclear weapons use. How should Western powers proceed?",
+      "options": [
+        {
+          "text": "Continue military aid to Ukraine but avoid direct NATO involvement. Russia has legitimate security concerns about NATO expansion. Negotiate Ukrainian neutrality for peace.",
+          "theoryAlignment": "Defensive Realism",
+          "explanation": "Defensive realist logic: Russia views NATO expansion as security threat (security dilemma). Ukraine buffer state status reduces great power conflict risk. Neutrality deal addresses Russian security concerns while preserving Ukrainian sovereignty."
+        },
+        {
+          "text": "Full NATO membership for Ukraine and increased military support until Russia withdraws. Aggression must not be rewarded. Uphold international law and sovereignty norms.",
+          "theoryAlignment": "Liberalism",
+          "explanation": "Liberal principles: Defend sovereignty, international law, and democratic Ukraine. Aggression violates liberal order. Institutions (NATO, EU) must protect members and uphold rules. Deterring future aggression requires firm response."
+        },
+        {
+          "text": "This is power politics. Russia seeks to restore its sphere of influence. Ukraine is strategically vital. Balance Russian power through arms supplies while avoiding escalation to nuclear war.",
+          "theoryAlignment": "Classical Realism",
+          "explanation": "Realist analysis: Russia acts as great power reclaiming sphere. Ukraine matters for European balance of power. Provide enough support to prevent Russian victory without triggering nuclear escalation. Pure power calculations."
+        },
+        {
+          "text": "Russian identity as Eurasian power clashes with Ukrainian identity shift toward Europe. Support Ukrainian self-determination and European identity choice. Ideas matter more than geography.",
+          "theoryAlignment": "Constructivism",
+          "explanation": "Constructivist view: War driven by identity conflict (Russian imperial identity vs. Ukrainian European identity). Not just about NATO bases but about Ukraine's identity choice. Support norm of self-determination and identity freedom."
+        }
+      ]
+    },
+    {
+      "id": "iran-nuclear",
+      "title": "Iran Nuclear Program (2024)",
+      "description": "Nuclear proliferation and sanctions diplomacy",
+      "situation": "Iran has enriched uranium to near-weapons-grade levels (60%), far beyond civilian needs. The 2015 JCPOA nuclear deal collapsed after US withdrawal (2018). Iran cites Israeli nuclear weapons and regional threats. Western sanctions cripple Iranian economy. Israel threatens military strikes. Negotiations have stalled. What approach should be taken?",
+      "options": [
+        {
+          "text": "Maximum pressure: Tighter sanctions, support Israeli military option, regime change goal. Iran cannot be trusted. Only force prevents nuclear Iran.",
+          "theoryAlignment": "Offensive Realism",
+          "explanation": "Offensive realist view: Iran seeks regional hegemony. Nuclear weapons would shift Middle East balance irreversibly. Preventive action (sanctions, military strikes) necessary to maintain power distribution. Cannot trust adversaries in anarchy."
+        },
+        {
+          "text": "Revive JCPOA negotiations with stronger verification. Offer sanctions relief for verifiable nuclear limits. Institutions and agreements can constrain Iran even without trust.",
+          "theoryAlignment": "Neoliberalism",
+          "explanation": "Neoliberal approach: Regimes work even under anarchy. JCPOA demonstrated institutional mechanisms can verify and constrain. Economic incentives (sanctions relief) change cost-benefit. Monitoring reduces cheating. Cooperation possible through institutions."
+        },
+        {
+          "text": "Accept Iran has legitimate security concerns (Israel's nukes, US threats). Negotiate comprehensive regional security framework addressing all parties' fears, including Iran's.",
+          "theoryAlignment": "Defensive Realism",
+          "explanation": "Defensive realist logic: Iran faces real security threats. Nuclear pursuit is defensive response to security dilemma. Address root causes (regional threat environment). Security guarantees and regional balance better than coercion."
+        },
+        {
+          "text": "Iranian identity as Islamic Republic and regional power drives nuclear ambition. Western pressure reinforces nationalist identity. Reshape narratives and build new regional identity frameworks that make nukes unnecessary.",
+          "theoryAlignment": "Constructivism",
+          "explanation": "Constructivist analysis: Nuclear program tied to Iranian identity (technological achievement, resistance to West). External pressure strengthens regime identity. Transform identity dynamics and regional norms rather than use force."
+        }
+      ]
+    }
+  ]
+}

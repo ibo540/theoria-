@@ -1,0 +1,768 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-dark: var(--dark);
+  --color-dark-accent: var(--dark-accent);
+  --color-primary-gold: var(--primary-gold);
+  --color-primary-silver: var(--primary-silver);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-forum: var(--font-forum);
+  --font-body: var(--font-forum), serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-red: var(--red);
+  --color-purple: var(--purple);
+  --color-navy: var(--navy);
+  --color-green: var(--green);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --dark: #0f1114;
+  --dark-accent: #14161a;
+  --primary-gold: #ffe4be;
+  --primary-silver: #b3b6bb;
+  --yellow: #f3db66;
+  --blue: #7edef9;
+  --red: #f9464c;
+  --purple: #f5d6f9;
+  --navy: #91beef;
+  --green: #bbe581;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --yellow: #3e3015;
+  --blue: #124347;
+  --red: #330d0c;
+  --purple: #29133a;
+  --navy: #1a213d;
+  --green: #1c3621;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    font-family: var(--font-forum), serif;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-forum), serif;
+    background-color: #0f1114 !important;
+  }
+  
+  html {
+    background-color: #0f1114 !important;
+  }
+  
+  /* Custom cursor only on main site, not admin pages */
+  body:not([data-admin="true"]) * {
+    cursor: none !important;
+  }
+  
+  /* Normal cursor on admin pages - NO background override to allow dark theme */
+  body[data-admin="true"],
+  body[data-admin="true"] * {
+    cursor: auto !important;
+  }
+  
+  html[data-admin="true"] {
+    /* Allow dark theme to show through */
+  }
+  
+  /* Professional font for admin dashboard */
+  body[data-admin="true"],
+  body[data-admin="true"] *,
+  .admin-panel,
+  .admin-panel * {
+    font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif) !important;
+  }
+}
+
+.forum-regular {
+  font-family: var(--font-forum), serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Override cursor for loader overlay */
+.loader-overlay {
+  cursor: auto !important;
+}
+
+/* ============================================
+   Scrollbar Styles - Cross Browser Support
+   ============================================ */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ffe4be transparent;
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #ffe4be;
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #ffeccf;
+}
+
+/* TipTap Editor Styles */
+.ProseMirror {
+  outline: none;
+  color: #ffffff !important;
+}
+
+/* Ensure all ProseMirror content is visible */
+.ProseMirror,
+.ProseMirror *,
+.ProseMirror p,
+.ProseMirror span,
+.ProseMirror div {
+  color: #ffffff !important;
+}
+
+.ProseMirror p {
+  margin: 0.5em 0;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror strong {
+  font-weight: 600;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+/* Admin Panel Styles - Normal cursor */
+.admin-panel,
+.admin-panel *,
+[class*="admin"] * {
+  cursor: auto !important;
+}
+
+/* Ensure admin routes use normal cursor */
+body:has([href*="/admin"]) *,
+body:has([class*="admin"]) * {
+  cursor: auto !important;
+}
+
+/* ============================================
+   ADMIN PANEL BUTTON STYLES - COMPREHENSIVE FIX
+   ============================================ */
+
+/* Primary action buttons (Create, Save, etc.) */
+.admin-panel button.admin-create-btn,
+.admin-panel .admin-create-btn {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.admin-panel button.admin-create-btn *,
+.admin-panel .admin-create-btn *,
+.admin-panel button.admin-create-btn svg,
+.admin-panel .admin-create-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Delete/Danger buttons */
+.admin-panel button.admin-delete-btn,
+.admin-panel .admin-delete-btn {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.admin-panel button.admin-delete-btn *,
+.admin-panel .admin-delete-btn *,
+.admin-panel button.admin-delete-btn svg,
+.admin-panel .admin-delete-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Ensure text color is always visible on buttons - but don't override specific colors */
+.admin-panel button:not(.bg-blue-600):not(.bg-green-600):not(.bg-purple-600):not(.bg-red-600):not(.bg-white):not(.bg-gray-200):not(.bg-gray-100):not(.bg-blue-50):not([class*="text-"]) {
+  /* Force text color if not explicitly set */
+  color: inherit !important;
+}
+
+/* Mode selector buttons - Active state (colored background with white text) */
+.admin-panel button.bg-blue-600,
+.admin-panel button.bg-green-600,
+.admin-panel button.bg-purple-600,
+.admin-panel button.bg-red-600,
+.admin-panel button.bg-blue-600.text-white,
+.admin-panel button.bg-green-600.text-white,
+.admin-panel button.bg-purple-600.text-white,
+.admin-panel button.bg-red-600.text-white {
+  color: #ffffff !important;
+}
+
+.admin-panel button.bg-blue-600 *,
+.admin-panel button.bg-green-600 *,
+.admin-panel button.bg-purple-600 *,
+.admin-panel button.bg-red-600 *,
+.admin-panel button.bg-blue-600 svg,
+.admin-panel button.bg-green-600 svg,
+.admin-panel button.bg-purple-600 svg,
+.admin-panel button.bg-red-600 svg,
+.admin-panel button.bg-blue-600.text-white *,
+.admin-panel button.bg-green-600.text-white *,
+.admin-panel button.bg-purple-600.text-white *,
+.admin-panel button.bg-red-600.text-white *,
+.admin-panel button.bg-blue-600.text-white svg,
+.admin-panel button.bg-green-600.text-white svg,
+.admin-panel button.bg-purple-600.text-white svg,
+.admin-panel button.bg-red-600.text-white svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Mode selector buttons - Inactive state (dark background with light text) */
+.admin-panel button.bg-white {
+  background-color: rgba(51, 65, 85, 0.8) !important; /* slate-700/80 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border: 1px solid rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+.admin-panel button.bg-white *,
+.admin-panel button.bg-white svg {
+  color: #e2e8f0 !important; /* slate-200 */
+  stroke: #e2e8f0 !important;
+}
+
+/* Drawing tool buttons - these are handled by their specific classes */
+
+/* Tab buttons - Active state - DARK THEME */
+.admin-panel button.bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.2) !important; /* blue-500/20 */
+  color: #93c5fd !important; /* blue-300 */
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Tab buttons - Inactive state - DARK THEME */
+.admin-panel button.border-transparent {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Secondary buttons (Cancel, Clear, etc.) - DARK THEME */
+.admin-panel button.bg-gray-200,
+.admin-panel button.bg-gray-100 {
+  background-color: rgba(51, 65, 85, 0.8) !important; /* slate-700/80 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border: 1px solid rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+.admin-panel button.bg-gray-200 *,
+.admin-panel button.bg-gray-100 *,
+.admin-panel button.bg-gray-200 svg,
+.admin-panel button.bg-gray-100 svg {
+  color: #e2e8f0 !important; /* slate-200 */
+  stroke: #e2e8f0 !important;
+}
+
+/* Generic button fallback - ensure all buttons have visible text - DARK THEME */
+.admin-panel button:not([class*="bg-"]):not([class*="text-"]):not([class*="from-"]) {
+  background-color: rgba(51, 65, 85, 0.8) !important; /* slate-700/80 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border: 1px solid rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+/* Override any white text on dark background - DARK THEME */
+.admin-panel button.text-white.bg-white,
+.admin-panel button.text-white:not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-purple"]):not([class*="bg-red"]):not([class*="from-"]) {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* CRITICAL FIX: Force white text on blue buttons - highest specificity */
+div.admin-panel button.bg-blue-600,
+div.admin-panel button.bg-blue-600 *,
+div.admin-panel button.bg-blue-600 span,
+div.admin-panel button.bg-blue-600 svg,
+div.text-gray-900 button.bg-blue-600,
+div.text-gray-900 button.bg-blue-600 *,
+div.text-gray-900 button.bg-blue-600 span,
+div.text-gray-900 button.bg-blue-600 svg,
+div.min-h-screen button.bg-blue-600,
+div.min-h-screen button.bg-blue-600 *,
+div.min-h-screen button.bg-blue-600 span,
+div.min-h-screen button.bg-blue-600 svg,
+button.save-button-white-text,
+button.save-button-white-text *,
+button.save-button-white-text span,
+button.save-button-white-text svg,
+button[style*="backgroundColor"][style*="2563eb"],
+button[style*="backgroundColor"][style*="2563eb"] *,
+button[style*="backgroundColor"][style*="2563eb"] span,
+button[style*="backgroundColor"][style*="2563eb"] svg,
+button.bg-gradient-to-r.from-blue-500,
+button.bg-gradient-to-r.from-blue-500 *,
+button.bg-gradient-to-r.from-blue-500 span,
+button.bg-gradient-to-r.from-blue-500 svg,
+button[class*="from-blue-500"],
+button[class*="from-blue-500"] *,
+button[class*="from-blue-500"] span,
+button[class*="from-blue-500"] svg,
+button.save-button-blue-gradient,
+button.save-button-blue-gradient *,
+button.save-button-blue-gradient span,
+button.save-button-blue-gradient svg,
+button[class*="from-blue-500"]:not([class*="to-red"]),
+button[class*="from-blue-500"]:not([class*="to-red"]) *,
+button[class*="from-blue-500"]:not([class*="to-red"]) span,
+button[class*="from-blue-500"]:not([class*="to-red"]) svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Ensure text is visible even when button has opacity */
+button.save-button-white-text.disabled\:opacity-50,
+button.save-button-white-text[disabled],
+button.bg-blue-600[disabled],
+button.bg-blue-600[disabled] *,
+button.bg-blue-600[disabled] span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+button.bg-blue-600[disabled] {
+  opacity: 0.5 !important;
+}
+
+button.bg-blue-600[disabled] *,
+button.bg-blue-600[disabled] span {
+  opacity: 1 !important;
+}
+
+/* Ensure icons are visible */
+.admin-panel button svg {
+  color: inherit !important;
+  stroke: inherit !important;
+}
+
+/* ============================================
+   ADMIN DARK THEME OVERRIDES - COMPREHENSIVE
+   ============================================ */
+
+/* Force dark background on admin pages */
+body[data-admin="true"],
+html[data-admin="true"] {
+  background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a) !important;
+  background-color: #0f172a !important;
+}
+
+/* Ensure admin panel container uses dark theme */
+.admin-panel {
+  background: transparent !important;
+}
+
+/* Override any light backgrounds in admin components */
+.admin-panel .bg-white,
+.admin-panel [class*="bg-white"] {
+  background-color: rgba(30, 41, 59, 0.9) !important; /* slate-800/90 */
+  color: #e2e8f0 !important;
+}
+
+.admin-panel .bg-gray-50,
+.admin-panel [class*="bg-gray-50"] {
+  background-color: rgba(51, 65, 85, 0.5) !important; /* slate-700/50 */
+  color: #e2e8f0 !important;
+}
+
+/* Ensure text colors are light in admin panel */
+.admin-panel .text-gray-900,
+.admin-panel [class*="text-gray-900"] {
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+.admin-panel .text-gray-800,
+.admin-panel [class*="text-gray-800"] {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+.admin-panel .text-gray-700,
+.admin-panel [class*="text-gray-700"] {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+.admin-panel .text-gray-600,
+.admin-panel [class*="text-gray-600"] {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+.admin-panel .text-gray-500,
+.admin-panel [class*="text-gray-500"] {
+  color: #64748b !important; /* slate-500 */
+}
+
+/* Border colors for dark theme */
+.admin-panel .border-gray-200,
+.admin-panel .border-gray-300,
+.admin-panel [class*="border-gray"] {
+  border-color: rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+/* Prose editor styling for dark theme */
+.admin-panel .prose,
+.admin-panel .ProseMirror {
+  color: #ffffff !important; /* white text for dark editor background */
+}
+
+.admin-panel .prose p,
+.admin-panel .ProseMirror p {
+  color: #ffffff !important;
+}
+
+/* Rich text editor container - ensure text is visible with highest priority */
+.rich-text-editor-container .ProseMirror,
+.rich-text-editor-container .ProseMirror *,
+.rich-text-editor-container .ProseMirror p,
+.rich-text-editor-container .ProseMirror strong,
+.rich-text-editor-container .ProseMirror em,
+.rich-text-editor-container .ProseMirror ul,
+.rich-text-editor-container .ProseMirror ol,
+.rich-text-editor-container .ProseMirror li {
+  color: #ffffff !important;
+}
+
+/* Override any admin-panel styles for rich text editor */
+.admin-panel .rich-text-editor-container .ProseMirror,
+.admin-panel .rich-text-editor-container .ProseMirror *,
+.admin-panel .rich-text-editor-container .ProseMirror p {
+  color: #ffffff !important;
+}
+
+/* Toolbar buttons in RichTextEditor */
+.admin-panel button[title="Bold"],
+.admin-panel button[title="Italic"],
+.admin-panel button[title="Bullet List"],
+.admin-panel button[title="Numbered List"],
+.admin-panel button[title="Undo"],
+.admin-panel button[title="Redo"] {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+.admin-panel button[title="Bold"] svg,
+.admin-panel button[title="Italic"] svg,
+.admin-panel button[title="Bullet List"] svg,
+.admin-panel button[title="Numbered List"] svg,
+.admin-panel button[title="Undo"] svg,
+.admin-panel button[title="Redo"] svg {
+  color: #e2e8f0 !important;
+  stroke: #e2e8f0 !important;
+}
+
+/* ============================================
+   PROFESSIONAL NUMBER INPUT SPINNERS
+   ============================================ */
+
+/* Hide default browser spinners */
+.admin-panel input[type="number"]::-webkit-inner-spin-button,
+.admin-panel input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  display: none;
+}
+
+.admin-panel input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Custom spinner container */
+.admin-panel .number-input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.admin-panel .number-input-wrapper input[type="number"] {
+  padding-right: 2.25rem !important;
+}
+
+/* Custom spinner buttons */
+.admin-panel .number-spinner {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 10;
+  height: calc(100% - 0.5rem);
+  justify-content: center;
+}
+
+.admin-panel .number-spinner-button {
+  width: 1.25rem;
+  height: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-panel .number-spinner-button:first-child {
+  border-radius: 0.25rem 0.25rem 0 0;
+  border-bottom: 0.5px solid #cbd5e1;
+}
+
+.admin-panel .number-spinner-button:last-child {
+  border-radius: 0 0 0.25rem 0.25rem;
+  border-top: 0.5px solid #cbd5e1;
+}
+
+.admin-panel .number-spinner-button:hover {
+  background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+  border-color: #94a3b8;
+}
+
+.admin-panel .number-spinner-button:active {
+  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  transform: scale(0.95);
+}
+
+.admin-panel .number-spinner-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-panel .number-spinner-button svg {
+  width: 0.625rem;
+  height: 0.625rem;
+  color: #1e293b !important;
+  stroke: #1e293b !important;
+  stroke-width: 3;
+  flex-shrink: 0;
+}
+
+.admin-panel .number-spinner-button:hover svg {
+  color: #0f172a !important;
+  stroke: #0f172a !important;
+}
+
+.admin-panel .number-spinner-button:disabled svg {
+  color: #94a3b8 !important;
+  stroke: #94a3b8 !important;
+}
+
+/* ============================================
+   ADMIN PANEL ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.6s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}

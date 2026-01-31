@@ -1,0 +1,1158 @@
+{
+  "id": "cold-war",
+  "title": "The Cold War",
+  "kind": "era",
+  "period": {
+    "startYear": 1947,
+    "endYear": 1991,
+    "startDate": "1947-03-12",
+    "endDate": "1991-12-26"
+  },
+  "date": "1947-1991",
+  "summary": "Geopolitical rivalry between the United States and the Soviet Union and their allies after World War II, marked by proxy wars, nuclear arms races, ideological competition and the eventual collapse of the USSR.",
+  "description": "A period of geopolitical tension between the United States and the Soviet Union and their respective allies, characterized by proxy wars, arms races, ideological conflict, and nuclear deterrence.",
+  "fullDescription": "The Cold War was a period of geopolitical tension between the United States and the Soviet Union and their respective allies, the Western Bloc and the Eastern Bloc, which began following World War II. Historians do not fully agree on the dates, but the period is generally considered to span the 1947 Truman Doctrine to the 1991 dissolution of the Soviet Union. The term 'cold' is used because there was no large-scale fighting directly between the two superpowers, but they each supported major regional conflicts known as proxy wars. The conflict split the temporary wartime alliance against Nazi Germany, leaving the USSR and the US as two superpowers with profound economic and political differences.",
+  "category": "ideological",
+  "domains": [
+    "military",
+    "economic",
+    "diplomatic",
+    "ideological",
+    "technological"
+  ],
+  "primaryLocation": { "lat": 52.52, "lng": 13.405 },
+  "zoom": 3,
+  "actors": [
+    { "id": "usa", "name": "United States", "role": "Superpower" },
+    { "id": "ussr", "name": "Soviet Union", "role": "Superpower" },
+    { "id": "nato", "name": "NATO", "role": "Alliance" },
+    { "id": "warsaw-pact", "name": "Warsaw Pact", "role": "Alliance" },
+    { "id": "china", "name": "China", "role": "Regional Power" },
+    { "id": "non-aligned", "name": "Non-Aligned Movement", "role": "Coalition" }
+  ],
+  "highlightedCountries": [
+    "Afghanistan",
+    "Bulgaria",
+    "Canada",
+    "China",
+    "Cuba",
+    "Czechia",
+    "Egypt",
+    "France",
+    "Germany",
+    "Hungary",
+    "India",
+    "Indonesia",
+    "Italy",
+    "Poland",
+    "Romania",
+    "Russia",
+    "Slovakia",
+    "South Korea",
+    "Spain",
+    "Turkey",
+    "United Kingdom",
+    "United States of America",
+    "Vietnam",
+    "Yugoslavia"
+  ],
+  "connections": [
+    {
+      "from": "United States of America",
+      "to": "Russia",
+      "type": "rivalry",
+      "label": "Bipolar rivalry"
+    },
+    {
+      "from": "United States of America",
+      "to": "nato-bloc",
+      "type": "alliance",
+      "label": "US–NATO"
+    },
+    {
+      "from": "Russia",
+      "to": "warsaw-bloc",
+      "type": "alliance",
+      "label": "USSR–Warsaw Pact"
+    },
+    {
+      "from": "United States of America",
+      "to": "China",
+      "type": "alliance",
+      "label": "Nixon visits China"
+    },
+    {
+      "from": "Russia",
+      "to": "Afghanistan",
+      "type": "proxy-war",
+      "label": "Soviet invasion & US support"
+    },
+    {
+      "from": "United States of America",
+      "to": "Vietnam",
+      "type": "proxy-war",
+      "label": "Vietnam War"
+    }
+  ],
+  "unifiedAreas": [
+    {
+      "id": "nato-bloc",
+      "name": "NATO & Western Allies",
+      "countries": [
+        "United States of America",
+        "United Kingdom",
+        "France",
+        "Germany",
+        "Italy",
+        "Canada",
+        "South Korea",
+        "Spain",
+        "Turkey"
+      ]
+    },
+    {
+      "id": "warsaw-bloc",
+      "name": "Warsaw Pact & Soviet Allies",
+      "countries": [
+        "Russia",
+        "Poland",
+        "Czechia",
+        "Slovakia",
+        "Hungary",
+        "Afghanistan",
+        "Vietnam",
+        "Cuba",
+        "Romania",
+        "Bulgaria"
+      ]
+    },
+    {
+      "id": "non-aligned",
+      "name": "Non-Aligned Movement (sample)",
+      "countries": ["India", "Egypt", "Indonesia", "Yugoslavia"]
+    }
+  ],
+  "stats": {
+    "militaryPower": {
+      "United States": 85,
+      "Soviet Union": 80,
+      "NATO Allies": 65,
+      "Warsaw Pact": 60
+    },
+    "economicPower": {
+      "United States": 90,
+      "Soviet Union": 65,
+      "Western Europe": 75,
+      "Eastern Europe": 45
+    },
+    "alliances": ["NATO (1949)", "Warsaw Pact (1955)", "Non-Aligned Movement"]
+  },
+  "overviewTimeline": [
+    { "date": "1947", "event": "Truman Doctrine announced" },
+    { "date": "1949", "event": "NATO formed" },
+    { "date": "1955", "event": "Warsaw Pact formed" },
+    { "date": "1962", "event": "Cuban Missile Crisis" },
+    { "date": "1989", "event": "Fall of Berlin Wall" },
+    { "date": "1991", "event": "Soviet Union dissolves" }
+  ],
+  "timelinePoints": [
+    {
+      "year": "1947",
+      "date": "March 1947",
+      "title": "Truman Doctrine Announced",
+      "description": "Realists argue that the Cold War began when the United States announced the Truman Doctrine in 1947. They saw it as a move to contain Soviet power. The goal was not moral defense of democracy but to stop a rival from expanding its sphere of influence. This policy set the logic of containment that guided U.S. actions for decades.",
+      "eventType": "diplomatic",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism", "structural-realism"],
+      "icon": "shield",
+      "focusLocation": [39.0, 22.0],
+      "focusZoom": 5,
+      "mapData": {
+        "points": [
+          {
+            "coords": [38.9072, -77.0369],
+            "label": "Pentagon",
+            "kind": "base",
+            "actorId": "usa",
+            "size": 10
+          },
+          {
+            "coords": [55.7558, 37.6173],
+            "label": "Kremlin",
+            "kind": "base",
+            "actorId": "ussr",
+            "size": 10
+          }
+        ],
+        "areas": [
+          {
+            "shape": "circle",
+            "center": [38.9072, -77.0369],
+            "radiusKm": 2000,
+            "kind": "influence",
+            "actorId": "usa",
+            "label": "US Sphere of Influence"
+          },
+          {
+            "shape": "circle",
+            "center": [55.7558, 37.6173],
+            "radiusKm": 1800,
+            "kind": "influence",
+            "actorId": "ussr",
+            "label": "Soviet Sphere of Influence"
+          }
+        ],
+        "flows": []
+      }
+    },
+    {
+      "year": "1948",
+      "date": "April 1948",
+      "title": "Marshall Plan Implemented",
+      "description": "As a result, the Marshall Plan in 1948 became the economic arm of containment. The U.S. rebuilt Western Europe to prevent Soviet influence through economic dependence. Realists interpret it as strategic aid to strengthen allies and stabilize the balance of power.",
+      "eventType": "economic",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism", "liberalism"],
+      "icon": "trending-up",
+      "focusLocation": [48.8566, 2.3522],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [48.8566, 2.3522],
+            "name": "Paris",
+            "country": "France",
+            "size": 8
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2100000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 1900000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1949",
+      "date": "April 1949",
+      "title": "NATO Founded",
+      "description": "The success of containment led to the formation of NATO in 1949. The alliance institutionalized collective defense to counter Soviet military strength. Realists viewed it as a clear example of balancing behavior among states facing a common threat.",
+      "eventType": "military",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism", "liberalism", "neoliberalism"],
+      "icon": "users",
+      "focusLocation": [50.0, 10.0],
+      "focusZoom": 4,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [51.5074, -0.1278],
+            "name": "London HQ",
+            "country": "UK",
+            "size": 8
+          },
+          {
+            "position": [48.8566, 2.3522],
+            "name": "Paris HQ",
+            "country": "France",
+            "size": 8
+          },
+          {
+            "position": [52.52, 13.405],
+            "name": "Berlin (West)",
+            "country": "West Germany",
+            "size": 7
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          }
+        ],
+        "movements": [
+          {
+            "from": [38.9072, -77.0369],
+            "to": [51.5074, -0.1278],
+            "type": "alliance",
+            "label": "NATO Alliance"
+          },
+          {
+            "from": [38.9072, -77.0369],
+            "to": [48.8566, 2.3522],
+            "type": "alliance",
+            "label": "NATO Alliance"
+          },
+          {
+            "from": [51.5074, -0.1278],
+            "to": [48.8566, 2.3522],
+            "type": "alliance",
+            "label": "NATO Alliance"
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2200000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2000000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1950",
+      "date": "June 1950",
+      "title": "Korean War Begins",
+      "description": "The next escalation came with the Korean War (1950-1953). It tested U.S. willingness to defend its containment policy by force. For realists, this was a limited war to preserve credibility and prevent communist dominance in Asia.",
+      "eventType": "military",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism", "structural-realism"],
+      "icon": "sword",
+      "focusLocation": [37.5665, 126.978],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [37.5665, 126.978],
+            "name": "Seoul",
+            "country": "South Korea",
+            "size": 8
+          },
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [38.0, 127.0],
+            "name": "Korean War",
+            "intensity": 9
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2150000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2100000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1952",
+      "date": "November 1952",
+      "title": "First Hydrogen Bomb Test",
+      "description": "In response, both sides sought deterrence through weapons. The hydrogen bomb development (1952-1953) created mutual fear and strategic balance. Realists explain this as survival logic under anarchy, where security depends on deterrence.",
+      "eventType": "military",
+      "isTurningPoint": true,
+      "relevantTheories": ["structural-realism"],
+      "icon": "zap",
+      "focusLocation": [11.55, 162.35],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2200000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2150000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1955",
+      "date": "May 1955",
+      "title": "Warsaw Pact Established",
+      "description": "To counter NATO, the Soviet Union established the Warsaw Pact in 1955. This formalized the division of Europe into two armed camps. Realists saw it as the mirror image of NATO, reinforcing the bipolar balance.",
+      "eventType": "military",
+      "isTurningPoint": false,
+      "relevantTheories": ["classical-realism", "structural-realism"],
+      "icon": "shield",
+      "focusLocation": [52.2297, 21.0122],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [51.5074, -0.1278],
+            "name": "London",
+            "country": "UK",
+            "size": 8
+          },
+          {
+            "position": [48.8566, 2.3522],
+            "name": "Paris",
+            "country": "France",
+            "size": 8
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          },
+          {
+            "position": [52.2297, 21.0122],
+            "name": "Warsaw",
+            "country": "Poland",
+            "size": 7
+          },
+          {
+            "position": [50.0755, 14.4378],
+            "name": "Prague",
+            "country": "Czechoslovakia",
+            "size": 6
+          },
+          {
+            "position": [47.4979, 19.0402],
+            "name": "Budapest",
+            "country": "Hungary",
+            "size": 6
+          }
+        ],
+        "movements": [
+          {
+            "from": [55.7558, 37.6173],
+            "to": [52.2297, 21.0122],
+            "type": "alliance",
+            "label": "Warsaw Pact"
+          },
+          {
+            "from": [55.7558, 37.6173],
+            "to": [50.0755, 14.4378],
+            "type": "alliance",
+            "label": "Warsaw Pact"
+          },
+          {
+            "from": [55.7558, 37.6173],
+            "to": [47.4979, 19.0402],
+            "type": "alliance",
+            "label": "Warsaw Pact"
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2300000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2300000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1956",
+      "date": "October 1956",
+      "title": "Suez Crisis",
+      "description": "Power politics soon extended beyond Europe. The Suez Crisis of 1956 revealed U.S. dominance over Britain and France and Soviet influence in the Middle East. Realists saw it as a shift in hierarchy within the Western bloc, proving the U.S. as the new global leader.",
+      "eventType": "diplomatic",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism"],
+      "icon": "globe",
+      "focusLocation": [30.0444, 31.2357],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [30.0444, 31.2357],
+            "name": "Suez Canal Zone",
+            "country": "Egypt",
+            "size": 8
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [30.0444, 31.2357],
+            "name": "Suez Crisis",
+            "intensity": 8
+          }
+        ]
+      }
+    },
+    {
+      "year": "1957",
+      "date": "October 1957",
+      "title": "Sputnik Launched",
+      "description": "The launch of Sputnik in 1957 demonstrated Soviet technological and strategic reach. Realists viewed space competition as a new domain for power projection and psychological warfare. It intensified the arms race.",
+      "eventType": "military",
+      "isTurningPoint": true,
+      "relevantTheories": ["structural-realism"],
+      "icon": "zap",
+      "focusLocation": [45.92, 63.34],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [45.92, 63.34],
+            "name": "Baikonur Cosmodrome",
+            "country": "USSR",
+            "size": 9
+          }
+        ]
+      }
+    },
+    {
+      "year": "1962",
+      "date": "October 1962",
+      "title": "Cuban Missile Crisis",
+      "description": "The Cuban Missile Crisis in 1962 marked the peak of confrontation. Realists saw it as a near-war that proved deterrence works when both sides act rationally. Each preserved survival through calculated restraint.",
+      "eventType": "military",
+      "isTurningPoint": true,
+      "relevantTheories": ["structural-realism", "english-school"],
+      "icon": "zap",
+      "focusLocation": [23.1136, -82.3666],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [25.7617, -80.1918],
+            "name": "Homestead AFB",
+            "country": "USA",
+            "size": 9
+          },
+          {
+            "position": [23.1136, -82.3666],
+            "name": "Soviet Missile Sites",
+            "country": "USSR",
+            "size": 8
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          }
+        ],
+        "movements": [
+          {
+            "from": [55.7558, 37.6173],
+            "to": [23.1136, -82.3666],
+            "type": "military",
+            "label": "Soviet Missiles"
+          },
+          {
+            "from": [38.9072, -77.0369],
+            "to": [23.1136, -82.3666],
+            "type": "blockade",
+            "label": "US Naval Blockade"
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [23.1136, -82.3666],
+            "name": "Cuban Missile Crisis",
+            "intensity": 10
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2400000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2400000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1972",
+      "date": "February 1972",
+      "title": "Nixon Visits China",
+      "description": "This division enabled the U.S.-China rapprochement in 1972. Nixon used the Sino-Soviet split to balance against the USSR. Realists consider it a successful strategic move that reshaped the global power structure.",
+      "eventType": "diplomatic",
+      "isTurningPoint": true,
+      "relevantTheories": ["classical-realism", "structural-realism"],
+      "icon": "users",
+      "focusLocation": [39.9042, 116.4074],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [39.9042, 116.4074],
+            "name": "Beijing",
+            "country": "China",
+            "size": 9
+          }
+        ],
+        "movements": [
+          {
+            "from": [38.9072, -77.0369],
+            "to": [39.9042, 116.4074],
+            "type": "diplomacy",
+            "label": "US-China Rapprochement"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1975",
+      "date": "April 1975",
+      "title": "Fall of Saigon",
+      "description": "Vietnam War ends. Communist victory in Southeast Asia expands Soviet influence.",
+      "eventType": "military",
+      "isTurningPoint": false,
+      "relevantTheories": ["classical-realism", "constructivism"],
+      "icon": "flag",
+      "focusLocation": [10.8231, 106.6297],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          },
+          {
+            "position": [10.8231, 106.6297],
+            "name": "Saigon (Ho Chi Minh)",
+            "country": "Vietnam",
+            "size": 7
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [10.8231, 106.6297],
+            "name": "Vietnam War Ends",
+            "intensity": 8
+          }
+        ],
+        "movements": [
+          {
+            "from": [55.7558, 37.6173],
+            "to": [10.8231, 106.6297],
+            "type": "support",
+            "label": "Soviet Support"
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2200000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2600000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1979",
+      "date": "December 1979",
+      "title": "Soviet Invasion of Afghanistan",
+      "description": "USSR invades Afghanistan. US provides support to Mujahideen fighters.",
+      "eventType": "military",
+      "isTurningPoint": false,
+      "relevantTheories": ["classical-realism", "structural-realism"],
+      "icon": "sword",
+      "focusLocation": [34.5553, 69.2075],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 10
+          },
+          {
+            "position": [34.5553, 69.2075],
+            "name": "Kabul",
+            "country": "Afghanistan",
+            "size": 8
+          }
+        ],
+        "troops": [
+          {
+            "position": [34.5553, 69.2075],
+            "name": "Soviet Forces",
+            "strength": 100000
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [34.5553, 69.2075],
+            "name": "Soviet-Afghan War",
+            "intensity": 9
+          }
+        ],
+        "movements": [
+          {
+            "from": [55.7558, 37.6173],
+            "to": [34.5553, 69.2075],
+            "type": "invasion",
+            "label": "Soviet Invasion"
+          },
+          {
+            "from": [38.9072, -77.0369],
+            "to": [34.5553, 69.2075],
+            "type": "support",
+            "label": "US Support to Mujahideen"
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2300000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2700000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1985",
+      "date": "March 1985",
+      "title": "Gorbachev Comes to Power",
+      "description": "Mikhail Gorbachev becomes Soviet leader. Begins Glasnost and Perestroika reforms.",
+      "eventType": "ideological",
+      "isTurningPoint": true,
+      "relevantTheories": ["constructivism", "liberalism"],
+      "icon": "lightbulb",
+      "focusLocation": [55.7558, 37.6173],
+      "focusZoom": 6,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow (Reforming)",
+            "country": "USSR",
+            "size": 10
+          }
+        ],
+        "movements": [
+          {
+            "from": [55.7558, 37.6173],
+            "to": [38.9072, -77.0369],
+            "type": "diplomacy",
+            "label": "New Thinking"
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2400000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2500000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1989",
+      "date": "November 1989",
+      "title": "Fall of Berlin Wall",
+      "description": "The fall of the Berlin Wall in 1989 showed Soviet loss of control over Eastern Europe. Realists interpreted it as the outcome of economic and military decline, not a triumph of liberal ideas.",
+      "eventType": "ideological",
+      "isTurningPoint": true,
+      "relevantTheories": ["constructivism", "liberalism", "english-school"],
+      "icon": "wall",
+      "focusLocation": [52.52, 13.405],
+      "focusZoom": 7,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [52.52, 13.405],
+            "name": "Berlin (Reunifying)",
+            "country": "Germany",
+            "size": 9
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow",
+            "country": "USSR",
+            "size": 9
+          }
+        ],
+        "conflicts": [
+          {
+            "position": [52.52, 13.405],
+            "name": "Peaceful Revolution",
+            "intensity": 3
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 2600000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 2000000,
+            "country": "USSR"
+          }
+        ]
+      }
+    },
+    {
+      "year": "1991",
+      "date": "December 1991",
+      "title": "Soviet Union Dissolves",
+      "description": "By 1991, the Soviet Union dissolved. Realists saw the end of bipolarity as a consequence of overextension and power imbalance. The United States remained dominant because it sustained its economic and military capacity. From a realist view, the Cold War was a continuous chain of actions driven by security, competition, and balance of power. Each event shaped the next through shifts in military strength, alliances, and national interest.",
+      "eventType": "ideological",
+      "isTurningPoint": true,
+      "relevantTheories": [
+        "constructivism",
+        "structural-realism",
+        "liberalism"
+      ],
+      "icon": "alert-circle",
+      "focusLocation": [55.7558, 37.6173],
+      "focusZoom": 5,
+      "mapData": {
+        "militaryBases": [
+          {
+            "position": [38.9072, -77.0369],
+            "name": "Pentagon",
+            "country": "USA",
+            "size": 10
+          },
+          {
+            "position": [55.7558, 37.6173],
+            "name": "Moscow (Russia)",
+            "country": "Russia",
+            "size": 7
+          }
+        ],
+        "influence": [
+          {
+            "center": [38.9072, -77.0369],
+            "radius": 3000000,
+            "country": "USA"
+          },
+          {
+            "center": [55.7558, 37.6173],
+            "radius": 1500000,
+            "country": "Russia"
+          }
+        ]
+      }
+    }
+  ],
+  "interpretations": {
+    "classical-realism": {
+      "interpretation": "The Cold War exemplifies realist principles of power politics and security competition. Two superpowers competed for dominance in an anarchic international system, each seeking to maximize their power and security while minimizing threats.",
+      "keyPoints": [
+        "Bipolar balance of power between US and USSR",
+        "Security dilemma: each side's defensive measures increased the other's insecurity",
+        "Zero-sum competition for influence and allies",
+        "Nuclear weapons as ultimate power capability",
+        "Ideological rhetoric masked pure power calculations"
+      ],
+      "visualElements": [
+        {
+          "type": "circle",
+          "coordinates": [[38.9072, -77.0369]],
+          "label": "US Power Center",
+          "color": "#FF0000"
+        },
+        {
+          "type": "circle",
+          "coordinates": [[55.7558, 37.6173]],
+          "label": "Soviet Power Center",
+          "color": "#CC0000"
+        }
+      ],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "minor",
+        "blindSpots": [],
+        "whatItMisses": [],
+        "betterAlternatives": []
+      }
+    },
+    "structural-realism": {
+      "interpretation": "Neorealism sees the Cold War as a product of bipolar system structure. The distribution of capabilities created a stable balance where two superpowers dominated, reducing uncertainty but creating intense competition.",
+      "keyPoints": [
+        "Bipolar structure created stability through clarity",
+        "Balance of power through nuclear deterrence (MAD)",
+        "System structure determined behavior more than ideology",
+        "Self-help through military buildups and alliances",
+        "Relative gains concerns drove arms race"
+      ],
+      "visualElements": [],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "none",
+        "blindSpots": [],
+        "whatItMisses": [],
+        "betterAlternatives": []
+      }
+    },
+    "liberalism": {
+      "interpretation": "Liberalism explains Cold War tensions through lack of democratic peace and absence of strong international institutions between the blocs. The eventual end came through increasing interdependence and institutional cooperation.",
+      "keyPoints": [
+        "Democratic peace absent - USSR was authoritarian",
+        "Limited institutions for cooperation (UN Security Council deadlock)",
+        "Economic isolation prevented interdependence benefits",
+        "Eventual cooperation through arms control treaties",
+        "End facilitated by Gorbachev's liberalization"
+      ],
+      "visualElements": [],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "minor",
+        "blindSpots": [
+          "Underestimates how ideological divide prevented cooperation early on",
+          "Assumes institutions and trade could have prevented conflict (but ideological incompatibility was strong)",
+          "Democratic peace doesn't apply when one side (USSR) is authoritarian"
+        ],
+        "whatItMisses": [
+          "The structural conflict between superpowers regardless of ideology",
+          "Security competition as primary driver in early Cold War",
+          "Why economic interdependence failed to develop between blocs"
+        ],
+        "betterAlternatives": [
+          {
+            "theoryId": "Structural Realism",
+            "reason": "Better explains early Cold War bipolar competition"
+          },
+          {
+            "theoryId": "Constructivism",
+            "reason": "Captures how identity change (Gorbachev) ended Cold War"
+          }
+        ]
+      }
+    },
+    "neoliberalism": {
+      "interpretation": "Neoliberal institutionalism sees arms control regimes and international organizations as crucial mechanisms that enabled limited cooperation even during intense rivalry.",
+      "keyPoints": [
+        "Arms control treaties (SALT, START) reduced uncertainty",
+        "UN provided forum for limited cooperation",
+        "Helsinki Accords created norms of human rights",
+        "International institutions persisted despite rivalry",
+        "Regimes enabled eventual détente"
+      ],
+      "visualElements": [],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "moderate",
+        "blindSpots": [
+          "Institutions were weak during early Cold War (UN Security Council deadlocked)",
+          "No trade between blocs meant economic interdependence couldn't work",
+          "Ideological incompatibility prevented regime formation"
+        ],
+        "whatItMisses": [
+          "Why institutions failed to prevent proxy wars",
+          "How ideological divide prevented meaningful cooperation until late 1980s",
+          "The primacy of security competition over institutional cooperation"
+        ],
+        "betterAlternatives": [
+          {
+            "theoryId": "Constructivism",
+            "reason": "Better explains how identity change (Gorbachev) ended Cold War"
+          }
+        ]
+      }
+    },
+    "english-school": {
+      "interpretation": "The English School views the Cold War as a managed rivalry within an international society. Despite ideological differences, both superpowers recognized shared interests in avoiding nuclear war and maintaining basic order.",
+      "keyPoints": [
+        "Maintenance of international society despite ideological divide",
+        "Shared norms against nuclear weapon use",
+        "Great power management of international order",
+        "Diplomacy and communication channels maintained",
+        "Balance between conflict and cooperation"
+      ],
+      "visualElements": [],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "none",
+        "blindSpots": [],
+        "whatItMisses": [],
+        "betterAlternatives": []
+      }
+    },
+    "constructivism": {
+      "interpretation": "Constructivism explains the Cold War's end through identity transformation. Gorbachev's 'New Thinking' changed Soviet identity from revolutionary expansionist to normal state seeking integration.",
+      "keyPoints": [
+        "Cold War sustained by mutually constituted enemy identities",
+        "US identity as 'leader of free world'",
+        "Soviet identity as revolutionary state",
+        "Gorbachev's identity shift crucial to ending conflict",
+        "Ideas and norms mattered as much as material power"
+      ],
+      "visualElements": [],
+      "limitations": {
+        "canExplain": true,
+        "weaknessLevel": "none",
+        "blindSpots": [],
+        "whatItMisses": [],
+        "betterAlternatives": []
+      }
+    }
+  },
+  "countryPerspectives": {
+    "United States": {
+      "role": "Superpower, Western bloc leader",
+      "perspectives": {
+        "realism": "Superpower pursuing global hegemony. Power maximizer using NATO and nuclear deterrence.",
+        "liberalism": "Leader of liberal international order. Promotes democracy, free trade, institutions.",
+        "neoliberalism": "Hegemon providing public goods. Uses regimes to manage cooperation.",
+        "constructivism": "Identity as 'leader of free world'. Spreads democratic norms.",
+        "structural-realism": "Pole in bipolar system. Structure determines must balance Soviet power."
+      }
+    },
+    "Soviet Union": {
+      "role": "Superpower, Eastern bloc leader",
+      "perspectives": {
+        "realism": "Rival superpower competing for influence. Seeks security through buffer states and power.",
+        "liberalism": "Authoritarian limiting cooperation. Lack of democracy prevents engagement.",
+        "constructivism": "Revolutionary identity drives behavior. 1985+ identity shift (Gorbachev) ends Cold War.",
+        "structural-realism": "Second pole. Must compete due to structure, not ideology."
+      }
+    },
+    "China": {
+      "role": "Communist power, Sino-Soviet split",
+      "perspectives": {
+        "realism": "Sino-Soviet split shows security trumps ideology. China feared Soviet power more than shared communism. Aligned with U.S. (1970s) against USSR despite ideological difference. Pure balance of power.",
+        "liberalism": "Authoritarian regime limiting cooperation. Economic opening (1980s) brought integration into global economy. Shows economic incentives can overcome ideology.",
+        "constructivism": "Distinct Chinese communist identity vs. Soviet model. Maoism as unique ideology. Cultural Revolution showed ideational factors. Identity as Middle Kingdom persisted through communism.",
+        "structural-realism": "Balanced against proximate threat (USSR) by aligning with distant power (U.S.). Classic external balancing. Shows system structure determines behavior more than ideology."
+      }
+    },
+    "West Germany": {
+      "role": "Divided frontline state, Western anchor",
+      "perspectives": {
+        "realism": "Divided nation on Cold War frontline. Hosted NATO troops as buffer. Feared Soviet invasion. Total dependence on U.S. security. Geography determined vulnerability.",
+        "liberalism": "Democratic transformation post-WWII. Deeply integrated in Western institutions (NATO, EEC). Economic miracle through trade. Democratic peace with former enemies (France). Model of liberal success.",
+        "constructivism": "Identity transformation from Nazi aggression to peaceful democracy. Vergangenheitsbewältigung (coming to terms with past). European identity adoption. Constitutional pacifism norm.",
+        "neoliberalism": "Used institutions to overcome WWII legacy. European integration locked in peaceful identity. Regained legitimacy through institutional embeddedness."
+      }
+    },
+    "Cuba": {
+      "role": "Soviet ally in Western hemisphere",
+      "perspectives": {
+        "realism": "Small state seeking Soviet protection against U.S. threat (90 miles away). Rational balancing despite geographic distance. Missile crisis showed risks of superpower proxy.",
+        "liberalism": "Castro's authoritarianism prevented cooperation with Western hemisphere institutions. Excluded from OAS. Isolation drove Soviet dependence.",
+        "constructivism": "Revolutionary identity as anti-imperialist. Castro's charisma built new Cuban identity. Solidarity with Third World movements. Identity more important than material costs of U.S. embargo."
+      }
+    },
+    "India": {
+      "role": "Non-Aligned Movement leader",
+      "perspectives": {
+        "realism": "Large power pursuing strategic autonomy. Non-alignment maximized aid from both sides. Played superpowers against each other. Realist behavior disguised as moralistic non-alignment.",
+        "liberalism": "Democratic but pragmatic. Founder of Non-Aligned Movement. Used institutions for voice. Shows democracy doesn't automatically mean Western alignment.",
+        "constructivism": "Post-colonial identity of independence and non-alignment. Moral leadership aspiration. Nehru's vision of Third World solidarity. Identity as bridge between blocs, not as subordinate.",
+        "english-school": "Great power in regional context. Leader in creating non-aligned as distinct international society. Promoted new norms of decolonization and development."
+      }
+    }
+  },
+  "relatedScholars": [
+    "Hans Morgenthau",
+    "Kenneth Waltz",
+    "E.H. Carr",
+    "Robert Keohane",
+    "Joseph Nye",
+    "Alexander Wendt",
+    "Hedley Bull",
+    "John Mearsheimer"
+  ],
+  "relatedScenarios": ["china-south-china-sea", "ukraine-war"]
+}
