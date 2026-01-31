@@ -63,16 +63,16 @@ export default function AdminDashboard() {
           setIsRefreshing(false);
           return;
         }
-        // If API returns empty array, continue to localStorage/static fallback
+        // If API returns empty array, continue to Supabase/static fallback
       }
     } catch (error) {
-      console.warn("API not available, trying localStorage and static data");
+      console.warn("API not available, trying Supabase and static data");
     }
 
     // Try Supabase/localStorage (where events are saved)
     const storedEvents = await loadAllEventsFromStorage();
     // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/4947b7ed-4136-4ff9-a241-fb1ba4b196f0', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'admin/page.tsx:57', message: 'Events loaded from localStorage', data: { count: storedEvents.length, events: storedEvents.map((e: EventData) => ({ id: e.id, title: e.title, theory: e.theory })) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
+    fetch('http://127.0.0.1:7243/ingest/4947b7ed-4136-4ff9-a241-fb1ba4b196f0', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'admin/page.tsx:57', message: 'Events loaded from Supabase/localStorage', data: { count: storedEvents.length, events: storedEvents.map((e: EventData) => ({ id: e.id, title: e.title, theory: e.theory })) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
     // #endregion
 
     // Load static data and merge
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       const eventsModule = await import("@/data/events");
       const staticEvents = eventsModule.EVENTS_DATA || [];
 
-      // Merge with localStorage events (localStorage takes priority)
+      // Merge with Supabase/localStorage events (stored events take priority)
       let allEvents: EventData[] = [];
       if (storedEvents && storedEvents.length > 0) {
         // Combine stored events with static events, avoiding duplicates
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
       setEvents(allEvents);
     } catch (error) {
       console.error("Error loading static events:", error);
-      // If static events fail, use whatever is in localStorage
+      // If static events fail, use whatever is in Supabase/localStorage
       if (storedEvents && storedEvents.length > 0) {
         setEvents(storedEvents);
       } else {
@@ -118,11 +118,12 @@ export default function AdminDashboard() {
     loadEvents();
 
     // Listen for storage changes to refresh the list
-    const handleStorageChange = () => {
-      const storedEvents = loadAllEventsFromStorage();
-      // Merge with static events when storage changes
-      import("@/data/events").then((module) => {
-        const staticEvents = module.EVENTS_DATA || [];
+    const handleStorageChange = async () => {
+      try {
+        const storedEvents = await loadAllEventsFromStorage();
+        // Merge with static events when storage changes
+        const eventsModule = await import("@/data/events");
+        const staticEvents = eventsModule.EVENTS_DATA || [];
         if (storedEvents && storedEvents.length > 0) {
           const uniqueStaticEvents = staticEvents.filter(
             (e: EventData) => !storedEvents.some((se: EventData) => se.id === e.id)
@@ -132,26 +133,25 @@ export default function AdminDashboard() {
         } else if (staticEvents.length > 0) {
           setEvents(staticEvents);
         }
-      }).catch(() => {
-        if (storedEvents && storedEvents.length > 0) {
-          setEvents(storedEvents);
-        }
-      });
+      } catch (error) {
+        console.error("Error in handleStorageChange:", error);
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
 
     // Also check periodically (for same-tab updates) - but skip if refreshing
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       // Don't interfere with manual refresh
       if (isRefreshingRef.current) {
         return;
       }
 
-      const storedEvents = loadAllEventsFromStorage();
-      // Merge with static events to maintain consistency
-      import("@/data/events").then((module) => {
-        const staticEvents = module.EVENTS_DATA || [];
+      try {
+        const storedEvents = await loadAllEventsFromStorage();
+        // Merge with static events to maintain consistency
+        const eventsModule = await import("@/data/events");
+        const staticEvents = eventsModule.EVENTS_DATA || [];
         if (storedEvents && storedEvents.length > 0) {
           const uniqueStaticEvents = staticEvents.filter(
             (e: EventData) => !storedEvents.some((se: EventData) => se.id === e.id)
@@ -161,12 +161,9 @@ export default function AdminDashboard() {
         } else if (staticEvents.length > 0) {
           setEvents(staticEvents);
         }
-      }).catch(() => {
-        // If static events fail, just use localStorage
-        if (storedEvents && storedEvents.length > 0) {
-          setEvents(storedEvents);
-        }
-      });
+      } catch (error) {
+        console.error("Error in periodic check:", error);
+      }
     }, 2000);
 
     return () => {
@@ -205,7 +202,7 @@ export default function AdminDashboard() {
     setExistingTheoriesForSelected(theories);
   };
 
-  const handleSelectTheory = (theoryId: string) => {
+  const handleSelectTheory = async (theoryId: string) => {
     if (!selectedBaseEvent) return;
 
     try {

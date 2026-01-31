@@ -1,16 +1,36 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { EventData } from '@/data/events';
 
-// Supabase client configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Lazy initialization of Supabase client
+let supabaseClient: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+function getSupabaseClient(): SupabaseClient {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Return a mock client that will fail gracefully when used
+    // This allows the build to complete even if env vars aren't set
+    console.warn('Supabase environment variables not set. Database operations will fail.');
+    // Create a client with dummy values - it will fail when actually used
+    supabaseClient = createClient('https://placeholder.supabase.co', 'placeholder-key');
+    return supabaseClient;
+  }
+
+  supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  return supabaseClient;
 }
 
-// Create Supabase client for public operations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Export a getter function instead of direct client
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    return getSupabaseClient()[prop as keyof SupabaseClient];
+  }
+});
 
 // Helper function to convert EventData to database format
 export function eventToDbFormat(event: EventData): any {

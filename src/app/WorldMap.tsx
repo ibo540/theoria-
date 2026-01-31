@@ -368,7 +368,7 @@ export default function WorldMap() {
       // Only reload if the theory actually changed and we have a base event
       if (previousTheoryRef.current !== activeTheory) {
         // Reload event with the selected theory
-        selectEvent(baseEventId, activeTheory);
+        selectEvent(baseEventId, activeTheory).catch(console.error);
         previousTheoryRef.current = activeTheory;
       }
     }

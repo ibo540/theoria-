@@ -61,17 +61,22 @@ export default function Sidebar() {
   const deselectEvent = useEventStore((state) => state.deselectEvent);
   const isEventSelected = useEventStore((state) => state.isEventSelected);
 
-  // Load events from localStorage and merge with static events
+  // Load events from Supabase/localStorage and merge with static events
   useEffect(() => {
-    const loadEvents = () => {
-      const storedEvents = loadAllEventsFromStorage();
-      if (storedEvents && storedEvents.length > 0) {
-        // Merge stored events with static events (stored events take priority)
-        const uniqueStaticEvents = EVENTS_DATA.filter(
-          (e) => !storedEvents.some((se) => se.id === e.id)
-        );
-        setAllEvents([...storedEvents, ...uniqueStaticEvents]);
-      } else {
+    const loadEvents = async () => {
+      try {
+        const storedEvents = await loadAllEventsFromStorage();
+        if (storedEvents && storedEvents.length > 0) {
+          // Merge stored events with static events (stored events take priority)
+          const uniqueStaticEvents = EVENTS_DATA.filter(
+            (e) => !storedEvents.some((se) => se.id === e.id)
+          );
+          setAllEvents([...storedEvents, ...uniqueStaticEvents]);
+        } else {
+          setAllEvents(EVENTS_DATA);
+        }
+      } catch (error) {
+        console.error("Error loading events:", error);
         setAllEvents(EVENTS_DATA);
       }
     };
@@ -182,7 +187,7 @@ export default function Sidebar() {
       deselectEvent();
       setActiveTab("overview"); // Reset tab when deselecting
     } else {
-      selectEvent(eventId);
+      selectEvent(eventId).catch(console.error);
       setActiveTab("overview"); // Reset tab when selecting new event
     }
   };

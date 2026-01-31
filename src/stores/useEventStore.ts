@@ -23,7 +23,7 @@ interface EventStore {
   isTimelinePlaying: boolean;
   timelinePlaySpeed: number; // milliseconds per point
   // Actions
-  selectEvent: (eventId: string, theoryId?: string | null) => void;
+  selectEvent: (eventId: string, theoryId?: string | null) => Promise<void>;
   deselectEvent: () => void;
   toggleEvent: (eventId: string) => void;
   isEventSelected: (eventId: string) => boolean;
@@ -63,7 +63,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
   geoDataError: null,
   isTimelinePlaying: false,
   timelinePlaySpeed: 4000, // 4 seconds per point
-  selectEvent: (eventId, theoryId?: string | null) => {
+  selectEvent: async (eventId, theoryId?: string | null) => {
     // If theory is provided, try to find the theory-specific version
     let event: EventData | null = null;
     let finalEventId = eventId;
@@ -71,7 +71,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
     if (theoryId) {
       // Try to find theory-specific version
       const theorySpecificId = createEventIdWithTheory(getBaseEventId(eventId), theoryId);
-      const storedTheoryEvent = loadEventFromStorage(theorySpecificId);
+      const storedTheoryEvent = await loadEventFromStorage(theorySpecificId);
       if (storedTheoryEvent) {
         event = storedTheoryEvent;
         finalEventId = theorySpecificId;
@@ -79,7 +79,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         // Fallback: try to find any version of this event and use it
         // (user might be selecting a theory for an event that doesn't have that theory yet)
         const baseId = getBaseEventId(eventId);
-        const allEvents = loadAllEventsFromStorage();
+        const allEvents = await loadAllEventsFromStorage();
         const eventVersions = allEvents.filter(e => getBaseEventId(e.id) === baseId);
         
         if (eventVersions.length > 0) {
@@ -101,7 +101,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
       }
     } else {
       // No theory specified, just load by ID
-      const storedEvent = loadEventFromStorage(eventId);
+      const storedEvent = await loadEventFromStorage(eventId);
       if (storedEvent) {
         event = storedEvent;
       } else {
