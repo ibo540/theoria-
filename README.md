@@ -2,6 +2,8 @@
 
 A modern Next.js project with TypeScript, shadcn/ui components, and browser API utilities.
 
+<!-- Trigger deployment -->
+
 ## Features
 
 - ⚡ **Next.js 16** with App Router
