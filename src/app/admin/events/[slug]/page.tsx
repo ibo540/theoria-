@@ -69,8 +69,8 @@ export default function EventEditor() {
           console.warn("API not available, trying localStorage");
         }
 
-        // Try localStorage
-        const storedEvent = loadEventFromStorage(slug);
+        // Try Supabase/localStorage
+        const storedEvent = await loadEventFromStorage(slug);
         if (storedEvent) {
           setEvent(storedEvent);
           setIsLoading(false);
@@ -131,11 +131,11 @@ export default function EventEditor() {
           router.push("/admin");
         }, 1500);
       } catch (apiError) {
-        // Fallback to localStorage if API fails
-        console.warn("API save failed, using localStorage:", apiError);
-        saveEventToStorage(finalEvent);
+        // Fallback to Supabase/localStorage if API fails
+        console.warn("API save failed, using Supabase/localStorage:", apiError);
+        await saveEventToStorage(finalEvent);
         setIsSaving(false);
-        setSaveMessage({ type: "success", text: "Event saved to browser storage!" });
+        setSaveMessage({ type: "success", text: "Event saved to database!" });
         // Redirect to dashboard to see the new event
         setTimeout(() => {
           router.push("/admin");

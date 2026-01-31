@@ -36,6 +36,7 @@ export default function AdminDashboard() {
   const isRefreshingRef = useRef(false);
   const [showAddTheoryModal, setShowAddTheoryModal] = useState(false);
   const [selectedBaseEvent, setSelectedBaseEvent] = useState<EventData | null>(null);
+  const [existingTheoriesForSelected, setExistingTheoriesForSelected] = useState<string[]>([]);
 
   // Check authentication on mount
   useEffect(() => {
@@ -68,8 +69,8 @@ export default function AdminDashboard() {
       console.warn("API not available, trying localStorage and static data");
     }
 
-    // Try localStorage (where events are saved)
-    const storedEvents = loadAllEventsFromStorage();
+    // Try Supabase/localStorage (where events are saved)
+    const storedEvents = await loadAllEventsFromStorage();
     // #region agent log
     fetch('http://127.0.0.1:7243/ingest/4947b7ed-4136-4ff9-a241-fb1ba4b196f0', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'admin/page.tsx:57', message: 'Events loaded from localStorage', data: { count: storedEvents.length, events: storedEvents.map((e: EventData) => ({ id: e.id, title: e.title, theory: e.theory })) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
     // #endregion
@@ -182,10 +183,10 @@ export default function AdminDashboard() {
     isRefreshingRef.current = false;
   };
 
-  const handleDeleteEvent = (eventId: string, eventTitle: string) => {
+  const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
     if (confirm(`Are you sure you want to delete "${eventTitle}"? This action cannot be undone.`)) {
       try {
-        deleteEventFromStorage(eventId);
+        await deleteEventFromStorage(eventId);
         // Remove from current state
         setEvents(events.filter(e => e.id !== eventId));
       } catch (error) {
@@ -195,9 +196,13 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddTheory = (baseEvent: EventData) => {
+  const handleAddTheory = async (baseEvent: EventData) => {
     setSelectedBaseEvent(baseEvent);
     setShowAddTheoryModal(true);
+    // Load existing theories for this event
+    const baseId = getBaseEventId(baseEvent.id);
+    const theories = await getTheoriesForBaseEvent(baseId);
+    setExistingTheoriesForSelected(theories);
   };
 
   const handleSelectTheory = (theoryId: string) => {
@@ -206,7 +211,7 @@ export default function AdminDashboard() {
     try {
       // Check if this theory already exists for this base event
       const baseId = getBaseEventId(selectedBaseEvent.id);
-      const existingTheories = getTheoriesForBaseEvent(baseId);
+      const existingTheories = await getTheoriesForBaseEvent(baseId);
 
       if (existingTheories.includes(theoryId)) {
         alert(`This theory already exists for this event. Please select a different theory.`);
@@ -215,7 +220,7 @@ export default function AdminDashboard() {
 
       // Create new event with selected theory
       const newEvent = duplicateEventForNewTheory(selectedBaseEvent, theoryId);
-      saveEventToStorage(newEvent);
+      await saveEventToStorage(newEvent);
 
       // Refresh events
       loadEvents();
@@ -540,9 +545,7 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {THEORIES.map((theory) => {
-                  const baseId = getBaseEventId(selectedBaseEvent.id);
-                  const existingTheories = getTheoriesForBaseEvent(baseId);
-                  const isExisting = existingTheories.includes(theory.id);
+                  const isExisting = existingTheoriesForSelected.includes(theory.id);
 
                   return (
                     <button

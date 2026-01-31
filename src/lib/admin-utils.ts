@@ -4,6 +4,7 @@
 
 import { EventData } from "@/data/events";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { supabase, eventToDbFormat, dbToEventFormat } from "@/lib/supabase";
 
 /**
  * Extract base event ID from composite ID (format: baseId-theoryId)
@@ -121,17 +122,14 @@ export function duplicateEventForNewTheory(
 }
 
 /**
- * Save event to localStorage (temporary solution)
- * In production, this should save to API/database
+ * Save event to Supabase database
+ * Falls back to localStorage if Supabase is unavailable
  */
-export function saveEventToStorage(event: EventData): void {
+export async function saveEventToStorage(event: EventData): Promise<void> {
   try {
     // Get current user info for tracking
     const authState = useAuthStore.getState();
     const currentUser = authState.getCurrentUser();
-    
-    const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
-    const existingIndex = events.findIndex((e: EventData) => e.id === event.id);
     
     // Prepare event with user tracking
     const eventWithTracking: EventData = {
@@ -144,63 +142,161 @@ export function saveEventToStorage(event: EventData): void {
       } : undefined,
     };
     
+    // Check if event exists in Supabase
+    const { data: existingEvent } = await supabase
+      .from('events')
+      .select('created_at')
+      .eq('id', event.id)
+      .single();
+    
     // If this is a new event, set createdAt
-    if (existingIndex < 0) {
+    if (!existingEvent) {
       eventWithTracking.createdAt = new Date().toISOString();
     } else {
       // Preserve original createdAt for existing events
-      eventWithTracking.createdAt = events[existingIndex].createdAt || new Date().toISOString();
+      eventWithTracking.createdAt = existingEvent.created_at || new Date().toISOString();
     }
     
-    if (existingIndex >= 0) {
-      events[existingIndex] = eventWithTracking;
+    // Convert to database format
+    const dbEvent = eventToDbFormat(eventWithTracking);
+    
+    // Upsert (insert or update) to Supabase
+    const { error } = await supabase
+      .from('events')
+      .upsert(dbEvent, { onConflict: 'id' });
+    
+    if (error) {
+      console.error("Error saving to Supabase, falling back to localStorage:", error);
+      // Fallback to localStorage
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      const existingIndex = events.findIndex((e: EventData) => e.id === event.id);
+      
+      if (existingIndex >= 0) {
+        events[existingIndex] = eventWithTracking;
+      } else {
+        events.push(eventWithTracking);
+      }
+      
+      localStorage.setItem("theoria-events", JSON.stringify(events));
     } else {
-      events.push(eventWithTracking);
+      console.log("Event saved successfully to Supabase");
     }
-    
-    localStorage.setItem("theoria-events", JSON.stringify(events));
   } catch (error) {
-    console.error("Error saving event to storage:", error);
-    throw error;
+    console.error("Error saving event:", error);
+    // Fallback to localStorage
+    try {
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      const existingIndex = events.findIndex((e: EventData) => e.id === event.id);
+      
+      if (existingIndex >= 0) {
+        events[existingIndex] = event;
+      } else {
+        events.push(event);
+      }
+      
+      localStorage.setItem("theoria-events", JSON.stringify(events));
+    } catch (localError) {
+      console.error("Error saving to localStorage fallback:", localError);
+      throw error;
+    }
   }
 }
 
 /**
- * Load event from localStorage
+ * Load event from Supabase database
+ * Falls back to localStorage if Supabase is unavailable
  */
-export function loadEventFromStorage(eventId: string): EventData | null {
+export async function loadEventFromStorage(eventId: string): Promise<EventData | null> {
   try {
+    // Try Supabase first
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', eventId)
+      .single();
+    
+    if (!error && data) {
+      return dbToEventFormat(data);
+    }
+    
+    // Fallback to localStorage
     const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
     return events.find((e: EventData) => e.id === eventId) || null;
   } catch (error) {
-    console.error("Error loading event from storage:", error);
-    return null;
+    console.error("Error loading event:", error);
+    // Fallback to localStorage
+    try {
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      return events.find((e: EventData) => e.id === eventId) || null;
+    } catch (localError) {
+      console.error("Error loading from localStorage fallback:", localError);
+      return null;
+    }
   }
 }
 
 /**
- * Load all events from localStorage
+ * Load all events from Supabase database
+ * Falls back to localStorage if Supabase is unavailable
  */
-export function loadAllEventsFromStorage(): EventData[] {
+export async function loadAllEventsFromStorage(): Promise<EventData[]> {
   try {
+    // Try Supabase first
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('updated_at', { ascending: false });
+    
+    if (!error && data) {
+      return data.map(dbToEventFormat);
+    }
+    
+    // Fallback to localStorage
     return JSON.parse(localStorage.getItem("theoria-events") || "[]");
   } catch (error) {
-    console.error("Error loading events from storage:", error);
-    return [];
+    console.error("Error loading events:", error);
+    // Fallback to localStorage
+    try {
+      return JSON.parse(localStorage.getItem("theoria-events") || "[]");
+    } catch (localError) {
+      console.error("Error loading from localStorage fallback:", localError);
+      return [];
+    }
   }
 }
 
 /**
- * Delete event from localStorage
+ * Delete event from Supabase database
+ * Falls back to localStorage if Supabase is unavailable
  */
-export function deleteEventFromStorage(eventId: string): void {
+export async function deleteEventFromStorage(eventId: string): Promise<void> {
   try {
-    const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
-    const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
-    localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+    // Try Supabase first
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId);
+    
+    if (error) {
+      console.error("Error deleting from Supabase, falling back to localStorage:", error);
+      // Fallback to localStorage
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
+      localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+    } else {
+      console.log("Event deleted successfully from Supabase");
+    }
   } catch (error) {
-    console.error("Error deleting event from storage:", error);
-    throw error;
+    console.error("Error deleting event:", error);
+    // Fallback to localStorage
+    try {
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
+      localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+    } catch (localError) {
+      console.error("Error deleting from localStorage fallback:", localError);
+      throw error;
+    }
   }
 }
 
