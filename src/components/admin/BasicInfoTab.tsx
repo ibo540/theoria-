@@ -2,6 +2,7 @@
 
 import { EventData } from "@/data/events";
 import { RichTextEditor } from "./RichTextEditor";
+import { getAvailableHistoricalMaps, getHistoricalMapForEvent } from "@/lib/historical-maps";
 
 interface BasicInfoTabProps {
   event: Partial<EventData>;
@@ -74,6 +75,27 @@ export function BasicInfoTab({ event, setEvent }: BasicInfoTabProps) {
             <option value="war">War</option>
             <option value="treaty">Treaty</option>
           </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-200">
+            Historical Map Period
+          </label>
+          <select
+            value={event.historicalMapPeriod || (event.date || event.period?.startYear ? getHistoricalMapForEvent(event as EventData).id : "modern")}
+            onChange={(e) => setEvent({ ...event, historicalMapPeriod: e.target.value || undefined })}
+            className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600/50 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all hover:border-slate-500 text-white"
+          >
+            <option value="">Auto-detect from date</option>
+            {getAvailableHistoricalMaps().map((period) => (
+              <option key={period.id} value={period.id}>
+                {period.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-[11px] sm:text-xs text-gray-400">
+            Select the historical period to show accurate borders. Leave as "Auto-detect" to automatically choose based on event date.
+          </p>
         </div>
       </div>
 

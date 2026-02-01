@@ -68,6 +68,7 @@ export function eventToDbFormat(event: EventData): any {
     last_modified_by_name: event.lastModifiedBy?.name || null,
     last_modified_by_username: event.lastModifiedBy?.username || null,
     last_modified_timestamp: event.lastModifiedBy?.timestamp || null,
+    historical_map_period: event.historicalMapPeriod || null,
   };
 }
 
@@ -107,5 +108,6 @@ export function dbToEventFormat(row: any): EventData {
       name: row.last_modified_by_name,
       timestamp: row.last_modified_timestamp || row.updated_at,
     } : undefined,
+    historicalMapPeriod: row.historical_map_period || undefined,
   } as EventData;
 }

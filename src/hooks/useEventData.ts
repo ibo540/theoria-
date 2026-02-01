@@ -6,6 +6,7 @@ import { useMapStore } from "@/stores/useMapStore";
 import { useTheoryStore } from "@/stores/useTheoryStore";
 import { useCountryData } from "./useCountryData";
 import { MarkerData } from "@/components/marker";
+import { getHistoricalMapForEvent, mapHistoricalCountryNames, getAvailableHistoricalMaps } from "@/lib/historical-maps";
 
 const GEOJSON_URL = "/geo/countries.geojson";
 
@@ -114,6 +115,21 @@ export function useEventData() {
   );
   const setActiveTheory = useTheoryStore((state) => state.setActiveTheory);
 
+  // Determine which historical map to use
+  const historicalMapConfig = useMemo(() => {
+    if (!activeEvent) {
+      return getAvailableHistoricalMaps()[0]; // Default to modern
+    }
+    
+    // Use explicitly set period, or auto-detect from event date
+    if (activeEvent.historicalMapPeriod) {
+      const period = getAvailableHistoricalMaps().find(p => p.id === activeEvent.historicalMapPeriod);
+      if (period) return period;
+    }
+    
+    return getHistoricalMapForEvent(activeEvent);
+  }, [activeEvent]);
+
   // Prepare event configuration for geolocation data processing
   const eventConfig = useMemo(() => {
     if (!activeEvent) {
@@ -132,14 +148,20 @@ export function useEventData() {
       activeTimelinePointId
     );
 
+    // Map historical country names to modern equivalents for highlighting
+    const mappedCountries = mapHistoricalCountryNames(
+      filteredCountries,
+      historicalMapConfig
+    );
+
     return {
-      geojsonUrl: GEOJSON_URL,
-      highlightedCountries: filteredCountries,
+      geojsonUrl: historicalMapConfig.geojsonPath,
+      highlightedCountries: mappedCountries,
       connections: activeEvent.connections,
       unifiedAreas: activeEvent.unifiedAreas || [],
       event: activeEvent,
     };
-  }, [activeEvent, activeTimelinePointId]);
+  }, [activeEvent, activeTimelinePointId, historicalMapConfig]);
 
   // Process geolocation data (markers, boundaries, connections, drawn shapes)
   const {

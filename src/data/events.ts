@@ -538,6 +538,8 @@ export interface EventData {
   primaryLocation?: GeoPoint;
   /** Default map zoom level */
   zoom?: number;
+  /** Historical map period ID to use (e.g., "cold-war", "ww2-era"). If not specified, will be auto-detected from event date */
+  historicalMapPeriod?: string;
 
   // === ACTORS ===
   /** Main actors/blocs involved (structured with id, name, role) */
