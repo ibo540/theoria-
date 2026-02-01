@@ -8,6 +8,7 @@ import { X, Plus, Trash2, Globe, Shapes, Link as LinkIcon, MapPin, Edit, Save, S
 import { THEORY_COLORS, THEORY_COLORS_DARK, THEORY_LABELS } from "@/lib/theoryTokens";
 import { MapDrawingTools } from "./MapDrawingTools";
 import { detectCountriesInShape, detectCountriesForLine } from "@/lib/country-detection";
+import { getHistoricalMapForEvent, getAvailableHistoricalMaps, mapHistoricalCountryNames } from "@/lib/historical-maps";
 
 // Load map only on client
 const MapComponent = dynamic(() => import("./InteractiveMap"), { ssr: false });
@@ -26,6 +27,21 @@ interface CountryHighlight {
 }
 
 export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
+  // Determine which historical map to use
+  const historicalMapConfig = (() => {
+    if (!event) {
+      return getAvailableHistoricalMaps()[0]; // Default to modern
+    }
+    
+    // Use explicitly set period, or auto-detect from event date
+    if (event.historicalMapPeriod) {
+      const period = getAvailableHistoricalMaps().find(p => p.id === event.historicalMapPeriod);
+      if (period) return period;
+    }
+    
+    return getHistoricalMapForEvent(event as any);
+  })();
+
   // Convert countryHighlights or highlightedCountries to map with timing info
   const [countryHighlights, setCountryHighlights] = useState<Map<string, CountryHighlight>>(() => {
     const map = new Map<string, CountryHighlight>();
@@ -369,14 +385,28 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
         className="mb-6 border-2 border-gray-300 rounded-xl overflow-hidden shadow-lg relative"
         style={{ height: "600px" }}
       >
+        {/* Historical Map Period Indicator */}
+        <div className="absolute top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-4 py-2 shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-300">Map Period:</span>
+            <span className="text-sm font-semibold text-white">{historicalMapConfig.name}</span>
+          </div>
+          {historicalMapConfig.id !== "modern" && (
+            <p className="text-xs text-gray-400 mt-1">
+              Using {historicalMapConfig.id === event.historicalMapPeriod ? "selected" : "auto-detected"} period
+            </p>
+          )}
+        </div>
+
         <MapComponent
-          highlightedCountries={Array.from(countryHighlights.keys())}
+          highlightedCountries={mapHistoricalCountryNames(Array.from(countryHighlights.keys()), historicalMapConfig)}
           countryColors={Object.fromEntries(Array.from(countryHighlights.entries()).map(([name, h]) => [name, h.color]))}
           onCountryClick={handleCountryClick}
           onCountryHover={mapMode === "highlight" && !isDrawing ? setSelectedCountry : undefined}
           selectedCountries={mapMode === "unified-area" && !isDrawing ? Array.from(selectedCountriesForArea) : []}
           connectionFrom={mapMode === "connection" && !isDrawing ? connectionFrom : null}
           mapInstance={mapInstanceRef}
+          geojsonUrl={historicalMapConfig.geojsonPath}
         />
 
         {/* Render completed drawings */}

@@ -13,6 +13,7 @@ interface InteractiveMapProps {
   selectedCountries?: string[]; // Countries selected for unified area
   connectionFrom?: string | null; // Country selected as "from" for connection
   mapInstance?: React.MutableRefObject<maplibregl.Map | null>;
+  geojsonUrl?: string; // Optional: custom GeoJSON URL for historical maps
 }
 
 export default function InteractiveMap({
@@ -23,6 +24,7 @@ export default function InteractiveMap({
   selectedCountries = [],
   connectionFrom = null,
   mapInstance,
+  geojsonUrl = "/geo/countries.geojson", // Default to modern borders
 }: InteractiveMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -101,6 +103,35 @@ export default function InteractiveMap({
     }
   }, [mapInstance, map.current]);
 
+  // Reload GeoJSON when geojsonUrl changes
+  useEffect(() => {
+    if (!map.current || !mapReady.current) return;
+
+    const source = map.current.getSource("countries") as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    console.log("Reloading GeoJSON from:", geojsonUrl);
+    fetch(geojsonUrl, { cache: "no-cache" })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to load countries data: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (!data || !data.features) {
+          throw new Error("Invalid GeoJSON data structure");
+        }
+        if (map.current && source) {
+          source.setData(data);
+          console.log("GeoJSON reloaded successfully");
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to reload GeoJSON:", err);
+      });
+  }, [geojsonUrl]);
+
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
@@ -168,8 +199,8 @@ export default function InteractiveMap({
           }
         };
 
-        // Load countries GeoJSON
-        fetch("/geo/countries.geojson", {
+        // Load countries GeoJSON (use provided URL or default)
+        fetch(geojsonUrl, {
           cache: "no-cache",
           signal: controller.signal,
         })
