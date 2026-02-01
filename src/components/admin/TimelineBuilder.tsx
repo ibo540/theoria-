@@ -4,7 +4,7 @@ import { useState } from "react";
 import { EventData, TimelinePoint, CountryIcon } from "@/data/events";
 import { Plus, Trash2, Edit2, Save, X, ChevronUp, ChevronDown } from "lucide-react";
 import { RichTextEditor } from "./RichTextEditor";
-import { getCountryCoordinates } from "@/lib/country-coordinates";
+import { getCountryCoordinates, COUNTRY_COORDINATES } from "@/lib/country-coordinates";
 
 interface TimelineBuilderProps {
   event: Partial<EventData>;
@@ -30,6 +30,11 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
   const handleAddPoint = () => {
     if (!newPoint.label || !newPoint.date) {
       alert("Please fill in at least Label and Date");
+      return;
+    }
+    
+    if (!selectedCountry || !selectedCountry.trim()) {
+      alert("Please select a country. This field is required.");
       return;
     }
 
@@ -229,30 +234,33 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           </div>
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-700">
-              Country (Optional - creates icon on map)
+              Country <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
               className="w-full px-4 py-2.5 border border-slate-600/50 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-800 text-white"
-              placeholder="e.g., United States, Russia, China"
+              placeholder="Type to search countries..."
               list="countries-list"
+              required
             />
             <datalist id="countries-list">
-              {[
-                "United States of America", "Russia", "China", "United Kingdom",
-                "France", "Germany", "Japan", "India", "Brazil", "Canada",
-                "Australia", "South Korea", "Italy", "Spain", "Poland",
-                "Ukraine", "Turkey", "Saudi Arabia", "Iran", "Israel",
-                "Egypt", "Indonesia", "Mexico", "Argentina", "South Africa",
-                "Algeria", "Iraq", "Afghanistan", "North Korea", "Cuba"
-              ].map(country => (
-                <option key={country} value={country} />
-              ))}
+              {(() => {
+                // Get all unique country names from COUNTRY_COORDINATES
+                // Exclude only very short aliases (USA, US, UK)
+                const shortAliases = new Set(['USA', 'US', 'UK']);
+                const allCountries = Object.keys(COUNTRY_COORDINATES)
+                  .filter(key => !shortAliases.has(key))
+                  .sort();
+                
+                return allCountries.map(country => (
+                  <option key={country} value={country} />
+                ));
+              })()}
             </datalist>
             <p className="text-xs text-gray-500 mt-1">
-              Select the country where this event occurred. An icon will be placed on the map.
+              Select the country where this event occurred. An icon will be placed on the map. <span className="text-red-500">Required</span>
             </p>
           </div>
           <div className="space-y-1">
