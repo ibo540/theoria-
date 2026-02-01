@@ -71,6 +71,21 @@ export default function WorldMap() {
   const [showTheoryNotification, setShowTheoryNotification] = useState(false);
   const lastActiveTimelinePointRef = useRef<string | null>(null);
   
+  // Determine which historical map period is active
+  const historicalMapConfig = useMemo(() => {
+    if (!activeEvent) {
+      return getAvailableHistoricalMaps()[0]; // Default to modern
+    }
+    
+    // Use explicitly set period, or auto-detect from event date
+    if (activeEvent.historicalMapPeriod) {
+      const period = getAvailableHistoricalMaps().find(p => p.id === activeEvent.historicalMapPeriod);
+      if (period) return period;
+    }
+    
+    return getHistoricalMapForEvent(activeEvent);
+  }, [activeEvent]);
+  
   // Debug: log when selectedIcon changes
   useEffect(() => {
     console.log("selectedIcon state changed:", selectedIcon);
