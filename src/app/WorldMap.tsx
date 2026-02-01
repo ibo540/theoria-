@@ -570,7 +570,7 @@ export default function WorldMap() {
       
       {/* Historical Map Period Indicator */}
       {activeEvent && historicalMapConfig.id !== "modern" && (
-        <div className="absolute top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-4 py-2 shadow-lg">
+        <div className="absolute top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-4 py-2 shadow-lg max-w-xs">
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-300">Historical Period:</span>
             <span className="text-sm font-semibold text-white">{historicalMapConfig.name}</span>
@@ -578,6 +578,11 @@ export default function WorldMap() {
           <p className="text-xs text-gray-400 mt-1">
             Showing borders for {historicalMapConfig.startYear}-{historicalMapConfig.endYear === 9999 ? "present" : historicalMapConfig.endYear}
           </p>
+          {historicalMapConfig.geojsonPath === "/geo/countries.geojson" && (
+            <p className="text-xs text-yellow-400 mt-1 italic">
+              ⚠️ Note: Historical borders file not yet added. Currently showing modern borders.
+            </p>
+          )}
         </div>
       )}
       <div
