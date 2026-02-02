@@ -34,42 +34,57 @@ function shouldShowItem(
   const timelinePoints = event.timelinePoints || [];
 
   // Check if item should appear
+  // If no timing conditions are set, item should always appear
   let shouldAppear = true;
   
-  if (item.appearAtTimelinePoint) {
-    if (!activeTimelinePointId) {
-      shouldAppear = false;
-    } else {
-      const appearIndex = timelinePoints.findIndex(
-        (p: any) => p.id === item.appearAtTimelinePoint
-      );
-      const currentIndex = timelinePoints.findIndex(
-        (p: any) => p.id === activeTimelinePointId
-      );
-      shouldAppear = appearIndex >= 0 && currentIndex >= appearIndex;
-    }
-  } else if (item.appearAtYear !== undefined) {
-    if (!activeTimelinePointId) {
-      if (timelinePoints.length > 0) {
-        const firstPointYear = timelinePoints[0]?.year 
-          ? parseInt(timelinePoints[0].year) 
-          : null;
-        shouldAppear = firstPointYear !== null && firstPointYear >= item.appearAtYear;
+  // Only apply timing filters if timing conditions are explicitly set
+  const hasTimingConditions = 
+    item.appearAtTimelinePoint !== undefined ||
+    item.appearAtYear !== undefined ||
+    item.appearAtPosition !== undefined;
+  
+  if (hasTimingConditions) {
+    shouldAppear = false; // Start as false, will be set to true if conditions are met
+    
+    if (item.appearAtTimelinePoint) {
+      if (!activeTimelinePointId) {
+        shouldAppear = false;
       } else {
-        const eventStartYear = event.period?.startYear || 
-          (event.date ? parseInt(event.date.split('-')[0]) : null);
-        shouldAppear = eventStartYear !== null && item.appearAtYear <= eventStartYear;
+        const appearIndex = timelinePoints.findIndex(
+          (p: any) => p.id === item.appearAtTimelinePoint
+        );
+        const currentIndex = timelinePoints.findIndex(
+          (p: any) => p.id === activeTimelinePointId
+        );
+        shouldAppear = appearIndex >= 0 && currentIndex >= appearIndex;
       }
-    } else if (currentYear !== null) {
-      shouldAppear = currentYear >= item.appearAtYear;
-    }
-  } else if (item.appearAtPosition !== undefined) {
-    if (!activeTimelinePointId) {
-      shouldAppear = item.appearAtPosition <= 0;
-    } else {
-      shouldAppear = currentPosition >= item.appearAtPosition;
+    } else if (item.appearAtYear !== undefined) {
+      if (!activeTimelinePointId) {
+        if (timelinePoints.length > 0) {
+          const firstPointYear = timelinePoints[0]?.year 
+            ? parseInt(timelinePoints[0].year) 
+            : null;
+          shouldAppear = firstPointYear !== null && firstPointYear >= item.appearAtYear;
+        } else {
+          const eventStartYear = event.period?.startYear || 
+            (event.date ? parseInt(event.date.split('-')[0]) : null);
+          shouldAppear = eventStartYear !== null && item.appearAtYear <= eventStartYear;
+        }
+      } else if (currentYear !== null) {
+        shouldAppear = currentYear >= item.appearAtYear;
+      } else {
+        // No year info available, show by default if no timeline point
+        shouldAppear = !activeTimelinePointId;
+      }
+    } else if (item.appearAtPosition !== undefined) {
+      if (!activeTimelinePointId) {
+        shouldAppear = item.appearAtPosition <= 0;
+      } else {
+        shouldAppear = currentPosition >= item.appearAtPosition;
+      }
     }
   }
+  // If no timing conditions, shouldAppear remains true (always visible)
 
   // Check if item should disappear
   let shouldDisappear = false;
