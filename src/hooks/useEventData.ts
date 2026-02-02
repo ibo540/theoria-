@@ -201,6 +201,18 @@ export function useEventData() {
       historicalMapConfig
     );
 
+    // Debug logging
+    if (filteredCountries.length > 0 || mappedCountries.length > 0) {
+      console.log("🔍 Country Highlight Debug:", {
+        original: activeEvent.highlightedCountries || [],
+        countryHighlights: activeEvent.countryHighlights || [],
+        afterTimingFilter: filteredCountries,
+        afterMapping: mappedCountries,
+        historicalMapPeriod: activeEvent.historicalMapPeriod,
+        mapConfig: historicalMapConfig.id,
+      });
+    }
+
     // Filter unified areas based on timeline
     const filteredUnifiedAreas = (activeEvent.unifiedAreas || []).filter((area: any) =>
       shouldShowItem(area, activeEvent, activeTimelinePointId)

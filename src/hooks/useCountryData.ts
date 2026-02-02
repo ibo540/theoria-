@@ -164,6 +164,9 @@ export function useCountryData({
   const { highlighted, centroids, markers, countriesInUnifiedAreas } =
     useMemo(() => {
       if (!worldData || !highlightedCountries?.length) {
+        if (highlightedCountries?.length === 0 && event) {
+          console.warn("⚠️ No highlighted countries provided for event:", event.id);
+        }
         return {
           highlighted: null,
           centroids: new Map<string, [number, number]>(),
@@ -172,11 +175,22 @@ export function useCountryData({
         };
       }
 
+      console.log("🗺️ Filtering countries:", {
+        searchingFor: highlightedCountries,
+        totalFeatures: worldData.features.length,
+        geojsonUrl,
+      });
+
       // Filter and simplify features in one pass
       const filteredFeatures = filterCountriesByNames(
         worldData.features,
         highlightedCountries
       );
+
+      console.log("✅ Filtered features:", {
+        found: filteredFeatures.length,
+        countries: filteredFeatures.map(f => f.properties?.name || f.properties?.NAME || 'unknown'),
+      });
 
       // Simplify features to optimize rendering (reduce to 10% of original points)
       const features = filteredFeatures.map((feature) =>
