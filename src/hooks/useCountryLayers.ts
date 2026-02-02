@@ -20,9 +20,9 @@ const DEFAULT_COLORS: LayerColors = {
   border: "#8b7a5f",
   borderWidth: 2,
   borderOpacity: 0.7,
-  line: "#8b7a5f",
-  lineWidth: 2.5,
-  lineOpacity: 0.6,
+  line: "#d4af37", // Enhanced gold color for connections
+  lineWidth: 3.5, // Slightly thicker for better visibility
+  lineOpacity: 0.85, // More opaque for better visibility
 };
 
 // Layer IDs as constants for consistency
@@ -234,6 +234,35 @@ function setupConnectionLayers(
       data: data as GeoJSON.FeatureCollection,
     });
 
+    // Add glow layer (wider, more transparent line behind main line)
+    map.addLayer(
+      {
+        id: `${LAYER_IDS.connectionsLine}-glow`,
+        type: "line",
+        source: SOURCE_IDS.connections,
+        paint: {
+          "line-color": colorExpression,
+          "line-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            ["+", widthExpression, 4],
+            10,
+            ["+", widthExpression, 6],
+          ],
+          "line-opacity": [
+            "*",
+            opacityExpression,
+            0.3
+          ],
+          "line-blur": 3,
+        },
+      },
+      beforeId
+    );
+
+    // Add main line layer
     map.addLayer(
       {
         id: LAYER_IDS.connectionsLine,
@@ -243,12 +272,36 @@ function setupConnectionLayers(
           "line-color": colorExpression,
           "line-width": widthExpression,
           "line-opacity": opacityExpression,
+          "line-cap": "round",
+          "line-join": "round",
         },
       },
       beforeId
     );
   } else {
     source.setData(data as GeoJSON.FeatureCollection);
+    
+    // Update glow layer
+    const glowLayerId = `${LAYER_IDS.connectionsLine}-glow`;
+    if (map.getLayer(glowLayerId)) {
+      map.setPaintProperty(glowLayerId, "line-color", colorExpression);
+      map.setPaintProperty(glowLayerId, "line-width", [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        ["+", widthExpression, 4],
+        10,
+        ["+", widthExpression, 6],
+      ]);
+      map.setPaintProperty(glowLayerId, "line-opacity", [
+        "*",
+        opacityExpression,
+        0.3
+      ]);
+    }
+    
+    // Update main line layer
     if (map.getLayer(LAYER_IDS.connectionsLine)) {
       map.setPaintProperty(
         LAYER_IDS.connectionsLine,
@@ -357,7 +410,47 @@ function updateLayerColors(map: maplibregl.Map, colors: LayerColors): void {
     );
   }
 
-  // Update connection line layer (only affects non-drawn lines)
+  // Update connection line layers (glow + main)
+  const glowLayerId = `${LAYER_IDS.connectionsLine}-glow`;
+  if (map.getLayer(glowLayerId)) {
+    const colorExpression: any = [
+      "case",
+      ["has", "color"],
+      ["get", "color"],
+      colors.line
+    ];
+    
+    const widthExpression: any = [
+      "case",
+      ["has", "thickness"],
+      ["get", "thickness"],
+      colors.lineWidth
+    ];
+    
+    const opacityExpression: any = [
+      "case",
+      ["has", "opacity"],
+      ["get", "opacity"],
+      colors.lineOpacity
+    ];
+    
+    map.setPaintProperty(glowLayerId, "line-color", colorExpression);
+    map.setPaintProperty(glowLayerId, "line-width", [
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      0,
+      ["+", widthExpression, 4],
+      10,
+      ["+", widthExpression, 6],
+    ]);
+    map.setPaintProperty(glowLayerId, "line-opacity", [
+      "*",
+      opacityExpression,
+      0.3
+    ]);
+  }
+  
   if (map.getLayer(LAYER_IDS.connectionsLine)) {
     const colorExpression: any = [
       "case",
@@ -394,8 +487,11 @@ function updateLayerVisibility(map: maplibregl.Map, isVisible: boolean): void {
   const layerIds = [
     LAYER_IDS.highlightFill,
     LAYER_IDS.highlightBorder,
+    `${LAYER_IDS.connectionsLine}-glow`,
     LAYER_IDS.connectionsLine,
+    `${LAYER_IDS.drawnShapesFill}-shadow`,
     LAYER_IDS.drawnShapesFill,
+    `${LAYER_IDS.drawnShapesBorder}-glow`,
     LAYER_IDS.drawnShapesBorder,
   ];
 
@@ -419,8 +515,14 @@ function setupDrawnShapesLayers(
     if (map.getLayer(LAYER_IDS.drawnShapesFill)) {
       map.removeLayer(LAYER_IDS.drawnShapesFill);
     }
+    if (map.getLayer(`${LAYER_IDS.drawnShapesFill}-shadow`)) {
+      map.removeLayer(`${LAYER_IDS.drawnShapesFill}-shadow`);
+    }
     if (map.getLayer(LAYER_IDS.drawnShapesBorder)) {
       map.removeLayer(LAYER_IDS.drawnShapesBorder);
+    }
+    if (map.getLayer(`${LAYER_IDS.drawnShapesBorder}-glow`)) {
+      map.removeLayer(`${LAYER_IDS.drawnShapesBorder}-glow`);
     }
     if (map.getSource(SOURCE_IDS.drawnShapes)) {
       map.removeSource(SOURCE_IDS.drawnShapes);
@@ -442,6 +544,37 @@ function setupDrawnShapesLayers(
     });
   }
 
+  // Add shadow/glow layer for shapes (behind main fill)
+  const shadowLayerId = `${fillLayerId}-shadow`;
+  if (!map.getLayer(shadowLayerId)) {
+    map.addLayer(
+      {
+        id: shadowLayerId,
+        type: "fill",
+        source: sourceId,
+        paint: {
+          "fill-color": [
+            "case",
+            ["has", "color"],
+            ["get", "color"],
+            "#10b981"
+          ],
+          "fill-opacity": [
+            "*",
+            [
+              "case",
+              ["has", "opacity"],
+              ["get", "opacity"],
+              0.15 // Very subtle shadow
+            ],
+            0.5
+          ],
+        },
+      },
+      beforeId
+    );
+  }
+
   // Add fill layer with custom colors from properties
   if (!map.getLayer(fillLayerId)) {
     map.addLayer(
@@ -460,7 +593,7 @@ function setupDrawnShapesLayers(
             "case",
             ["has", "opacity"],
             ["get", "opacity"],
-            0.4 // Default opacity
+            0.35 // Slightly more transparent for better layering
           ],
         },
       },
@@ -468,7 +601,31 @@ function setupDrawnShapesLayers(
     );
   }
 
-  // Add border layer
+  // Add glow border layer (wider, more transparent)
+  const glowBorderLayerId = `${borderLayerId}-glow`;
+  if (!map.getLayer(glowBorderLayerId)) {
+    map.addLayer(
+      {
+        id: glowBorderLayerId,
+        type: "line",
+        source: sourceId,
+        paint: {
+          "line-color": [
+            "case",
+            ["has", "color"],
+            ["get", "color"],
+            "#10b981"
+          ],
+          "line-width": 5,
+          "line-opacity": 0.25,
+          "line-blur": 2,
+        },
+      },
+      beforeId
+    );
+  }
+
+  // Add main border layer
   if (!map.getLayer(borderLayerId)) {
     map.addLayer(
       {
@@ -482,8 +639,10 @@ function setupDrawnShapesLayers(
             ["get", "color"],
             "#10b981"
           ],
-          "line-width": 2,
-          "line-opacity": 0.8,
+          "line-width": 2.5,
+          "line-opacity": 0.9,
+          "line-cap": "round",
+          "line-join": "round",
         },
       },
       beforeId

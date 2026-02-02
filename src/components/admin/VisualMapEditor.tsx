@@ -1581,7 +1581,7 @@ function CompletedDrawingsRenderer({
           const radiusKm = typeof shape.radius === "number" ? shape.radius : 100;
           const feature = createCircleGeoJSON(shape.center, radiusKm);
           (feature.properties as any).color = shape.color || "#10b981";
-          (feature.properties as any).opacity = shape.opacity || 0.4;
+          (feature.properties as any).opacity = shape.opacity !== undefined ? shape.opacity : 0.35;
           shapeFeatures.push(feature);
         } else if (shape.type === "polygon" && shape.coordinates && shape.coordinates.length >= 3) {
           const feature: GeoJSON.Feature<GeoJSON.Polygon> = {
@@ -1592,7 +1592,7 @@ function CompletedDrawingsRenderer({
             },
             properties: {
               color: shape.color || "#10b981",
-              opacity: shape.opacity || 0.4,
+              opacity: shape.opacity !== undefined ? shape.opacity : 0.35,
             },
           };
           shapeFeatures.push(feature);
@@ -1618,9 +1618,9 @@ function CompletedDrawingsRenderer({
               coordinates: line.points,
             },
             properties: {
-              color: line.color || "#8b5cf6",
-              thickness: line.thickness || 3,
-              opacity: line.opacity !== undefined ? line.opacity : 1,
+              color: line.color || "#d4af37", // Enhanced gold color
+              thickness: line.thickness || 3.5,
+              opacity: line.opacity !== undefined ? line.opacity : 0.85,
             },
           };
           lineFeatures.push(feature);
@@ -1636,9 +1636,9 @@ function CompletedDrawingsRenderer({
             line.controlPoints?.[0] || line.points[1],
             line.points[line.points.length - 1]
           );
-          (feature.properties as any).color = line.color || "#8b5cf6";
-          (feature.properties as any).thickness = line.thickness || 3;
-          (feature.properties as any).opacity = line.opacity !== undefined ? line.opacity : 1;
+          (feature.properties as any).color = line.color || "#d4af37"; // Enhanced gold color
+          (feature.properties as any).thickness = line.thickness || 3.5;
+          (feature.properties as any).opacity = line.opacity !== undefined ? line.opacity : 0.85;
           lineFeatures.push(feature);
 
           // Track connection points
@@ -1694,6 +1694,22 @@ function CompletedDrawingsRenderer({
             }
           }
 
+          // Add shadow layer
+          map.addLayer({
+            id: `${shapeLayerId}-shadow`,
+            type: "fill",
+            source: shapeSourceId,
+            paint: {
+              "fill-color": ["get", "color"],
+              "fill-opacity": [
+                "*",
+                ["get", "opacity"],
+                0.5
+              ],
+            },
+          }, beforeId);
+
+          // Add main fill layer
           map.addLayer({
             id: shapeLayerId,
             type: "fill",
@@ -1704,21 +1720,39 @@ function CompletedDrawingsRenderer({
             },
           }, beforeId);
 
+          // Add glow border layer
+          map.addLayer({
+            id: `${shapeOutlineLayerId}-glow`,
+            type: "line",
+            source: shapeSourceId,
+            paint: {
+              "line-color": ["get", "color"],
+              "line-width": 5,
+              "line-opacity": 0.25,
+              "line-blur": 2,
+            },
+          }, beforeId);
+
+          // Add main border layer
           map.addLayer({
             id: shapeOutlineLayerId,
             type: "line",
             source: shapeSourceId,
             paint: {
               "line-color": ["get", "color"],
-              "line-width": 2,
-              "line-opacity": 0.8,
+              "line-width": 2.5,
+              "line-opacity": 0.9,
+              "line-cap": "round",
+              "line-join": "round",
             },
           }, beforeId);
         }
       } else {
         // Remove layers and source if no shapes
         if (map.getLayer(shapeLayerId)) map.removeLayer(shapeLayerId);
+        if (map.getLayer(`${shapeLayerId}-shadow`)) map.removeLayer(`${shapeLayerId}-shadow`);
         if (map.getLayer(shapeOutlineLayerId)) map.removeLayer(shapeOutlineLayerId);
+        if (map.getLayer(`${shapeOutlineLayerId}-glow`)) map.removeLayer(`${shapeOutlineLayerId}-glow`);
         if (map.getSource(shapeSourceId)) map.removeSource(shapeSourceId);
       }
 
@@ -1745,6 +1779,32 @@ function CompletedDrawingsRenderer({
               }
             }
 
+            // Add glow layer
+            map.addLayer({
+              id: `${lineLayerId}-glow`,
+              type: "line",
+              source: lineSourceId,
+              paint: {
+                "line-color": ["get", "color"],
+                "line-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  0,
+                  ["+", ["get", "thickness"], 4],
+                  10,
+                  ["+", ["get", "thickness"], 6],
+                ],
+                "line-opacity": [
+                  "*",
+                  ["get", "opacity"],
+                  0.3
+                ],
+                "line-blur": 3,
+              },
+            }, beforeId);
+
+            // Add main line layer
             map.addLayer({
               id: lineLayerId,
               type: "line",
@@ -1753,6 +1813,8 @@ function CompletedDrawingsRenderer({
                 "line-color": ["get", "color"],
                 "line-width": ["get", "thickness"],
                 "line-opacity": ["get", "opacity"],
+                "line-cap": "round",
+                "line-join": "round",
               },
             }, beforeId);
           } else {
@@ -1779,6 +1841,32 @@ function CompletedDrawingsRenderer({
             }
           }
 
+          // Add glow layer
+          map.addLayer({
+            id: `${lineLayerId}-glow`,
+            type: "line",
+            source: lineSourceId,
+            paint: {
+              "line-color": ["get", "color"],
+              "line-width": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0,
+                ["+", ["get", "thickness"], 4],
+                10,
+                ["+", ["get", "thickness"], 6],
+              ],
+              "line-opacity": [
+                "*",
+                ["get", "opacity"],
+                0.3
+              ],
+              "line-blur": 3,
+            },
+          }, beforeId);
+
+          // Add main line layer
           map.addLayer({
             id: lineLayerId,
             type: "line",
@@ -1787,6 +1875,8 @@ function CompletedDrawingsRenderer({
               "line-color": ["get", "color"],
               "line-width": ["get", "thickness"],
               "line-opacity": ["get", "opacity"],
+              "line-cap": "round",
+              "line-join": "round",
             },
           }, beforeId);
         }
@@ -1817,6 +1907,20 @@ function CompletedDrawingsRenderer({
               }
             }
 
+            // Add glow layer for connection points
+            map.addLayer({
+              id: `${connectionPointLayerId}-glow`,
+              type: "circle",
+              source: connectionPointSourceId,
+              paint: {
+                "circle-radius": 10,
+                "circle-color": "#ffd700",
+                "circle-opacity": 0.3,
+                "circle-blur": 2,
+              },
+            }, beforeId);
+
+            // Add main connection point layer
             map.addLayer({
               id: connectionPointLayerId,
               type: "circle",
@@ -1824,22 +1928,25 @@ function CompletedDrawingsRenderer({
               paint: {
                 "circle-radius": 6,
                 "circle-color": "#ffd700",
-                "circle-stroke-width": 2,
+                "circle-stroke-width": 2.5,
                 "circle-stroke-color": "#ffffff",
-                "circle-opacity": 0.9,
+                "circle-opacity": 0.95,
               },
             }, beforeId);
           }
         } else {
           // Remove connection points if none
           if (map.getLayer(connectionPointLayerId)) map.removeLayer(connectionPointLayerId);
+          if (map.getLayer(`${connectionPointLayerId}-glow`)) map.removeLayer(`${connectionPointLayerId}-glow`);
           if (map.getSource(connectionPointSourceId)) map.removeSource(connectionPointSourceId);
         }
       } else {
         // Remove layer and source if no lines
         if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
+        if (map.getLayer(`${lineLayerId}-glow`)) map.removeLayer(`${lineLayerId}-glow`);
         if (map.getSource(lineSourceId)) map.removeSource(lineSourceId);
         if (map.getLayer(connectionPointLayerId)) map.removeLayer(connectionPointLayerId);
+        if (map.getLayer(`${connectionPointLayerId}-glow`)) map.removeLayer(`${connectionPointLayerId}-glow`);
         if (map.getSource(connectionPointSourceId)) map.removeSource(connectionPointSourceId);
       }
 
@@ -1862,11 +1969,15 @@ function CompletedDrawingsRenderer({
         const connectionPointLayerId = "connection-points-layer";
 
         if (map.getLayer(shapeLayerId)) map.removeLayer(shapeLayerId);
+        if (map.getLayer(`${shapeLayerId}-shadow`)) map.removeLayer(`${shapeLayerId}-shadow`);
         if (map.getLayer(shapeOutlineLayerId)) map.removeLayer(shapeOutlineLayerId);
+        if (map.getLayer(`${shapeOutlineLayerId}-glow`)) map.removeLayer(`${shapeOutlineLayerId}-glow`);
         if (map.getSource(shapeSourceId)) map.removeSource(shapeSourceId);
         if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
+        if (map.getLayer(`${lineLayerId}-glow`)) map.removeLayer(`${lineLayerId}-glow`);
         if (map.getSource(lineSourceId)) map.removeSource(lineSourceId);
         if (map.getLayer(connectionPointLayerId)) map.removeLayer(connectionPointLayerId);
+        if (map.getLayer(`${connectionPointLayerId}-glow`)) map.removeLayer(`${connectionPointLayerId}-glow`);
         if (map.getSource(connectionPointSourceId)) map.removeSource(connectionPointSourceId);
       } catch (e) {
         // Ignore errors during cleanup
