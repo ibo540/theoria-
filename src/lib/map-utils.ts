@@ -127,18 +127,57 @@ export function calculateOptimalZoom(
 
 /**
  * Filter features by country names - simple and fast
+ * Also checks multiple property names and does partial matching
  */
 export function filterCountriesByNames(
   features: GeoJSON.Feature[],
   countryNames: string[]
 ): CountryFeature[] {
   const names = new Set(countryNames.map((n) => n.toLowerCase().trim()));
-  return features.filter((f) => {
-    const name = String(f.properties?.name || "")
-      .toLowerCase()
-      .trim();
-    return names.has(name);
-  }) as CountryFeature[];
+  const matchedFeatures: CountryFeature[] = [];
+  
+  for (const feature of features) {
+    // Check multiple possible property names
+    const possibleNames = [
+      feature.properties?.name,
+      feature.properties?.NAME,
+      feature.properties?.NAME_EN,
+      feature.properties?.name_en,
+      feature.properties?.NAME_LONG,
+      feature.properties?.name_long,
+    ].filter(Boolean).map((n) => String(n).toLowerCase().trim());
+    
+    // Check if any of the possible names match
+    let isMatch = false;
+    for (const possibleName of possibleNames) {
+      if (names.has(possibleName)) {
+        isMatch = true;
+        break;
+      }
+      // Also try partial matching (e.g., "United Kingdom" matches "United Kingdom of Great Britain and Ireland")
+      for (const searchName of names) {
+        if (possibleName.includes(searchName) || searchName.includes(possibleName)) {
+          isMatch = true;
+          break;
+        }
+      }
+      if (isMatch) break;
+    }
+    
+    if (isMatch) {
+      matchedFeatures.push(feature as CountryFeature);
+    }
+  }
+  
+  // Log if no matches found (for debugging)
+  if (matchedFeatures.length === 0 && countryNames.length > 0) {
+    console.warn("No countries matched for:", countryNames);
+    console.warn("Available country names (first 20):", 
+      Array.from(new Set(features.slice(0, 20).map(f => f.properties?.name || f.properties?.NAME || 'unknown')))
+    );
+  }
+  
+  return matchedFeatures;
 }
 
 /**
