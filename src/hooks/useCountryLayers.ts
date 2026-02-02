@@ -268,12 +268,14 @@ function setupConnectionLayers(
         id: LAYER_IDS.connectionsLine,
         type: "line",
         source: SOURCE_IDS.connections,
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
         paint: {
           "line-color": colorExpression,
           "line-width": widthExpression,
           "line-opacity": opacityExpression,
-          "line-cap": "round",
-          "line-join": "round",
         },
       },
       beforeId
@@ -632,6 +634,10 @@ function setupDrawnShapesLayers(
         id: borderLayerId,
         type: "line",
         source: sourceId,
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
         paint: {
           "line-color": [
             "case",
@@ -641,8 +647,6 @@ function setupDrawnShapesLayers(
           ],
           "line-width": 2.5,
           "line-opacity": 0.9,
-          "line-cap": "round",
-          "line-join": "round",
         },
       },
       beforeId

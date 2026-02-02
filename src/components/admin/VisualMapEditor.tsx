@@ -1738,12 +1738,14 @@ function CompletedDrawingsRenderer({
             id: shapeOutlineLayerId,
             type: "line",
             source: shapeSourceId,
+            layout: {
+              "line-cap": "round",
+              "line-join": "round",
+            },
             paint: {
               "line-color": ["get", "color"],
               "line-width": 2.5,
               "line-opacity": 0.9,
-              "line-cap": "round",
-              "line-join": "round",
             },
           }, beforeId);
         }
@@ -1809,12 +1811,14 @@ function CompletedDrawingsRenderer({
               id: lineLayerId,
               type: "line",
               source: lineSourceId,
+              layout: {
+                "line-cap": "round",
+                "line-join": "round",
+              },
               paint: {
                 "line-color": ["get", "color"],
                 "line-width": ["get", "thickness"],
                 "line-opacity": ["get", "opacity"],
-                "line-cap": "round",
-                "line-join": "round",
               },
             }, beforeId);
           } else {
