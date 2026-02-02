@@ -1,16 +1,19 @@
 import React from "react";
 import { EventData } from "@/data/events";
 import { SIDEBAR_TYPOGRAPHY } from "./typography";
+import { Loader2 } from "lucide-react";
 
 interface EventItemProps {
   event: EventData;
   isActive: boolean;
+  isLoading?: boolean;
   onClick: () => void;
 }
 
 export default function EventItem({
   event,
   isActive,
+  isLoading = false,
   onClick,
 }: EventItemProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -23,8 +26,14 @@ export default function EventItem({
     <button
       onClick={handleClick}
       type="button"
+      disabled={isLoading}
       className={`
-        group relative w-full text-left border-2 transition-all duration-300 ease-out cursor-pointer
+        group relative w-full text-left border-2 transition-all duration-300 ease-out
+        ${
+          isLoading
+            ? "cursor-wait opacity-75"
+            : "cursor-pointer"
+        }
         ${
           isActive
             ? "border-primary-gold scale-[1.02] shadow-lg shadow-primary-gold/20"
@@ -54,8 +63,15 @@ export default function EventItem({
         <div className="absolute inset-0 border-2 border-primary-gold/40 animate-pulse pointer-events-none" />
       )}
 
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10">
+          <Loader2 className="w-6 h-6 text-primary-gold animate-spin" />
+        </div>
+      )}
+
       {/* Content */}
-      <div className="relative p-5 space-y-3">
+      <div className={`relative p-5 space-y-3 ${isLoading ? "opacity-60" : ""}`}>
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <h3
             className={`${SIDEBAR_TYPOGRAPHY.eventItem.title} transition-colors ${

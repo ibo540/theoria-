@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { EVENTS_DATA, EventData } from "@/data/events";
 import { MarkerData } from "@/components/marker";
-import { loadAllEventsFromStorage, loadEventFromStorage, getBaseEventId, createEventIdWithTheory } from "@/lib/admin-utils";
+import { loadAllEventsFromStorage, loadEventFromStorage, loadEventsByBaseId, getBaseEventId, createEventIdWithTheory } from "@/lib/admin-utils";
 
 interface EventStore {
   activeEventId: string | null;
@@ -19,6 +19,9 @@ interface EventStore {
   countriesInUnifiedAreas: Set<string>;
   isLoadingGeoData: boolean;
   geoDataError: Error | null;
+  // Event loading state
+  isEventLoading: boolean;
+  loadingEventId: string | null; // Track which event is currently loading
   // Timeline playback state
   isTimelinePlaying: boolean;
   timelinePlaySpeed: number; // milliseconds per point
@@ -61,62 +64,84 @@ export const useEventStore = create<EventStore>((set, get) => ({
   countriesInUnifiedAreas: new Set(),
   isLoadingGeoData: false,
   geoDataError: null,
+  isEventLoading: false,
+  loadingEventId: null,
   isTimelinePlaying: false,
   timelinePlaySpeed: 4000, // 4 seconds per point
   selectEvent: async (eventId, theoryId?: string | null) => {
-    // If theory is provided, try to find the theory-specific version
-    let event: EventData | null = null;
-    let finalEventId = eventId;
+    // Set loading state immediately for UI feedback
+    set({ isEventLoading: true, loadingEventId: eventId });
     
-    if (theoryId) {
-      // Try to find theory-specific version
-      const theorySpecificId = createEventIdWithTheory(getBaseEventId(eventId), theoryId);
-      const storedTheoryEvent = await loadEventFromStorage(theorySpecificId);
-      if (storedTheoryEvent) {
-        event = storedTheoryEvent;
-        finalEventId = theorySpecificId;
-      } else {
-        // Fallback: try to find any version of this event and use it
-        // (user might be selecting a theory for an event that doesn't have that theory yet)
-        const baseId = getBaseEventId(eventId);
-        const allEvents = await loadAllEventsFromStorage();
-        const eventVersions = allEvents.filter(e => getBaseEventId(e.id) === baseId);
-        
-        if (eventVersions.length > 0) {
-          // Use the first available version, or try to find one matching the theory
-          const theoryMatch = eventVersions.find(e => e.theory === theoryId);
-          event = theoryMatch || eventVersions[0];
-          finalEventId = event.id;
+    try {
+      // If theory is provided, try to find the theory-specific version
+      let event: EventData | null = null;
+      let finalEventId = eventId;
+      
+      // First, check static data (fast, no network call)
+      const baseId = getBaseEventId(eventId);
+      const staticEvent = EVENTS_DATA.find((e) => {
+        const staticBaseId = getBaseEventId(e.id);
+        return staticBaseId === baseId;
+      });
+      
+      if (theoryId) {
+        // Try to find theory-specific version
+        const theorySpecificId = createEventIdWithTheory(baseId, theoryId);
+        const storedTheoryEvent = await loadEventFromStorage(theorySpecificId);
+        if (storedTheoryEvent) {
+          event = storedTheoryEvent;
+          finalEventId = theorySpecificId;
         } else {
-          // Check static data
-          const staticEvent = EVENTS_DATA.find((e) => {
-            const staticBaseId = getBaseEventId(e.id);
-            return staticBaseId === baseId;
-          });
-          if (staticEvent) {
+          // Fallback: try to find any version of this event and use it
+          // (user might be selecting a theory for an event that doesn't have that theory yet)
+          // Use optimized query to load only events with this base ID (much faster!)
+          const eventVersions = await loadEventsByBaseId(baseId);
+          
+          if (eventVersions.length > 0) {
+            // Use the first available version, or try to find one matching the theory
+            const theoryMatch = eventVersions.find(e => e.theory === theoryId);
+            event = theoryMatch || eventVersions[0];
+            finalEventId = event.id;
+          } else if (staticEvent) {
+            // Use static event as fallback
             event = staticEvent;
             finalEventId = staticEvent.id;
           }
         }
-      }
-    } else {
-      // No theory specified, just load by ID
-      const storedEvent = await loadEventFromStorage(eventId);
-      if (storedEvent) {
-        event = storedEvent;
       } else {
-        // Fallback to static data
-        event = EVENTS_DATA.find((e) => e.id === eventId) || null;
+        // No theory specified, just load by ID
+        // Try static data first (instant)
+        if (staticEvent && staticEvent.id === eventId) {
+          event = staticEvent;
+        } else {
+          // Try Supabase/localStorage
+          const storedEvent = await loadEventFromStorage(eventId);
+          if (storedEvent) {
+            event = storedEvent;
+          } else if (staticEvent) {
+            // Fallback to static data
+            event = staticEvent;
+          } else {
+            // Last resort: check all static events
+            event = EVENTS_DATA.find((e) => e.id === eventId) || null;
+          }
+        }
       }
+      
+      // Set first timeline point as active when event is selected
+      const firstPointId = event?.timelinePoints?.[0]?.id || null;
+      set({ 
+        activeEventId: finalEventId, 
+        activeEvent: event,
+        activeTimelinePointId: firstPointId,
+        isEventLoading: false,
+        loadingEventId: null,
+      });
+    } catch (error) {
+      console.error("Error selecting event:", error);
+      set({ isEventLoading: false, loadingEventId: null });
+      throw error;
     }
-    
-    // Set first timeline point as active when event is selected
-    const firstPointId = event?.timelinePoints?.[0]?.id || null;
-    set({ 
-      activeEventId: finalEventId, 
-      activeEvent: event,
-      activeTimelinePointId: firstPointId,
-    });
   },
   deselectEvent: () => {
     set({

@@ -60,6 +60,7 @@ export default function Sidebar() {
   const selectEvent = useEventStore((state) => state.selectEvent);
   const deselectEvent = useEventStore((state) => state.deselectEvent);
   const isEventSelected = useEventStore((state) => state.isEventSelected);
+  const loadingEventId = useEventStore((state) => state.loadingEventId);
 
   // Load events from Supabase/localStorage and merge with static events
   useEffect(() => {
@@ -282,6 +283,7 @@ export default function Sidebar() {
                         key={event.id}
                         event={event}
                         isActive={isEventSelected(event.id)}
+                        isLoading={loadingEventId === event.id}
                         onClick={() => handleEventClick(event.id)}
                       />
                     ))

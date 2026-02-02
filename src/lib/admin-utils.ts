@@ -236,6 +236,46 @@ export async function loadEventFromStorage(eventId: string): Promise<EventData |
 }
 
 /**
+ * Load events by base ID (all theory versions of an event)
+ * Much faster than loading all events
+ */
+export async function loadEventsByBaseId(baseId: string): Promise<EventData[]> {
+  try {
+    // Try Supabase first - query for events where id starts with baseId
+    // This is much faster than loading all events
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .like('id', `${baseId}%`)
+      .order('updated_at', { ascending: false });
+    
+    if (!error && data && data.length > 0) {
+      return data.map(dbToEventFormat);
+    }
+    
+    // Fallback to localStorage
+    const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+    return events.filter((e: EventData) => {
+      const eventBaseId = getBaseEventId(e.id);
+      return eventBaseId === baseId;
+    });
+  } catch (error) {
+    console.error("Error loading events by base ID:", error);
+    // Fallback to localStorage
+    try {
+      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+      return events.filter((e: EventData) => {
+        const eventBaseId = getBaseEventId(e.id);
+        return eventBaseId === baseId;
+      });
+    } catch (localError) {
+      console.error("Error loading from localStorage fallback:", localError);
+      return [];
+    }
+  }
+}
+
+/**
  * Load all events from Supabase database
  * Falls back to localStorage if Supabase is unavailable
  */
