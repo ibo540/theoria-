@@ -35,7 +35,7 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
     name: "Post-Cold War (1991-2023)",
     startYear: 1991,
     endYear: 2023,
-    geojsonPath: "/geo/countries.geojson", // Same as modern for now
+    geojsonPath: "/geo/countries-post-cold-war.geojson", // Historical borders for post-Cold War period (or use countries.geojson if same as modern)
     countryNameMapping: {
       "Soviet Union": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
       "USSR": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
@@ -49,7 +49,7 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
     name: "Cold War Era (1947-1991)",
     startYear: 1947,
     endYear: 1991,
-    geojsonPath: "/geo/countries.geojson", // Will need historical GeoJSON file
+    geojsonPath: "/geo/countries-cold-war.geojson", // Historical borders for Cold War period
     countryNameMapping: {
       "Soviet Union": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
       "USSR": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
@@ -64,7 +64,7 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
     name: "World War II Era (1939-1945)",
     startYear: 1939,
     endYear: 1945,
-    geojsonPath: "/geo/countries.geojson", // Will need historical GeoJSON file
+    geojsonPath: "/geo/countries-ww2.geojson", // Historical borders for WW2 period
     countryNameMapping: {
       "Soviet Union": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
       "USSR": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
@@ -78,7 +78,7 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
     name: "Interwar Period (1918-1939)",
     startYear: 1918,
     endYear: 1939,
-    geojsonPath: "/geo/countries.geojson", // Will need historical GeoJSON file
+    geojsonPath: "/geo/countries-interwar.geojson", // Historical borders for Interwar period
     countryNameMapping: {
       "Soviet Union": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
       "USSR": ["Russia", "Ukraine", "Belarus", "Kazakhstan", "Uzbekistan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Georgia", "Armenia", "Azerbaijan", "Moldova", "Lithuania", "Latvia", "Estonia"],
