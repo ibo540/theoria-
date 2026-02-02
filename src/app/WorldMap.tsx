@@ -69,6 +69,7 @@ export default function WorldMap() {
   const drawnShapes = useEventStore((state) => state.drawnShapes);
   const [selectedIcon, setSelectedIcon] = useState<any>(null);
   const [showTheoryNotification, setShowTheoryNotification] = useState(false);
+  const [selectedUnifiedArea, setSelectedUnifiedArea] = useState<{ area: any; position: { x: number; y: number } } | null>(null);
   const lastActiveTimelinePointRef = useRef<string | null>(null);
   
   // Determine which historical map period is active
@@ -513,6 +514,50 @@ export default function WorldMap() {
     handleIconClick
   );
 
+  // Add click handler for unified areas
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !hasMapLoadedRef.current) return;
+
+    const handleMapClick = (e: maplibregl.MapMouseEvent) => {
+      // Only handle clicks if no marker/icon is selected and we have an active event
+      if (!activeEvent || selectedIcon || selectedMarker) return;
+
+      // Query for country features at click point
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["countries-base", "countries-highlight", "countries-border"],
+      });
+
+      if (features.length > 0) {
+        const countryFeature = features.find(
+          (f) => f.source === "countries" && (f.properties?.name || f.properties?.NAME)
+        );
+
+        if (countryFeature) {
+          const countryName = countryFeature.properties?.name || countryFeature.properties?.NAME;
+          
+          // Check if this country belongs to a unified area
+          const unifiedArea = activeEvent.unifiedAreas?.find((area) =>
+            area.countries.includes(countryName)
+          );
+
+          if (unifiedArea && unifiedArea.description) {
+            setSelectedUnifiedArea({
+              area: unifiedArea,
+              position: { x: e.point.x, y: e.point.y },
+            });
+          }
+        }
+      }
+    };
+
+    map.on("click", handleMapClick);
+
+    return () => {
+      map.off("click", handleMapClick);
+    };
+  }, [activeEvent, selectedIcon, selectedMarker]);
+
   // TODO: Render timeline point areas (influence zones, conflict zones, etc.)
   // This functionality requires implementing useTimelineAreas hook
   // useTimelineAreas(
@@ -807,6 +852,101 @@ export default function WorldMap() {
                 );
               })()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Unified Area Description Popup */}
+      {selectedUnifiedArea && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none"
+          style={{ zIndex: 9999, backgroundColor: 'transparent' }}
+        >
+          <div
+            className="px-6 py-5 rounded-md shadow-2xl max-w-lg w-full animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.96)",
+              border: "1.5px solid rgba(255, 228, 190, 0.4)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: "#ffe4be" }}
+              >
+                {selectedUnifiedArea.area.name}
+              </h3>
+              <button
+                onClick={() => setSelectedUnifiedArea(null)}
+                className="text-gray-400 hover:text-white transition-colors"
+                style={{ color: "rgba(255, 228, 190, 0.7)" }}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="mb-3">
+              <p
+                className="text-xs uppercase tracking-wide mb-1"
+                style={{ color: "rgba(255, 228, 190, 0.5)" }}
+              >
+                Countries
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {selectedUnifiedArea.area.countries.map((country: string) => (
+                  <span
+                    key={country}
+                    className="px-2 py-1 rounded text-xs"
+                    style={{
+                      backgroundColor: "rgba(255, 228, 190, 0.1)",
+                      border: "1px solid rgba(255, 228, 190, 0.3)",
+                      color: "rgba(255, 228, 190, 0.9)",
+                    }}
+                  >
+                    {country}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <p
+                className="text-xs uppercase tracking-wide mb-1"
+                style={{ color: "rgba(255, 228, 190, 0.5)" }}
+              >
+                Description
+              </p>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "rgba(255, 228, 190, 0.8)" }}
+              >
+                {selectedUnifiedArea.area.description}
+              </p>
+            </div>
+
+            <button
+              onClick={() => setSelectedUnifiedArea(null)}
+              className="w-full px-4 py-2.5 rounded-md transition-all duration-200 font-medium text-sm"
+              style={{
+                backgroundColor: "rgba(255, 228, 190, 0.1)",
+                border: "1px solid rgba(255, 228, 190, 0.3)",
+                color: "#ffe4be",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 228, 190, 0.2)";
+                e.currentTarget.style.borderColor = "rgba(255, 228, 190, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 228, 190, 0.1)";
+                e.currentTarget.style.borderColor = "rgba(255, 228, 190, 0.3)";
+              }}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

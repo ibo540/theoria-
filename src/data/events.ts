@@ -347,6 +347,18 @@ export interface EventConnection {
     | string;
   /** Optional descriptive label */
   label?: string;
+  /** Timeline point ID when this connection should appear (optional) */
+  appearAtTimelinePoint?: string;
+  /** Year when this connection should appear (optional, alternative to timeline point) */
+  appearAtYear?: number;
+  /** Position (0-100) on timeline when this connection should appear (optional) */
+  appearAtPosition?: number;
+  /** Timeline point ID when this connection should disappear (optional) */
+  disappearAtTimelinePoint?: string;
+  /** Year when this connection should disappear (optional, alternative to timeline point) */
+  disappearAtYear?: number;
+  /** Position (0-100) on timeline when this connection should disappear (optional) */
+  disappearAtPosition?: number;
 }
 
 /**
@@ -360,6 +372,20 @@ export interface UnifiedArea {
   name: string;
   /** Array of country names in this area */
   countries: string[];
+  /** Description of what this unified area represents */
+  description?: string;
+  /** Timeline point ID when this area should appear (optional) */
+  appearAtTimelinePoint?: string;
+  /** Year when this area should appear (optional, alternative to timeline point) */
+  appearAtYear?: number;
+  /** Position (0-100) on timeline when this area should appear (optional) */
+  appearAtPosition?: number;
+  /** Timeline point ID when this area should disappear (optional) */
+  disappearAtTimelinePoint?: string;
+  /** Year when this area should disappear (optional, alternative to timeline point) */
+  disappearAtYear?: number;
+  /** Position (0-100) on timeline when this area should disappear (optional) */
+  disappearAtPosition?: number;
 }
 
 /**

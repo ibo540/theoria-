@@ -987,12 +987,14 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
       {/* Unified Areas Section */}
       <UnifiedAreasEditor
         unifiedAreas={event.unifiedAreas || []}
+        timelinePoints={event.timelinePoints || []}
         onUpdate={(areas) => setEvent({ ...event, unifiedAreas: areas })}
       />
 
       {/* Connections Section */}
       <ConnectionsEditor
         connections={event.connections || []}
+        timelinePoints={event.timelinePoints || []}
         onUpdate={(connections) => setEvent({ ...event, connections })}
       />
 
@@ -1053,9 +1055,11 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
 // Unified Areas Editor Component
 function UnifiedAreasEditor({
   unifiedAreas,
+  timelinePoints = [],
   onUpdate,
 }: {
   unifiedAreas: UnifiedArea[];
+  timelinePoints?: any[];
   onUpdate: (areas: UnifiedArea[]) => void;
 }) {
   const handleAdd = () => {
@@ -1068,6 +1072,27 @@ function UnifiedAreasEditor({
   const handleUpdate = (index: number, field: string, value: any) => {
     const updated = [...unifiedAreas];
     (updated[index] as any)[field] = value;
+    onUpdate(updated);
+  };
+
+  const handleTimingChange = (
+    index: number,
+    field: 'appearAtTimelinePoint' | 'appearAtYear' | 'appearAtPosition' | 'disappearAtTimelinePoint' | 'disappearAtYear' | 'disappearAtPosition',
+    value: string | number | undefined
+  ) => {
+    const updated = [...unifiedAreas];
+    updated[index] = {
+      ...updated[index],
+      [field]: value === '' ? undefined : value,
+      // Clear other timing fields when setting one (for appear fields)
+      ...(field === 'appearAtTimelinePoint' ? { appearAtYear: undefined, appearAtPosition: undefined } : {}),
+      ...(field === 'appearAtYear' ? { appearAtTimelinePoint: undefined, appearAtPosition: undefined } : {}),
+      ...(field === 'appearAtPosition' ? { appearAtTimelinePoint: undefined, appearAtYear: undefined } : {}),
+      // Clear other timing fields when setting one (for disappear fields)
+      ...(field === 'disappearAtTimelinePoint' ? { disappearAtYear: undefined, disappearAtPosition: undefined } : {}),
+      ...(field === 'disappearAtYear' ? { disappearAtTimelinePoint: undefined, disappearAtPosition: undefined } : {}),
+      ...(field === 'disappearAtPosition' ? { disappearAtTimelinePoint: undefined, disappearAtYear: undefined } : {}),
+    };
     onUpdate(updated);
   };
 
@@ -1113,7 +1138,19 @@ function UnifiedAreasEditor({
               </button>
             </div>
           </div>
-          <div>
+          
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-white mb-1">Description</label>
+            <textarea
+              value={area.description || ""}
+              onChange={(e) => handleUpdate(index, "description", e.target.value)}
+              className="w-full px-3 py-2 border border-slate-600/50 bg-slate-800 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+              placeholder="Describe what this unified area represents (e.g., 'NATO alliance during the Cold War')"
+              rows={2}
+            />
+          </div>
+
+          <div className="mb-3">
             <label className="block text-xs font-medium text-white mb-1">
               Countries in this Area
               {area.countries && area.countries.length > 0 && (
@@ -1141,6 +1178,99 @@ function UnifiedAreasEditor({
               </p>
             )}
           </div>
+
+          {/* Timing Controls */}
+          <div className="mt-4 pt-4 border-t border-slate-600/50">
+            <h4 className="text-xs font-semibold text-white mb-3">Timeline Control</h4>
+            
+            {/* Appear Controls */}
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-300 mb-2">Appear At:</label>
+              <div className="mb-2">
+                <label className="block text-xs text-gray-400 mb-1">Timeline Point</label>
+                <select
+                  value={area.appearAtTimelinePoint || ""}
+                  onChange={(e) => handleTimingChange(index, 'appearAtTimelinePoint', e.target.value || undefined)}
+                  className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                >
+                  <option value="">None (appears immediately)</option>
+                  {timelinePoints.map((point) => (
+                    <option key={point.id} value={point.id}>
+                      {point.label || point.id} ({point.date || point.year || ''})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Year</label>
+                  <input
+                    type="number"
+                    value={area.appearAtYear || ''}
+                    onChange={(e) => handleTimingChange(index, 'appearAtYear', e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="e.g. 1947"
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Position (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={area.appearAtPosition || ''}
+                    onChange={(e) => handleTimingChange(index, 'appearAtPosition', e.target.value ? parseFloat(e.target.value) : undefined)}
+                    placeholder="e.g. 25"
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Disappear Controls */}
+            <div>
+              <label className="block text-xs font-medium text-gray-300 mb-2">Disappear At (Optional):</label>
+              <div className="mb-2">
+                <label className="block text-xs text-gray-400 mb-1">Timeline Point</label>
+                <select
+                  value={area.disappearAtTimelinePoint || ""}
+                  onChange={(e) => handleTimingChange(index, 'disappearAtTimelinePoint', e.target.value || undefined)}
+                  className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                >
+                  <option value="">Never (stays visible)</option>
+                  {timelinePoints.map((point) => (
+                    <option key={point.id} value={point.id}>
+                      {point.label || point.id} ({point.date || point.year || ''})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Year</label>
+                  <input
+                    type="number"
+                    value={area.disappearAtYear || ''}
+                    onChange={(e) => handleTimingChange(index, 'disappearAtYear', e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="e.g. 1991"
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Position (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={area.disappearAtPosition || ''}
+                    onChange={(e) => handleTimingChange(index, 'disappearAtPosition', e.target.value ? parseFloat(e.target.value) : undefined)}
+                    placeholder="e.g. 75"
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -1150,9 +1280,11 @@ function UnifiedAreasEditor({
 // Connections Editor Component
 function ConnectionsEditor({
   connections,
+  timelinePoints = [],
   onUpdate,
 }: {
   connections: EventConnection[];
+  timelinePoints?: any[];
   onUpdate: (connections: EventConnection[]) => void;
 }) {
   const handleAdd = () => {
@@ -1162,6 +1294,27 @@ function ConnectionsEditor({
   const handleUpdate = (index: number, field: string, value: any) => {
     const updated = [...connections];
     (updated[index] as any)[field] = value;
+    onUpdate(updated);
+  };
+
+  const handleTimingChange = (
+    index: number,
+    field: 'appearAtTimelinePoint' | 'appearAtYear' | 'appearAtPosition' | 'disappearAtTimelinePoint' | 'disappearAtYear' | 'disappearAtPosition',
+    value: string | number | undefined
+  ) => {
+    const updated = [...connections];
+    updated[index] = {
+      ...updated[index],
+      [field]: value === '' ? undefined : value,
+      // Clear other timing fields when setting one (for appear fields)
+      ...(field === 'appearAtTimelinePoint' ? { appearAtYear: undefined, appearAtPosition: undefined } : {}),
+      ...(field === 'appearAtYear' ? { appearAtTimelinePoint: undefined, appearAtPosition: undefined } : {}),
+      ...(field === 'appearAtPosition' ? { appearAtTimelinePoint: undefined, appearAtYear: undefined } : {}),
+      // Clear other timing fields when setting one (for disappear fields)
+      ...(field === 'disappearAtTimelinePoint' ? { disappearAtYear: undefined, disappearAtPosition: undefined } : {}),
+      ...(field === 'disappearAtYear' ? { disappearAtTimelinePoint: undefined, disappearAtPosition: undefined } : {}),
+      ...(field === 'disappearAtPosition' ? { disappearAtTimelinePoint: undefined, disappearAtYear: undefined } : {}),
+    };
     onUpdate(updated);
   };
 
@@ -1245,9 +1398,102 @@ function ConnectionsEditor({
                 type="text"
                 value={conn.label || ""}
                 onChange={(e) => handleUpdate(index, "label", e.target.value)}
-                className="w-full px-3 py-2 border border-slate-600/50 bg-white rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-600/50 bg-slate-800 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                 placeholder="e.g., Bipolar rivalry"
               />
+            </div>
+
+            {/* Timing Controls */}
+            <div className="mt-4 pt-4 border-t border-slate-600/50">
+              <h4 className="text-xs font-semibold text-white mb-3">Timeline Control</h4>
+              
+              {/* Appear Controls */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-300 mb-2">Appear At:</label>
+                <div className="mb-2">
+                  <label className="block text-xs text-gray-400 mb-1">Timeline Point</label>
+                  <select
+                    value={conn.appearAtTimelinePoint || ""}
+                    onChange={(e) => handleTimingChange(index, 'appearAtTimelinePoint', e.target.value || undefined)}
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  >
+                    <option value="">None (appears immediately)</option>
+                    {timelinePoints.map((point) => (
+                      <option key={point.id} value={point.id}>
+                        {point.label || point.id} ({point.date || point.year || ''})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Year</label>
+                    <input
+                      type="number"
+                      value={conn.appearAtYear || ''}
+                      onChange={(e) => handleTimingChange(index, 'appearAtYear', e.target.value ? parseInt(e.target.value) : undefined)}
+                      placeholder="e.g. 1947"
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Position (0-100)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={conn.appearAtPosition || ''}
+                      onChange={(e) => handleTimingChange(index, 'appearAtPosition', e.target.value ? parseFloat(e.target.value) : undefined)}
+                      placeholder="e.g. 25"
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Disappear Controls */}
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-2">Disappear At (Optional):</label>
+                <div className="mb-2">
+                  <label className="block text-xs text-gray-400 mb-1">Timeline Point</label>
+                  <select
+                    value={conn.disappearAtTimelinePoint || ""}
+                    onChange={(e) => handleTimingChange(index, 'disappearAtTimelinePoint', e.target.value || undefined)}
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  >
+                    <option value="">Never (stays visible)</option>
+                    {timelinePoints.map((point) => (
+                      <option key={point.id} value={point.id}>
+                        {point.label || point.id} ({point.date || point.year || ''})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Year</label>
+                    <input
+                      type="number"
+                      value={conn.disappearAtYear || ''}
+                      onChange={(e) => handleTimingChange(index, 'disappearAtYear', e.target.value ? parseInt(e.target.value) : undefined)}
+                      placeholder="e.g. 1991"
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Position (0-100)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={conn.disappearAtPosition || ''}
+                      onChange={(e) => handleTimingChange(index, 'disappearAtPosition', e.target.value ? parseFloat(e.target.value) : undefined)}
+                      placeholder="e.g. 75"
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );

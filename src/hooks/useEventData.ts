@@ -11,6 +11,93 @@ import { getHistoricalMapForEvent, mapHistoricalCountryNames, getAvailableHistor
 const GEOJSON_URL = "/geo/countries.geojson";
 
 /**
+ * Check if an item should be visible based on timeline timing
+ */
+function shouldShowItem(
+  item: {
+    appearAtTimelinePoint?: string;
+    appearAtYear?: number;
+    appearAtPosition?: number;
+    disappearAtTimelinePoint?: string;
+    disappearAtYear?: number;
+    disappearAtPosition?: number;
+  },
+  event: any,
+  activeTimelinePointId: string | null
+): boolean {
+  const currentPoint = activeTimelinePointId
+    ? event.timelinePoints?.find((p: any) => p.id === activeTimelinePointId)
+    : null;
+  
+  const currentPosition = currentPoint?.position ?? 0;
+  const currentYear = currentPoint?.year ? parseInt(currentPoint.year) : null;
+  const timelinePoints = event.timelinePoints || [];
+
+  // Check if item should appear
+  let shouldAppear = true;
+  
+  if (item.appearAtTimelinePoint) {
+    if (!activeTimelinePointId) {
+      shouldAppear = false;
+    } else {
+      const appearIndex = timelinePoints.findIndex(
+        (p: any) => p.id === item.appearAtTimelinePoint
+      );
+      const currentIndex = timelinePoints.findIndex(
+        (p: any) => p.id === activeTimelinePointId
+      );
+      shouldAppear = appearIndex >= 0 && currentIndex >= appearIndex;
+    }
+  } else if (item.appearAtYear !== undefined) {
+    if (!activeTimelinePointId) {
+      if (timelinePoints.length > 0) {
+        const firstPointYear = timelinePoints[0]?.year 
+          ? parseInt(timelinePoints[0].year) 
+          : null;
+        shouldAppear = firstPointYear !== null && firstPointYear >= item.appearAtYear;
+      } else {
+        const eventStartYear = event.period?.startYear || 
+          (event.date ? parseInt(event.date.split('-')[0]) : null);
+        shouldAppear = eventStartYear !== null && item.appearAtYear <= eventStartYear;
+      }
+    } else if (currentYear !== null) {
+      shouldAppear = currentYear >= item.appearAtYear;
+    }
+  } else if (item.appearAtPosition !== undefined) {
+    if (!activeTimelinePointId) {
+      shouldAppear = item.appearAtPosition <= 0;
+    } else {
+      shouldAppear = currentPosition >= item.appearAtPosition;
+    }
+  }
+
+  // Check if item should disappear
+  let shouldDisappear = false;
+  
+  if (item.disappearAtTimelinePoint) {
+    if (activeTimelinePointId) {
+      const disappearIndex = timelinePoints.findIndex(
+        (p: any) => p.id === item.disappearAtTimelinePoint
+      );
+      const currentIndex = timelinePoints.findIndex(
+        (p: any) => p.id === activeTimelinePointId
+      );
+      shouldDisappear = disappearIndex >= 0 && currentIndex >= disappearIndex;
+    }
+  } else if (item.disappearAtYear !== undefined) {
+    if (currentYear !== null) {
+      shouldDisappear = currentYear >= item.disappearAtYear;
+    }
+  } else if (item.disappearAtPosition !== undefined) {
+    if (activeTimelinePointId) {
+      shouldDisappear = currentPosition >= item.disappearAtPosition;
+    }
+  }
+
+  return shouldAppear && !shouldDisappear;
+}
+
+/**
  * Filter highlighted countries based on current timeline position
  * Only shows countries that should appear at the current timeline point
  */
@@ -36,62 +123,7 @@ function filterHighlightedCountriesByTiming(
   const timelinePoints = event.timelinePoints || [];
 
   for (const highlight of event.countryHighlights) {
-    let shouldShow = false;
-
-    // Check if highlight should appear based on timeline point
-    if (highlight.appearAtTimelinePoint) {
-      if (!activeTimelinePointId) {
-        // No timeline point active - don't show timed highlights that require a specific point
-        shouldShow = false;
-      } else {
-        // Find the indices of the appear point and current point
-        const appearIndex = timelinePoints.findIndex(
-          (p: any) => p.id === highlight.appearAtTimelinePoint
-        );
-        const currentIndex = timelinePoints.findIndex(
-          (p: any) => p.id === activeTimelinePointId
-        );
-        
-        // Show if we're at or past the point where it should appear
-        shouldShow = appearIndex >= 0 && currentIndex >= appearIndex;
-      }
-    }
-    // Check if highlight should appear based on year
-    else if (highlight.appearAtYear !== undefined) {
-      if (!activeTimelinePointId) {
-        // No timeline point active - check if any timeline point has reached this year
-        // If timeline points exist, only show if first point's year >= appearAtYear
-        if (timelinePoints.length > 0) {
-          const firstPointYear = timelinePoints[0]?.year 
-            ? parseInt(timelinePoints[0].year) 
-            : null;
-          shouldShow = firstPointYear !== null && firstPointYear >= highlight.appearAtYear;
-        } else {
-          // No timeline points - check event start year
-          const eventStartYear = event.period?.startYear || 
-            (event.date ? parseInt(event.date.split('-')[0]) : null);
-          shouldShow = eventStartYear !== null && highlight.appearAtYear <= eventStartYear;
-        }
-      } else if (currentYear !== null) {
-        // Show if current year is at or past the appear year
-        shouldShow = currentYear >= highlight.appearAtYear;
-      }
-    }
-    // Check if highlight should appear based on position
-    else if (highlight.appearAtPosition !== undefined) {
-      if (!activeTimelinePointId) {
-        // No timeline point active - only show if position is 0 or less (immediate)
-        shouldShow = highlight.appearAtPosition <= 0;
-      } else {
-        // Show if current position is at or past the appear position
-        shouldShow = currentPosition >= highlight.appearAtPosition;
-      }
-    }
-    // No timing specified - show immediately (always visible)
-    else {
-      shouldShow = true;
-    }
-
+    const shouldShow = shouldShowItem(highlight, event, activeTimelinePointId);
     if (shouldShow) {
       visibleCountries.push(highlight.country);
     }
@@ -154,11 +186,21 @@ export function useEventData() {
       historicalMapConfig
     );
 
+    // Filter unified areas based on timeline
+    const filteredUnifiedAreas = (activeEvent.unifiedAreas || []).filter((area: any) =>
+      shouldShowItem(area, activeEvent, activeTimelinePointId)
+    );
+
+    // Filter connections based on timeline
+    const filteredConnections = (activeEvent.connections || []).filter((conn: any) =>
+      shouldShowItem(conn, activeEvent, activeTimelinePointId)
+    );
+
     return {
       geojsonUrl: historicalMapConfig.geojsonPath,
       highlightedCountries: mappedCountries,
-      connections: activeEvent.connections,
-      unifiedAreas: activeEvent.unifiedAreas || [],
+      connections: filteredConnections,
+      unifiedAreas: filteredUnifiedAreas,
       event: activeEvent,
     };
   }, [activeEvent, activeTimelinePointId, historicalMapConfig]);

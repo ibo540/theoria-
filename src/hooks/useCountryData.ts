@@ -12,15 +12,10 @@ import { enrichMarkerData } from "@/lib/marker-utils";
 
 /**
  * Defines a unified area - a group of neighboring countries treated as one region
+ * Import from @/data/events for the full interface
  */
-export interface UnifiedArea {
-  /** Unique identifier for this unified area */
-  id: string;
-  /** Display name for the unified area */
-  name: string;
-  /** List of country names that make up this unified area */
-  countries: string[];
-}
+import { UnifiedArea } from "@/data/events";
+export type { UnifiedArea };
 
 /**
  * Connection between two points - can be country names or unified area IDs
