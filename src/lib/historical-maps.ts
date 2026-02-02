@@ -16,6 +16,8 @@ export interface HistoricalMapConfig {
   geojsonPath: string;
   /** Mapping of historical country names to modern equivalents for highlighting */
   countryNameMapping?: Record<string, string[]>;
+  /** Reverse mapping: modern country names to historical names in GeoJSON */
+  modernToHistoricalMapping?: Record<string, string[]>;
 }
 
 /**
@@ -85,6 +87,20 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
       "British Empire": ["United Kingdom", "India", "Australia", "Canada", "South Africa", "New Zealand"],
       "Ottoman Empire": ["Turkey", "Syria", "Iraq", "Lebanon", "Jordan", "Palestine", "Saudi Arabia"],
     },
+    modernToHistoricalMapping: {
+      "United Kingdom": ["United Kingdom of Great Britain and Ireland", "United Kingdom"],
+      "UK": ["United Kingdom of Great Britain and Ireland", "United Kingdom"],
+      "Germany": ["German Reich", "Germany", "Weimar Republic"],
+      "Russia": ["Soviet Union", "USSR", "Russia", "Russian Soviet Federative Socialist Republic"],
+      "Soviet Union": ["Soviet Union", "USSR", "Russia"],
+      "USSR": ["Soviet Union", "USSR"],
+      "Turkey": ["Ottoman Empire", "Turkey"],
+      "Sri Lanka": ["Ceylon"],
+      "Myanmar": ["Burma"],
+      "Thailand": ["Siam"],
+      "Iran": ["Persia"],
+      "Saudi Arabia": ["Nejd and Hejaz", "Saudi Arabia"],
+    },
   },
 ];
 
@@ -126,28 +142,40 @@ export function getHistoricalMapForEvent(event: { date?: string; period?: { star
 }
 
 /**
- * Map historical country names to modern equivalents for highlighting
+ * Map country names for highlighting on historical maps
+ * This function handles both directions:
+ * - Historical names → modern equivalents (for display)
+ * - Modern names → historical names (for matching GeoJSON features)
  */
 export function mapHistoricalCountryNames(
   countries: string[],
   config: HistoricalMapConfig
 ): string[] {
-  if (!config.countryNameMapping) {
-    return countries;
-  }
-  
   const mappedCountries = new Set<string>();
   
   for (const country of countries) {
-    // Check if this country has a mapping
-    const mapping = config.countryNameMapping[country];
-    if (mapping) {
-      // Add all modern equivalents
-      mapping.forEach(modernName => mappedCountries.add(modernName));
-    } else {
-      // No mapping, use the country name as-is
-      mappedCountries.add(country);
+    // First, try reverse mapping: modern name → historical name in GeoJSON
+    if (config.modernToHistoricalMapping) {
+      const historicalNames = config.modernToHistoricalMapping[country];
+      if (historicalNames && historicalNames.length > 0) {
+        // Add all possible historical names that might exist in GeoJSON
+        historicalNames.forEach(historicalName => mappedCountries.add(historicalName));
+        continue; // Skip forward mapping if we found a reverse mapping
+      }
     }
+    
+    // Second, try forward mapping: historical name → modern equivalents
+    if (config.countryNameMapping) {
+      const mapping = config.countryNameMapping[country];
+      if (mapping) {
+        // Add all modern equivalents
+        mapping.forEach(modernName => mappedCountries.add(modernName));
+        continue;
+      }
+    }
+    
+    // No mapping found, use the country name as-is (for exact matches)
+    mappedCountries.add(country);
   }
   
   return Array.from(mappedCountries);
