@@ -161,13 +161,29 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
     const dbEvent = eventToDbFormat(eventWithTracking);
     
     // Upsert (insert or update) to Supabase
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('events')
       .upsert(dbEvent, { onConflict: 'id' });
     
     if (error) {
-      console.error("Error saving to Supabase, falling back to localStorage:", error);
+      console.error("❌ Error saving to Supabase:", {
+        error,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        eventId: event.id,
+        eventTitle: event.title,
+      });
+      
+      // Check if it's an RLS (Row Level Security) error
+      if (error.code === '42501' || error.message?.includes('permission denied') || error.message?.includes('RLS')) {
+        console.error("🔒 RLS Policy Error: Check your Supabase Row Level Security policies for the 'events' table.");
+        console.error("   Make sure INSERT and UPDATE policies are enabled for authenticated/anonymous users.");
+      }
+      
       // Fallback to localStorage
+      console.warn("⚠️ Falling back to localStorage. Event will not appear in Supabase.");
       const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
       const existingIndex = events.findIndex((e: EventData) => e.id === event.id);
       
@@ -178,8 +194,15 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       }
       
       localStorage.setItem("theoria-events", JSON.stringify(events));
+      
+      // Re-throw error so caller knows it failed
+      throw new Error(`Failed to save to Supabase: ${error.message}. Saved to localStorage instead.`);
     } else {
-      console.log("Event saved successfully to Supabase");
+      console.log("✅ Event saved successfully to Supabase:", {
+        eventId: event.id,
+        eventTitle: event.title,
+        data,
+      });
     }
   } catch (error) {
     console.error("Error saving event:", error);
