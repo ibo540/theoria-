@@ -131,8 +131,6 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
       "Iceland": ["Iceland"],
       "Ireland": ["Ireland"],
       "Sri Lanka": ["Ceylon"],
-      "Myanmar": ["Burma"],
-      "Thailand": ["Siam"],
       "Iran": ["Persia"],
       "Saudi Arabia": ["Nejd and Hejaz", "Saudi Arabia"],
       "Afghanistan": ["Afghanistan"],
