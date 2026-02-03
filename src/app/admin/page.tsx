@@ -83,10 +83,27 @@ export default function AdminDashboard() {
       // Merge with Supabase/localStorage events (stored events take priority)
       let allEvents: EventData[] = [];
       if (storedEvents && storedEvents.length > 0) {
-        // Combine stored events with static events, avoiding duplicates
-        const uniqueStaticEvents = staticEvents.filter(
-          (e: EventData) => !storedEvents.some((se: EventData) => se.id === e.id)
-        );
+        // Get all base IDs from stored events
+        const storedBaseIds = new Set(storedEvents.map((e: EventData) => getBaseEventId(e.id)));
+        
+        // Filter static events:
+        // 1. Exclude if exact ID matches a stored event
+        // 2. Exclude if static event has a theory AND we already have stored events for that base ID
+        const uniqueStaticEvents = staticEvents.filter((e: EventData) => {
+          // Skip if exact ID matches
+          if (storedEvents.some((se: EventData) => se.id === e.id)) {
+            return false;
+          }
+          
+          // Skip if static event has a theory and we have stored events for this base ID
+          const staticBaseId = getBaseEventId(e.id);
+          if (e.theory && storedBaseIds.has(staticBaseId)) {
+            return false;
+          }
+          
+          return true;
+        });
+        
         allEvents = [...storedEvents, ...uniqueStaticEvents];
       } else {
         // No stored events, just use static
