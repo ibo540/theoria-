@@ -245,31 +245,47 @@ export function mapHistoricalCountryNames(
   const mappedCountries = new Set<string>();
   
   for (const country of countries) {
+    let foundMapping = false;
+    
     // First, try reverse mapping: modern name → historical name in GeoJSON
     if (config.modernToHistoricalMapping) {
       const historicalNames = config.modernToHistoricalMapping[country];
       if (historicalNames && historicalNames.length > 0) {
         // Add all possible historical names that might exist in GeoJSON
         historicalNames.forEach(historicalName => mappedCountries.add(historicalName));
-        continue; // Skip forward mapping if we found a reverse mapping
+        // Also add original name as fallback (in case GeoJSON has both names)
+        mappedCountries.add(country);
+        foundMapping = true;
       }
     }
     
     // Second, try forward mapping: historical name → modern equivalents
-    if (config.countryNameMapping) {
+    if (!foundMapping && config.countryNameMapping) {
       const mapping = config.countryNameMapping[country];
       if (mapping) {
         // Add all modern equivalents
         mapping.forEach(modernName => mappedCountries.add(modernName));
-        continue;
+        // Also add original name as fallback
+        mappedCountries.add(country);
+        foundMapping = true;
       }
     }
     
     // No mapping found, use the country name as-is (for exact matches)
-    mappedCountries.add(country);
+    // This will work if the GeoJSON uses the same name
+    if (!foundMapping) {
+      mappedCountries.add(country);
+    }
   }
   
-  return Array.from(mappedCountries);
+  const result = Array.from(mappedCountries);
+  console.log("🗺️ Country name mapping:", {
+    input: countries,
+    output: result,
+    mapConfig: config.id,
+  });
+  
+  return result;
 }
 
 /**
