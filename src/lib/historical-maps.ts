@@ -162,7 +162,6 @@ export const HISTORICAL_MAP_PERIODS: HistoricalMapConfig[] = [
       "Rwanda": ["Rwanda (belgium)", "Rwanda"],
       "Burundi": ["Burundi"],
       "Uganda": ["Uganda"],
-      "Kenya": ["Kenya"],
       "China": ["China"],
       "Japan": ["Japan"],
       "India": ["India"],
