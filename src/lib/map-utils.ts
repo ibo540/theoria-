@@ -171,10 +171,30 @@ export function filterCountriesByNames(
   
   // Log if no matches found (for debugging)
   if (matchedFeatures.length === 0 && countryNames.length > 0) {
-    console.warn("No countries matched for:", countryNames);
-    console.warn("Available country names (first 20):", 
-      Array.from(new Set(features.slice(0, 20).map(f => f.properties?.name || f.properties?.NAME || 'unknown')))
-    );
+    console.warn("⚠️ No countries matched for:", countryNames);
+    const availableNames = Array.from(new Set(
+      features.map(f => f.properties?.name || f.properties?.NAME || 'unknown')
+        .filter(n => n !== 'unknown')
+    ));
+    console.warn("📋 Available country names in GeoJSON (first 50):", availableNames.slice(0, 50));
+    console.warn("💡 Tip: Check if country names need to be added to modernToHistoricalMapping in historical-maps.ts");
+    
+    // Try to find close matches
+    const searchNamesLower = Array.from(names);
+    const closeMatches: string[] = [];
+    for (const searchName of searchNamesLower) {
+      for (const availableName of availableNames) {
+        const availableLower = availableName.toLowerCase();
+        if (availableLower.includes(searchName) || searchName.includes(availableLower)) {
+          if (!closeMatches.includes(availableName)) {
+            closeMatches.push(availableName);
+          }
+        }
+      }
+    }
+    if (closeMatches.length > 0) {
+      console.warn("🔍 Close matches found (might need mapping):", closeMatches);
+    }
   }
   
   return matchedFeatures;
