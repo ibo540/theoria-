@@ -254,8 +254,8 @@ export default function AdminDashboard() {
       const newEvent = duplicateEventForNewTheory(selectedBaseEvent, theoryId);
       await saveEventToStorage(newEvent);
 
-      // Refresh events
-      loadEvents();
+      // Refresh events and wait for it to complete
+      await loadEvents();
 
       // Close modal and navigate to edit the new event
       setShowAddTheoryModal(false);
@@ -277,6 +277,17 @@ export default function AdminDashboard() {
 
     events.forEach((event) => {
       const baseId = getBaseEventId(event.id);
+      
+      // Debug: Log if we see unexpected grouping
+      if (process.env.NODE_ENV === 'development') {
+        if (event.id !== baseId && !event.id.includes(baseId)) {
+          console.warn('⚠️ Base ID extraction might be incorrect:', {
+            eventId: event.id,
+            extractedBaseId: baseId,
+            theory: event.theory
+          });
+        }
+      }
 
       if (!grouped.has(baseId)) {
         grouped.set(baseId, []);
@@ -288,6 +299,20 @@ export default function AdminDashboard() {
         existing.push(event);
       }
     });
+    
+    // Debug: Log grouping results
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Event grouping:', {
+        totalEvents: events.length,
+        groupedCount: grouped.size,
+        groups: Array.from(grouped.entries()).map(([baseId, eventList]) => ({
+          baseId,
+          count: eventList.length,
+          eventIds: eventList.map(e => e.id),
+          theories: eventList.map(e => e.theory).filter(Boolean)
+        }))
+      });
+    }
 
     // Convert to array
     const baseEvents = Array.from(grouped.entries()).map(([baseId, eventList]) => {
