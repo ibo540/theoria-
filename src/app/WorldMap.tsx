@@ -613,9 +613,9 @@ export default function WorldMap() {
     >
       <div ref={mapContainerRef} style={{ position: "absolute", inset: 0 }} />
       
-      {/* Historical Map Period Indicator */}
+      {/* Historical Map Period Indicator - Moved to avoid overlapping with Admin Dashboard button */}
       {activeEvent && historicalMapConfig.id !== "modern" && (
-        <div className="absolute top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-4 py-2 shadow-lg max-w-xs">
+        <div className="absolute top-20 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-4 py-2 shadow-lg max-w-xs">
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-300">Historical Period:</span>
             <span className="text-sm font-semibold text-white">{historicalMapConfig.name}</span>
