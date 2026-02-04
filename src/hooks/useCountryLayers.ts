@@ -213,6 +213,19 @@ function setupBaseMapBorderLayer(
     const borderWidth = colors?.borderWidth || 0.5;
     const borderOpacity = colors?.borderOpacity || 0.5;
 
+    // Build filter array for country name matching
+    const filterConditions: any[] = [];
+    for (const name of highlightedCountryNames) {
+      filterConditions.push(
+        ["==", ["get", "name"], name],
+        ["==", ["get", "NAME"], name],
+        ["==", ["get", "NAME_EN"], name],
+        ["==", ["get", "name_en"], name],
+        ["==", ["get", "NAME_LONG"], name],
+        ["==", ["get", "name_long"], name]
+      );
+    }
+
     map.addLayer(
       {
         id: baseMapBorderLayerId,
@@ -227,17 +240,7 @@ function setupBaseMapBorderLayer(
           "line-cap": "butt",
           "line-join": "miter",
         },
-        filter: [
-          "any",
-          ...highlightedCountryNames.flatMap(name => [
-            ["==", ["get", "name"], name],
-            ["==", ["get", "NAME"], name],
-            ["==", ["get", "NAME_EN"], name],
-            ["==", ["get", "name_en"], name],
-            ["==", ["get", "NAME_LONG"], name],
-            ["==", ["get", "name_long"], name],
-          ])
-        ],
+        filter: filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false],
       },
       beforeId
     );
@@ -247,17 +250,20 @@ function setupBaseMapBorderLayer(
     const borderWidth = colors?.borderWidth || 0.5;
     const borderOpacity = colors?.borderOpacity || 0.5;
 
-    map.setFilter(baseMapBorderLayerId, [
-      "any",
-      ...highlightedCountryNames.flatMap(name => [
+    // Build filter array for country name matching
+    const filterConditions: any[] = [];
+    for (const name of highlightedCountryNames) {
+      filterConditions.push(
         ["==", ["get", "name"], name],
         ["==", ["get", "NAME"], name],
         ["==", ["get", "NAME_EN"], name],
         ["==", ["get", "name_en"], name],
         ["==", ["get", "NAME_LONG"], name],
-        ["==", ["get", "name_long"], name],
-      ])
-    ]);
+        ["==", ["get", "name_long"], name]
+      );
+    }
+
+    map.setFilter(baseMapBorderLayerId, filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false]);
     map.setPaintProperty(baseMapBorderLayerId, "line-color", borderColor);
     map.setPaintProperty(baseMapBorderLayerId, "line-width", borderWidth);
     map.setPaintProperty(baseMapBorderLayerId, "line-opacity", borderOpacity);
