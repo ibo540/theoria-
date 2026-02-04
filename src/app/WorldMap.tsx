@@ -70,6 +70,7 @@ export default function WorldMap() {
   const [selectedIcon, setSelectedIcon] = useState<any>(null);
   const [showTheoryNotification, setShowTheoryNotification] = useState(false);
   const [selectedUnifiedArea, setSelectedUnifiedArea] = useState<{ area: any; position: { x: number; y: number } } | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<{ name: string; position: { x: number; y: number } } | null>(null);
   const lastActiveTimelinePointRef = useRef<string | null>(null);
   
   // Determine which historical map period is active
@@ -524,6 +525,69 @@ export default function WorldMap() {
     handleIconClick
   );
 
+  // Add hover handler for country names
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !hasMapLoadedRef.current) return;
+
+    const handleMapMouseMove = (e: maplibregl.MapMouseEvent) => {
+      // Query for country features at mouse position
+      // Check both base map layers and highlight layers
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [
+          "countries-base-map-fill",
+          "countries-base-map-border",
+          "countries-highlight-fill",
+          "countries-base",
+        ],
+      });
+
+      if (features.length > 0) {
+        // Find a feature with a country name
+        const countryFeature = features.find(
+          (f) => {
+            const props = f.properties;
+            return props && (props.name || props.NAME || props.NAME_EN || props.name_en || props.NAME_LONG || props.name_long);
+          }
+        );
+
+        if (countryFeature) {
+          const props = countryFeature.properties;
+          const countryName = props?.name || props?.NAME || props?.NAME_EN || props?.name_en || props?.NAME_LONG || props?.name_long;
+          
+          if (countryName) {
+            setHoveredCountry({
+              name: countryName,
+              position: { x: e.point.x, y: e.point.y },
+            });
+            // Change cursor to pointer
+            map.getCanvas().style.cursor = "pointer";
+            return;
+          }
+        }
+      }
+
+      // No country found at this position
+      setHoveredCountry(null);
+      map.getCanvas().style.cursor = "";
+    };
+
+    const handleMapMouseLeave = () => {
+      setHoveredCountry(null);
+      if (map) {
+        map.getCanvas().style.cursor = "";
+      }
+    };
+
+    map.on("mousemove", handleMapMouseMove);
+    map.on("mouseleave", handleMapMouseLeave);
+
+    return () => {
+      map.off("mousemove", handleMapMouseMove);
+      map.off("mouseleave", handleMapMouseLeave);
+    };
+  }, [hasMapLoadedRef.current]);
+
   // Add click handler for unified areas
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -845,6 +909,30 @@ export default function WorldMap() {
                 );
               })()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Country Name Tooltip */}
+      {hoveredCountry && (
+        <div
+          className="fixed pointer-events-none z-[9998]"
+          style={{
+            left: `${hoveredCountry.position.x + 10}px`,
+            top: `${hoveredCountry.position.y - 10}px`,
+            transform: 'translateY(-100%)',
+          }}
+        >
+          <div
+            className="px-3 py-1.5 rounded-md shadow-lg text-sm font-medium whitespace-nowrap"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              border: "1px solid rgba(255, 228, 190, 0.4)",
+              color: "#ffe4be",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            {hoveredCountry.name}
           </div>
         </div>
       )}
