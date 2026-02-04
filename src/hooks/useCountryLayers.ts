@@ -107,7 +107,9 @@ function animateColorTransition(
 }
 
 /**
- * Setup highlight layers (fill + border)
+ * Setup highlight layers
+ * Note: Fill and border are now handled by setupBaseMapBorderLayer for perfect alignment.
+ * This function removes old highlight layers if they exist.
  */
 function setupHighlightLayers(
   map: maplibregl.Map,
@@ -115,53 +117,17 @@ function setupHighlightLayers(
   beforeId: string | undefined,
   colors: LayerColors
 ): void {
-  const data = highlighted || { type: "FeatureCollection", features: [] };
-  const source = map.getSource(
-    SOURCE_IDS.highlight
-  ) as maplibregl.GeoJSONSource | null;
-
-  if (!source) {
-    // Create new source and layers
-    map.addSource(SOURCE_IDS.highlight, {
-      type: "geojson",
-      data: data as GeoJSON.FeatureCollection,
-    });
-
-    map.addLayer(
-      {
-        id: LAYER_IDS.highlightFill,
-        type: "fill",
-        source: SOURCE_IDS.highlight,
-        paint: {
-          "fill-color": colors.fill,
-          "fill-opacity": colors.fillOpacity,
-        },
-      },
-      beforeId
-    );
-
-    // Don't add border layer - borders are handled by base map
-    // The old system draws borders on all countries from base map source,
-    // which ensures perfect alignment. Drawing borders on filtered GeoJSON
-    // features causes misalignment issues.
-  } else {
-    // Update existing source and paint properties
-    // Use setData to update the source - this will trigger a re-render of all layers using this source
-    source.setData(data as GeoJSON.FeatureCollection);
-
-    // Ensure layers exist before updating paint properties
-    const fillLayer = map.getLayer(LAYER_IDS.highlightFill);
-    const borderLayer = map.getLayer(LAYER_IDS.highlightBorder);
-
-    if (fillLayer) {
-      map.setPaintProperty(LAYER_IDS.highlightFill, "fill-color", colors.fill);
-      map.setPaintProperty(
-        LAYER_IDS.highlightFill,
-        "fill-opacity",
-        colors.fillOpacity
-      );
-    }
-    // Border layer removed - borders handled by base map for perfect alignment
+  // Remove old highlight layers if they exist - we're using base map layers now
+  // This ensures we don't have duplicate or misaligned layers
+  if (map.getLayer(LAYER_IDS.highlightFill)) {
+    map.removeLayer(LAYER_IDS.highlightFill);
+  }
+  if (map.getLayer(LAYER_IDS.highlightBorder)) {
+    map.removeLayer(LAYER_IDS.highlightBorder);
+  }
+  const oldSource = map.getSource(SOURCE_IDS.highlight);
+  if (oldSource) {
+    map.removeSource(SOURCE_IDS.highlight);
   }
 }
 
