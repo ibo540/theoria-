@@ -299,6 +299,39 @@ export default function WorldMap() {
 
       setBearing(map.getBearing());
       applyMonochromeStyle(map);
+      
+      // Add base country layer for tooltip queries (always present, invisible)
+      // This allows us to query country names even when no event is selected
+      const addBaseCountryLayer = async () => {
+        try {
+          const geojsonUrl = historicalMapConfig?.geojsonPath || "/geo/countries.geojson";
+          const response = await fetch(geojsonUrl);
+          const data = await response.json();
+          
+          if (!map.getSource("countries-tooltip-source")) {
+            map.addSource("countries-tooltip-source", {
+              type: "geojson",
+              data: data,
+            });
+            
+            // Add invisible layer for querying (opacity 0, but still queryable)
+            if (!map.getLayer("countries-tooltip-layer")) {
+              map.addLayer({
+                id: "countries-tooltip-layer",
+                type: "fill",
+                source: "countries-tooltip-source",
+                paint: {
+                  "fill-opacity": 0, // Invisible but still queryable
+                },
+              });
+            }
+          }
+        } catch (error) {
+          console.warn("Failed to load base country layer for tooltips:", error);
+        }
+      };
+      
+      addBaseCountryLayer();
       hasMapLoadedRef.current = true;
     });
 
@@ -531,25 +564,20 @@ export default function WorldMap() {
     if (!map || !hasMapLoadedRef.current) return;
 
     const handleMapMouseMove = (e: maplibregl.MapMouseEvent) => {
-      // Query all features at mouse position first
+      // Query all features at mouse position
+      // Prioritize the tooltip layer, then check other country sources
+      const tooltipFeatures = map.queryRenderedFeatures(e.point, {
+        layers: ["countries-tooltip-layer"],
+      });
+      
+      // Also check other country layers
       const allFeatures = map.queryRenderedFeatures(e.point);
       
-      // Try to find country features from various sources
-      // Check multiple possible layer names and sources
-      const countryFeature = allFeatures.find(
+      // Try tooltip layer first (always present)
+      let countryFeature = tooltipFeatures.find(
         (f) => {
           const props = f.properties;
-          const source = f.source;
-          
-          // Check if it's from a country-related source
-          const isCountrySource = 
-            source === "countries-base-map-source" ||
-            source === "countries-highlight" ||
-            source === "countries" ||
-            source?.includes("country");
-          
-          // Check if it has country name properties
-          const hasCountryName = props && (
+          return props && (
             props.name || 
             props.NAME || 
             props.NAME_EN || 
@@ -559,10 +587,40 @@ export default function WorldMap() {
             props.ABBREVN ||
             props.SUBJECTO
           );
-          
-          return isCountrySource && hasCountryName;
         }
       );
+      
+      // If not found, check other country sources
+      if (!countryFeature) {
+        countryFeature = allFeatures.find(
+          (f) => {
+            const props = f.properties;
+            const source = f.source;
+            
+            // Check if it's from a country-related source
+            const isCountrySource = 
+              source === "countries-base-map-source" ||
+              source === "countries-highlight" ||
+              source === "countries-tooltip-source" ||
+              source === "countries" ||
+              source?.includes("country");
+            
+            // Check if it has country name properties
+            const hasCountryName = props && (
+              props.name || 
+              props.NAME || 
+              props.NAME_EN || 
+              props.name_en || 
+              props.NAME_LONG || 
+              props.name_long ||
+              props.ABBREVN ||
+              props.SUBJECTO
+            );
+            
+            return isCountrySource && hasCountryName;
+          }
+        );
+      }
 
       if (countryFeature) {
         const props = countryFeature.properties;
