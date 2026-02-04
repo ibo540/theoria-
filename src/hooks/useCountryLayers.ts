@@ -179,18 +179,20 @@ function setupBaseMapBorderLayer(
   }
 
   // Build filter array for country name matching (used by both fill and border)
-  const filterConditions: any[] = [];
+  const filterConditions: FilterSpecification[] = [];
   for (const name of highlightedCountryNames) {
     filterConditions.push(
-      ["==", ["get", "name"], name],
-      ["==", ["get", "NAME"], name],
-      ["==", ["get", "NAME_EN"], name],
-      ["==", ["get", "name_en"], name],
-      ["==", ["get", "NAME_LONG"], name],
-      ["==", ["get", "name_long"], name]
+      ["==", ["get", "name"], name] as FilterSpecification,
+      ["==", ["get", "NAME"], name] as FilterSpecification,
+      ["==", ["get", "NAME_EN"], name] as FilterSpecification,
+      ["==", ["get", "name_en"], name] as FilterSpecification,
+      ["==", ["get", "NAME_LONG"], name] as FilterSpecification,
+      ["==", ["get", "name_long"], name] as FilterSpecification
     );
   }
-  const filter = filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false];
+  const filter: FilterSpecification = filterConditions.length > 0 
+    ? (["any", ...filterConditions] as FilterSpecification)
+    : (["literal", false] as FilterSpecification);
 
   const fillColor = colors?.fill || "#5a4f3f";
   const fillOpacity = colors?.fillOpacity || 0.75;
