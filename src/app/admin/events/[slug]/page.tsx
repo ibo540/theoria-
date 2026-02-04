@@ -122,40 +122,45 @@ export default function EventEditor() {
         }
       }
 
-      // Try to save to API first, fallback to localStorage
+      // Save directly to Supabase (skip API endpoint)
+      console.log("💾 Attempting to save event to Supabase:", {
+        eventId: finalEvent.id,
+        eventTitle: finalEvent.title,
+        theory: finalEvent.theory
+      });
+      
       try {
-        await saveEventToAPI(finalEvent);
+        await saveEventToStorage(finalEvent);
         setIsSaving(false);
-        setSaveMessage({ type: "success", text: "Event saved successfully to database!" });
+        setSaveMessage({ type: "success", text: "✅ Event saved successfully to Supabase database!" });
         // Redirect to dashboard to see the new event
         setTimeout(() => {
           router.push("/admin");
         }, 1500);
-      } catch (apiError) {
-        // Fallback to Supabase/localStorage if API fails
-        console.warn("API save failed, using Supabase/localStorage:", apiError);
-        try {
-          await saveEventToStorage(finalEvent);
+      } catch (storageError: any) {
+        console.error("❌ Error saving to Supabase:", storageError);
+        const errorMessage = storageError?.message || String(storageError);
+        
+        if (errorMessage.includes("Failed to save to Supabase") || errorMessage.includes("environment variables not loaded")) {
           setIsSaving(false);
-          setSaveMessage({ type: "success", text: "Event saved to database!" });
-          // Redirect to dashboard to see the new event
-          setTimeout(() => {
-            router.push("/admin");
-          }, 1500);
-        } catch (storageError: any) {
-          // Check if it's a Supabase error that was caught
-          const errorMessage = storageError?.message || String(storageError);
-          if (errorMessage.includes("Failed to save to Supabase")) {
-            setIsSaving(false);
-            setSaveMessage({ 
-              type: "error", 
-              text: `⚠️ Event saved to browser storage only. Not saved to Supabase. Check console for details.` 
-            });
-            console.error("Supabase save failed:", storageError);
-          } else {
-            throw storageError;
-          }
+          setSaveMessage({ 
+            type: "error", 
+            text: `⚠️ Failed to save to Supabase. Event saved to browser storage only. Check console for details.` 
+          });
+          console.error("Full error details:", {
+            message: errorMessage,
+            error: storageError,
+            eventId: finalEvent.id
+          });
+        } else {
+          setIsSaving(false);
+          setSaveMessage({ 
+            type: "error", 
+            text: `Error saving event: ${errorMessage}` 
+          });
+          console.error("Unexpected error:", storageError);
         }
+        setTimeout(() => setSaveMessage(null), 10000);
       }
     } catch (error) {
       console.error("Error saving event:", error);

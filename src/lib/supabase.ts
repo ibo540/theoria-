@@ -15,10 +15,21 @@ function getSupabaseClient(): SupabaseClient {
   if (!supabaseUrl || !supabaseAnonKey) {
     // Return a mock client that will fail gracefully when used
     // This allows the build to complete even if env vars aren't set
-    console.warn('Supabase environment variables not set. Database operations will fail.');
+    console.error('❌ Supabase environment variables not set. Database operations will fail.');
+    console.error('   Please check your .env.local file and restart the dev server.');
+    console.error('   Expected variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY');
     // Create a client with dummy values - it will fail when actually used
     supabaseClient = createClient('https://placeholder.supabase.co', 'placeholder-key');
     return supabaseClient;
+  }
+
+  // Log successful initialization (only once)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('✅ Supabase client initialized successfully:', {
+      url: supabaseUrl,
+      hasKey: !!supabaseAnonKey,
+      keyLength: supabaseAnonKey?.length || 0
+    });
   }
 
   supabaseClient = createClient(supabaseUrl, supabaseAnonKey);

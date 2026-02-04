@@ -126,6 +126,18 @@ export function duplicateEventForNewTheory(
  * Falls back to localStorage if Supabase is unavailable
  */
 export async function saveEventToStorage(event: EventData): Promise<void> {
+  // Debug: Check environment variables
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('❌ Cannot save to Supabase: Environment variables not loaded!');
+    console.error('   NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+    console.error('   NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseAnonKey ? '✅ Set' : '❌ Missing');
+    console.error('   Solution: Restart your dev server (npm run dev) after creating .env.local');
+    throw new Error('Supabase environment variables not loaded. Please restart the dev server.');
+  }
+
   try {
     // Get current user info for tracking
     const authState = useAuthStore.getState();
@@ -161,9 +173,25 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
     const dbEvent = eventToDbFormat(eventWithTracking);
     
     // Upsert (insert or update) to Supabase
+    console.log("🔍 DEBUG: Attempting Supabase upsert with data:", {
+      eventId: event.id,
+      table: 'events',
+      dbEventKeys: Object.keys(dbEvent),
+      hasId: !!dbEvent.id,
+      hasTitle: !!dbEvent.title
+    });
+    
     const { data, error } = await supabase
       .from('events')
       .upsert(dbEvent, { onConflict: 'id' });
+    
+    console.log("🔍 DEBUG: Supabase upsert response:", {
+      hasData: !!data,
+      dataLength: data?.length || 0,
+      hasError: !!error,
+      errorCode: error?.code,
+      errorMessage: error?.message
+    });
     
     if (error) {
       console.error("❌ Error saving to Supabase:", {
@@ -177,9 +205,21 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       });
       
       // Check if it's an RLS (Row Level Security) error
-      if (error.code === '42501' || error.message?.includes('permission denied') || error.message?.includes('RLS')) {
+      if (error.code === '42501' || error.message?.includes('permission denied') || error.message?.includes('RLS') || error.message?.includes('row-level security')) {
         console.error("🔒 RLS Policy Error: Check your Supabase Row Level Security policies for the 'events' table.");
-        console.error("   Make sure INSERT and UPDATE policies are enabled for authenticated/anonymous users.");
+        console.error("   Error Code:", error.code);
+        console.error("   Error Message:", error.message);
+        console.error("   Make sure INSERT and UPDATE policies are enabled for 'anon' role.");
+        console.error("   Go to: Supabase Dashboard → Authentication → Policies → events table");
+      }
+      
+      // Check for other common errors
+      if (error.code === 'PGRST301') {
+        console.error("🔒 RLS Policy Violation: The request was blocked by Row Level Security.");
+      }
+      
+      if (error.code === '23505') {
+        console.error("⚠️ Unique constraint violation - event ID already exists");
       }
       
       // Fallback to localStorage
@@ -195,14 +235,22 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       
       localStorage.setItem("theoria-events", JSON.stringify(events));
       
-      // Re-throw error so caller knows it failed
-      throw new Error(`Failed to save to Supabase: ${error.message}. Saved to localStorage instead.`);
+      // Re-throw error with more details
+      throw new Error(`Failed to save to Supabase: ${error.message} (Code: ${error.code}). Saved to localStorage instead.`);
     } else {
       console.log("✅ Event saved successfully to Supabase:", {
         eventId: event.id,
         eventTitle: event.title,
-        data,
+        dataReturned: data,
+        timestamp: new Date().toISOString()
       });
+      
+      // Verify the data was actually saved
+      if (data && data.length > 0) {
+        console.log("✅ Confirmed: Event data returned from Supabase:", data[0]);
+      } else {
+        console.warn("⚠️ Warning: Upsert succeeded but no data returned. This might be normal for upserts.");
+      }
     }
   } catch (error) {
     console.error("Error saving event:", error);
