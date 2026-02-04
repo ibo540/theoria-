@@ -16,7 +16,11 @@ import {
   TrendingUp,
   Map,
   BookOpen,
+  BarChart3,
 } from "lucide-react";
+import UniversalChart, { ChartType } from "./UniversalChart";
+import { ChartData } from "@/data/events";
+import { THEORY_COLORS } from "@/lib/theoryTokens";
 
 interface SidebarTabContentProps {
   tabId: SidebarTabId;
@@ -92,6 +96,8 @@ function getSectionsForTab(
       return getActorsSections(event);
     case "theories":
       return getTheoriesSections(event);
+    case "statistics":
+      return getStatisticsSections(event);
     default:
       return [];
   }
@@ -646,6 +652,148 @@ function getTheoriesSections(event: EventData): SidebarSection[] {
         </div>
       ),
     });
+  }
+
+  return sections;
+}
+
+function getStatisticsSections(event: EventData): SidebarSection[] {
+  const sections: SidebarSection[] = [];
+
+  // Charts section
+  if (event.stats?.charts && event.stats.charts.length > 0) {
+    sections.push({
+      id: "charts",
+      title: "Charts & Visualizations",
+      icon: <BarChart3 size={16} />,
+      content: (
+        <div className="space-y-6">
+          {event.stats.charts.map((chart) => {
+            // Get theory color if chart is associated with a theory
+            // Use actual color values from globals.css
+            const getTheoryColorValue = (theory: string): string | undefined => {
+              const colorMap: Record<string, string> = {
+                realism: "#f9464c", // --red
+                neorealism: "#91beef", // --navy
+                liberalism: "#7edef9", // --blue
+                neoliberal: "#bbe581", // --green
+                englishschool: "#f5d6f9", // --purple
+                constructivism: "#f3db66", // --yellow
+              };
+              return colorMap[theory];
+            };
+
+            const theoryColor = chart.theory ? getTheoryColorValue(chart.theory) : undefined;
+            // Create color variations with opacity for multi-series charts
+            const colors = theoryColor 
+              ? [theoryColor, theoryColor + "CC", theoryColor + "99", theoryColor + "66"]
+              : undefined;
+
+            return (
+              <UniversalChart
+                key={chart.id}
+                title={chart.title}
+                type={chart.type as ChartType}
+                data={chart.data}
+                description={chart.description}
+                dataKeys={chart.dataKeys}
+                colors={colors}
+                height={300}
+              />
+            );
+          })}
+        </div>
+      ),
+    });
+  }
+
+  // Legacy stats (military power, economic power, alliances)
+  if (event.stats) {
+    const hasLegacyStats = 
+      (event.stats.militaryPower && Object.keys(event.stats.militaryPower).length > 0) ||
+      (event.stats.economicPower && Object.keys(event.stats.economicPower).length > 0) ||
+      (event.stats.alliances && event.stats.alliances.length > 0);
+
+    if (hasLegacyStats) {
+      sections.push({
+        id: "statistics",
+        title: "Statistics",
+        icon: <TrendingUp size={16} />,
+        content: (
+          <div className="space-y-4">
+            {event.stats.militaryPower &&
+              Object.keys(event.stats.militaryPower).length > 0 && (
+                <div>
+                  <h4
+                    className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/80 mb-3`}
+                  >
+                    Military Power
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.entries(event.stats.militaryPower).map(
+                      ([country, power]) => (
+                        <div
+                          key={country}
+                          className={`flex items-center justify-between ${SIDEBAR_TYPOGRAPHY.content.normal}`}
+                        >
+                          <span className="text-primary-gold/90">{country}</span>
+                          <span className="text-primary-gold/80 font-medium">
+                            {power}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+            {event.stats.economicPower &&
+              Object.keys(event.stats.economicPower).length > 0 && (
+                <div>
+                  <h4
+                    className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/80 mb-3`}
+                  >
+                    Economic Power
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.entries(event.stats.economicPower).map(
+                      ([country, power]) => (
+                        <div
+                          key={country}
+                          className={`flex items-center justify-between ${SIDEBAR_TYPOGRAPHY.content.normal}`}
+                        >
+                          <span className="text-primary-gold/90">{country}</span>
+                          <span className="text-primary-gold/80 font-medium">
+                            {power}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+            {event.stats.alliances && event.stats.alliances.length > 0 && (
+              <div>
+                <h4
+                  className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/80 mb-3`}
+                >
+                  Alliances
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {event.stats.alliances.map((alliance) => (
+                    <span
+                      key={alliance}
+                      className={`px-3 py-2 border border-primary-gold/25 ${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/85 bg-black/20`}
+                    >
+                      {alliance}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ),
+      });
+    }
   }
 
   return sections;

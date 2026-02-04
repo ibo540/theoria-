@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Save, ArrowLeft, Map, FileText, Clock, Lightbulb, X } from "lucide-react";
+import { Save, ArrowLeft, Map, FileText, Clock, Lightbulb, X, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { EventData } from "@/data/events";
 import { VisualMapEditor } from "@/components/admin/VisualMapEditor";
 import { BasicInfoTab } from "@/components/admin/BasicInfoTab";
 import { TimelineBuilder } from "@/components/admin/TimelineBuilder";
+import { StatisticsTab } from "@/components/admin/StatisticsTab";
 import { saveEventToStorage, saveEventToAPI, loadEventFromAPI, getBaseEventId, createEventIdWithTheory, loadEventFromStorage } from "@/lib/admin-utils";
 import { THEORY_COLORS, THEORY_COLORS_DARK } from "@/lib/theoryTokens";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -47,7 +48,7 @@ export default function EventEditor() {
     countryIcons: [],
   });
 
-  const [activeTab, setActiveTab] = useState<"info" | "map" | "timeline">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "map" | "timeline" | "statistics">("info");
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(!isNew);
   const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -174,6 +175,7 @@ export default function EventEditor() {
     { id: "info", label: "Basic Information", icon: FileText },
     { id: "map", label: "Map Highlights", icon: Map },
     { id: "timeline", label: "Timeline", icon: Clock },
+    { id: "statistics", label: "Statistics", icon: BarChart3 },
   ];
 
   if (isLoading) {
@@ -359,6 +361,9 @@ export default function EventEditor() {
           )}
           {activeTab === "timeline" && (
             <TimelineBuilder event={event} setEvent={setEvent} />
+          )}
+          {activeTab === "statistics" && (
+            <StatisticsTab event={event} setEvent={setEvent} />
           )}
         </div>
       </div>

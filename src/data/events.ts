@@ -389,6 +389,31 @@ export interface UnifiedArea {
 }
 
 /**
+ * Chart data for statistics visualization
+ * @interface ChartData
+ */
+export interface ChartData {
+  /** Unique identifier for this chart */
+  id: string;
+  /** Chart title */
+  title: string;
+  /** Chart type */
+  type: "bar" | "line" | "area" | "radar" | "pie";
+  /** Chart data points */
+  data: Array<{
+    label: string;
+    value: number;
+    [key: string]: any; // Allow extra keys for multi-series charts
+  }>;
+  /** Optional description */
+  description?: string;
+  /** Data keys to plot (for multi-series charts) */
+  dataKeys?: string[];
+  /** Theory this chart is associated with (for color theming) */
+  theory?: "realism" | "neorealism" | "liberalism" | "neoliberal" | "englishschool" | "constructivism";
+}
+
+/**
  * Statistical data about an event (military power, economic data, etc.)
  * @interface EventStats
  */
@@ -397,6 +422,8 @@ export interface EventStats {
   militaryPower?: Record<string, number>;
   /** Economic power ratings by actor (0-100 scale) */
   economicPower?: Record<string, number>;
+  /** Custom charts for statistics visualization */
+  charts?: ChartData[];
   /** Array of alliance names and formation dates */
   alliances?: string[];
 }

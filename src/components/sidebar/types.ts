@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 /**
  * Tab IDs for the sidebar
  */
-export type SidebarTabId = "overview" | "timeline" | "actors" | "theories";
+export type SidebarTabId = "overview" | "timeline" | "actors" | "theories" | "statistics";
 
 /**
  * Tab configuration object

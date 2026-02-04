@@ -35,6 +35,7 @@ const TABS: SidebarTab[] = [
   { id: "timeline", label: "Timeline" },
   { id: "actors", label: "Actors" },
   { id: "theories", label: "Theories" },
+  { id: "statistics", label: "Statistics" },
 ];
 
 export default function Sidebar() {
@@ -51,6 +52,7 @@ export default function Sidebar() {
     timeline: null,
     actors: null,
     theories: null,
+    statistics: null,
   });
 
   const sidebarRef = useRef<HTMLElement>(null);
