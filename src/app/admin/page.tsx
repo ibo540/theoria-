@@ -318,19 +318,17 @@ export default function AdminDashboard() {
       }
     });
     
-    // Debug: Log grouping results
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📊 Event grouping:', {
-        totalEvents: events.length,
-        groupedCount: grouped.size,
-        groups: Array.from(grouped.entries()).map(([baseId, eventList]) => ({
-          baseId,
-          count: eventList.length,
-          eventIds: eventList.map(e => e.id),
-          theories: eventList.map(e => e.theory).filter(Boolean)
-        }))
-      });
-    }
+    // Debug: Log grouping results (always log to help debug)
+    console.log('📊 Event grouping:', {
+      totalEvents: events.length,
+      groupedCount: grouped.size,
+      groups: Array.from(grouped.entries()).map(([baseId, eventList]) => ({
+        baseId,
+        count: eventList.length,
+        eventIds: eventList.map(e => e.id),
+        theories: eventList.map(e => e.theory).filter(Boolean)
+      }))
+    });
 
     // Convert to array
     const baseEvents = Array.from(grouped.entries()).map(([baseId, eventList]) => {
