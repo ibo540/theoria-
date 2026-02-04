@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { TheoryType } from "@/stores/useTheoryStore";
-import { THEORY_COLORS } from "@/lib/theoryTokens";
+import { THEORY_COLORS, THEORY_LABELS } from "@/lib/theoryTokens";
 
 interface TheoryButtonProps {
   theory: TheoryType;
@@ -145,13 +145,15 @@ export default function TheoryButton({
 
   const { color: initialColor } = visualState;
 
+  const theoryLabel = THEORY_LABELS[theory];
+
   return (
     <div
       ref={(el) => {
         containerRef.current = el;
         if (containerRefCallback) containerRefCallback(el);
       }}
-      className="flex flex-col items-center"
+      className="flex flex-col items-center gap-2"
     >
       <button
         ref={buttonRef}
@@ -177,6 +179,15 @@ export default function TheoryButton({
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
       </button>
+      <span
+        className="text-xs font-medium text-center whitespace-nowrap transition-colors duration-300"
+        style={{
+          color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
+          opacity: isActive ? 1 : hasActiveTheory ? 0.7 : 0.9,
+        }}
+      >
+        {theoryLabel}
+      </span>
     </div>
   );
 }
