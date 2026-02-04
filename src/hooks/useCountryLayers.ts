@@ -618,7 +618,9 @@ function initializeLayers(
   connections: GeoJSON.FeatureCollection | null,
   drawnShapes: GeoJSON.FeatureCollection | null,
   isVisible: boolean,
-  colors: LayerColors
+  colors: LayerColors,
+  geojsonUrl?: string,
+  highlightedCountryNames?: string[]
 ): void {
   if (!map.isStyleLoaded()) {
     console.warn("Map style not loaded yet");
@@ -627,6 +629,7 @@ function initializeLayers(
 
   const beforeId = findFirstSymbolLayer(map);
   setupHighlightLayers(map, highlighted, beforeId, colors);
+  setupBaseMapBorderLayer(map, geojsonUrl, highlightedCountryNames, beforeId, colors);
   setupConnectionLayers(map, connections, beforeId, colors);
   setupDrawnShapesLayers(map, drawnShapes, beforeId);
   updateLayerVisibility(map, isVisible);
