@@ -991,17 +991,17 @@ export default function WorldMap() {
         </div>
       )}
 
-      {/* Country Name Tooltip - Fixed Position */}
+      {/* Country Name Tooltip - Fixed Position (Top-Right) */}
       {hoveredCountry && (
         <div
           className="fixed pointer-events-auto z-[9998]"
           style={{
-            bottom: "20px",
-            left: "20px",
+            top: "80px",
+            right: "20px",
           }}
         >
           <div
-            className="px-4 py-3 rounded-md shadow-lg flex items-center gap-3 group"
+            className="px-4 py-3 rounded-md shadow-lg flex items-center gap-3 group animate-in fade-in slide-in-from-top-2 duration-200"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.9)",
               border: "1.5px solid rgba(255, 228, 190, 0.5)",
