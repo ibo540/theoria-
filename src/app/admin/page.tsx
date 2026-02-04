@@ -516,15 +516,19 @@ export default function AdminDashboard() {
                       </div>
 
                       {representative.summary && (
-                        <p 
+                        <div 
                           className="text-sm text-gray-300 mb-6 line-clamp-2 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: representative.summary }}
+                          dangerouslySetInnerHTML={{ 
+                            __html: representative.summary.replace(/^<p>|<\/p>$/g, '').trim() 
+                          }}
                         />
                       )}
                       {representative.description && !representative.summary && (
-                        <p 
+                        <div 
                           className="text-sm text-gray-300 mb-6 line-clamp-2 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: representative.description }}
+                          dangerouslySetInnerHTML={{ 
+                            __html: representative.description.replace(/^<p>|<\/p>$/g, '').trim() 
+                          }}
                         />
                       )}
 
