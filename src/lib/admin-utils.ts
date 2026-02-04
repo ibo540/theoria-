@@ -143,11 +143,11 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
     };
     
     // Check if event exists in Supabase
-    const { data: existingEvent } = await supabase
+    const { data: existingEvent, error: fetchError } = await supabase
       .from('events')
       .select('created_at')
       .eq('id', event.id)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to avoid errors when no row exists
     
     // If this is a new event, set createdAt
     if (!existingEvent) {

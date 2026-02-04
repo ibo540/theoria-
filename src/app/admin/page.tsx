@@ -518,9 +518,16 @@ export default function AdminDashboard() {
                       </div>
 
                       {representative.summary && (
-                        <p className="text-sm text-gray-300 mb-6 line-clamp-2 leading-relaxed">
-                          {representative.summary}
-                        </p>
+                        <p 
+                          className="text-sm text-gray-300 mb-6 line-clamp-2 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: representative.summary }}
+                        />
+                      )}
+                      {representative.description && !representative.summary && (
+                        <p 
+                          className="text-sm text-gray-300 mb-6 line-clamp-2 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: representative.description }}
+                        />
                       )}
 
                     <div className="flex items-center gap-4 text-xs font-medium text-gray-300 bg-slate-800/50 rounded-lg p-3 border border-slate-600/30">
