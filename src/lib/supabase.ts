@@ -45,19 +45,20 @@ export const supabase = new Proxy({} as SupabaseClient, {
 
 // Helper function to convert EventData to database format
 export function eventToDbFormat(event: EventData): any {
-  return {
+  // Build the database object, only including fields that exist
+  const dbEvent: any = {
     id: event.id,
     title: event.title,
     date: event.date,
     description: event.description,
     full_description: event.fullDescription,
-    summary: event.summary,
-    theory: event.theory,
-    kind: event.kind,
-    category: event.category,
+    summary: event.summary || null,
+    theory: event.theory || null,
+    kind: event.kind || null,
+    category: event.category || null,
     domains: event.domains ? JSON.stringify(event.domains) : null,
     primary_location: event.primaryLocation ? JSON.stringify(event.primaryLocation) : null,
-    zoom: event.zoom,
+    zoom: event.zoom || null,
     actors: event.actors ? JSON.stringify(event.actors) : null,
     highlighted_countries: event.highlightedCountries ? JSON.stringify(event.highlightedCountries) : null,
     country_highlights: event.countryHighlights ? JSON.stringify(event.countryHighlights) : null,
@@ -79,8 +80,15 @@ export function eventToDbFormat(event: EventData): any {
     last_modified_by_name: event.lastModifiedBy?.name || null,
     last_modified_by_username: event.lastModifiedBy?.username || null,
     last_modified_timestamp: event.lastModifiedBy?.timestamp || null,
-    historical_map_period: event.historicalMapPeriod || null,
   };
+
+  // Only include historical_map_period if it exists (to avoid schema errors)
+  // This will be added to the table via SQL migration
+  if (event.historicalMapPeriod !== undefined) {
+    dbEvent.historical_map_period = event.historicalMapPeriod;
+  }
+
+  return dbEvent;
 }
 
 // Helper function to convert database format to EventData
