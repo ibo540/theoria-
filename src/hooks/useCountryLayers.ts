@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
-import maplibregl from "maplibre-gl";
+import maplibregl, { FilterSpecification } from "maplibre-gl";
 import { gsap } from "gsap";
 import { COLOR_TRANSITION_CONFIG, MAP_COLORS } from "@/lib/map-config";
 
