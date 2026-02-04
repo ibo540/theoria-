@@ -166,6 +166,105 @@ function setupHighlightLayers(
 }
 
 /**
+ * Setup base map border layer
+ * This draws borders on the base map source with a filter for highlighted countries,
+ * ensuring perfect alignment with the underlying map borders.
+ */
+function setupBaseMapBorderLayer(
+  map: maplibregl.Map,
+  geojsonUrl?: string,
+  highlightedCountryNames?: string[],
+  beforeId?: string,
+  colors?: LayerColors
+): void {
+  if (!geojsonUrl || !highlightedCountryNames || highlightedCountryNames.length === 0) {
+    // Remove layer if it exists but we don't have the required data
+    const baseMapBorderLayerId = "countries-base-map-border";
+    if (map.getLayer(baseMapBorderLayerId)) {
+      map.removeLayer(baseMapBorderLayerId);
+    }
+    const baseMapSourceId = "countries-base-map-source";
+    if (map.getSource(baseMapSourceId)) {
+      map.removeSource(baseMapSourceId);
+    }
+    return;
+  }
+
+  const baseMapSourceId = "countries-base-map-source";
+  const baseMapBorderLayerId = "countries-base-map-border";
+
+  // Add or update the base map source
+  if (!map.getSource(baseMapSourceId)) {
+    map.addSource(baseMapSourceId, {
+      type: "geojson",
+      data: geojsonUrl,
+    });
+  } else {
+    // Update the source data if the URL changes
+    const source = map.getSource(baseMapSourceId) as maplibregl.GeoJSONSource;
+    if (source && source._data !== geojsonUrl) {
+      source.setData(geojsonUrl);
+    }
+  }
+
+  // Add or update the border layer
+  if (!map.getLayer(baseMapBorderLayerId)) {
+    const borderColor = colors?.border || MAP_COLORS.boundary;
+    const borderWidth = colors?.borderWidth || 0.5;
+    const borderOpacity = colors?.borderOpacity || 0.5;
+
+    map.addLayer(
+      {
+        id: baseMapBorderLayerId,
+        type: "line",
+        source: baseMapSourceId,
+        paint: {
+          "line-color": borderColor,
+          "line-width": borderWidth,
+          "line-opacity": borderOpacity,
+        },
+        layout: {
+          "line-cap": "butt",
+          "line-join": "miter",
+        },
+        filter: [
+          "any",
+          ...highlightedCountryNames.flatMap(name => [
+            ["==", ["get", "name"], name],
+            ["==", ["get", "NAME"], name],
+            ["==", ["get", "NAME_EN"], name],
+            ["==", ["get", "name_en"], name],
+            ["==", ["get", "NAME_LONG"], name],
+            ["==", ["get", "name_long"], name],
+          ])
+        ],
+      },
+      beforeId
+    );
+  } else {
+    // Update filter if highlighted countries change
+    const borderColor = colors?.border || MAP_COLORS.boundary;
+    const borderWidth = colors?.borderWidth || 0.5;
+    const borderOpacity = colors?.borderOpacity || 0.5;
+
+    map.setFilter(baseMapBorderLayerId, [
+      "any",
+      ...highlightedCountryNames.flatMap(name => [
+        ["==", ["get", "name"], name],
+        ["==", ["get", "NAME"], name],
+        ["==", ["get", "NAME_EN"], name],
+        ["==", ["get", "name_en"], name],
+        ["==", ["get", "NAME_LONG"], name],
+        ["==", ["get", "name_long"], name],
+      ])
+    ]);
+    map.setPaintProperty(baseMapBorderLayerId, "line-color", borderColor);
+    map.setPaintProperty(baseMapBorderLayerId, "line-width", borderWidth);
+    map.setPaintProperty(baseMapBorderLayerId, "line-opacity", borderOpacity);
+  }
+}
+
+/**
  * Setup connection layers
  */
 function setupConnectionLayers(
