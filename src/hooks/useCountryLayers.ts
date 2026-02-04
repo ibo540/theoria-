@@ -44,10 +44,8 @@ const SOURCE_IDS = {
  * Check if layers exist on the map
  */
 function layersExist(map: maplibregl.Map): boolean {
-  return (
-    Boolean(map.getLayer(LAYER_IDS.highlightFill)) &&
-    Boolean(map.getLayer(LAYER_IDS.highlightBorder))
-  );
+  return Boolean(map.getLayer(LAYER_IDS.highlightFill));
+  // Border layer removed - borders handled by base map
 }
 
 /**
@@ -142,23 +140,10 @@ function setupHighlightLayers(
       beforeId
     );
 
-    map.addLayer(
-      {
-        id: LAYER_IDS.highlightBorder,
-        type: "line",
-        source: SOURCE_IDS.highlight,
-        paint: {
-          "line-color": colors.border,
-          "line-width": colors.borderWidth,
-          "line-opacity": colors.borderOpacity,
-        },
-        layout: {
-          "line-cap": "butt", // Sharp line caps for precision
-          "line-join": "miter", // Sharp joins for precision
-        },
-      },
-      beforeId
-    );
+    // Don't add border layer - borders are handled by base map
+    // The old system draws borders on all countries from base map source,
+    // which ensures perfect alignment. Drawing borders on filtered GeoJSON
+    // features causes misalignment issues.
   } else {
     // Update existing source and paint properties
     // Use setData to update the source - this will trigger a re-render of all layers using this source
@@ -176,23 +161,7 @@ function setupHighlightLayers(
         colors.fillOpacity
       );
     }
-    if (borderLayer) {
-      map.setPaintProperty(
-        LAYER_IDS.highlightBorder,
-        "line-color",
-        colors.border
-      );
-      map.setPaintProperty(
-        LAYER_IDS.highlightBorder,
-        "line-width",
-        colors.borderWidth
-      );
-      map.setPaintProperty(
-        LAYER_IDS.highlightBorder,
-        "line-opacity",
-        colors.borderOpacity
-      );
-    }
+    // Border layer removed - borders handled by base map for perfect alignment
   }
 }
 
@@ -396,25 +365,7 @@ function updateLayerColors(map: maplibregl.Map, colors: LayerColors): void {
     );
   }
 
-  // Update border layer
-  if (map.getLayer(LAYER_IDS.highlightBorder)) {
-    animateColorTransition(
-      map,
-      LAYER_IDS.highlightBorder,
-      "line-color",
-      colors.border
-    );
-    map.setPaintProperty(
-      LAYER_IDS.highlightBorder,
-      "line-width",
-      colors.borderWidth
-    );
-    map.setPaintProperty(
-      LAYER_IDS.highlightBorder,
-      "line-opacity",
-      colors.borderOpacity
-    );
-  }
+  // Border layer removed - borders handled by base map for perfect alignment
 
   // Update connection line layers (glow + main)
   const glowLayerId = `${LAYER_IDS.connectionsLine}-glow`;
@@ -492,7 +443,7 @@ function updateLayerVisibility(map: maplibregl.Map, isVisible: boolean): void {
   const visibility = isVisible ? "visible" : "none";
   const layerIds = [
     LAYER_IDS.highlightFill,
-    LAYER_IDS.highlightBorder,
+    // LAYER_IDS.highlightBorder removed - borders handled by base map
     `${LAYER_IDS.connectionsLine}-glow`,
     LAYER_IDS.connectionsLine,
     `${LAYER_IDS.drawnShapesFill}-shadow`,
