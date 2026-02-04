@@ -200,9 +200,9 @@ function setupBaseMapBorderLayer(
       data: geojsonUrl,
     });
   } else {
-    // Update the source data if the URL changes
+    // Update the source data
     const source = map.getSource(baseMapSourceId) as maplibregl.GeoJSONSource;
-    if (source && source._data !== geojsonUrl) {
+    if (source) {
       source.setData(geojsonUrl);
     }
   }
