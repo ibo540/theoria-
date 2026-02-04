@@ -991,26 +991,43 @@ export default function WorldMap() {
         </div>
       )}
 
-      {/* Country Name Tooltip */}
+      {/* Country Name Tooltip - Fixed Position */}
       {hoveredCountry && (
         <div
-          className="fixed pointer-events-none z-[9998]"
+          className="fixed pointer-events-auto z-[9998]"
           style={{
-            left: `${hoveredCountry.position.x + 10}px`,
-            top: `${hoveredCountry.position.y - 10}px`,
-            transform: 'translateY(-100%)',
+            bottom: "20px",
+            left: "20px",
           }}
         >
           <div
-            className="px-3 py-1.5 rounded-md shadow-lg text-sm font-medium whitespace-nowrap"
+            className="px-4 py-3 rounded-md shadow-lg flex items-center gap-3 group"
             style={{
-              backgroundColor: "rgba(0, 0, 0, 0.85)",
-              border: "1px solid rgba(255, 228, 190, 0.4)",
+              backgroundColor: "rgba(0, 0, 0, 0.9)",
+              border: "1.5px solid rgba(255, 228, 190, 0.5)",
               color: "#ffe4be",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
+              backdropFilter: "blur(8px)",
             }}
           >
-            {hoveredCountry.name}
+            <div className="flex items-center gap-2">
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor: "#ffe4be",
+                  boxShadow: "0 0 8px rgba(255, 228, 190, 0.6)",
+                }}
+              />
+              <span className="text-sm font-semibold">{hoveredCountry.name}</span>
+            </div>
+            <button
+              onClick={() => setHoveredCountry(null)}
+              className="opacity-60 hover:opacity-100 transition-opacity"
+              style={{ color: "#ffe4be" }}
+              aria-label="Close tooltip"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
