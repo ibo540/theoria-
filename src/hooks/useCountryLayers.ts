@@ -166,8 +166,8 @@ function setupHighlightLayers(
 }
 
 /**
- * Setup base map border layer
- * This draws borders on the base map source with a filter for highlighted countries,
+ * Setup base map fill and border layers
+ * This draws both fill and borders on the base map source with a filter for highlighted countries,
  * ensuring perfect alignment with the underlying map borders.
  */
 function setupBaseMapBorderLayer(
@@ -178,8 +178,12 @@ function setupBaseMapBorderLayer(
   colors?: LayerColors
 ): void {
   if (!geojsonUrl || !highlightedCountryNames || highlightedCountryNames.length === 0) {
-    // Remove layer if it exists but we don't have the required data
+    // Remove layers if they exist but we don't have the required data
+    const baseMapFillLayerId = "countries-base-map-fill";
     const baseMapBorderLayerId = "countries-base-map-border";
+    if (map.getLayer(baseMapFillLayerId)) {
+      map.removeLayer(baseMapFillLayerId);
+    }
     if (map.getLayer(baseMapBorderLayerId)) {
       map.removeLayer(baseMapBorderLayerId);
     }
@@ -191,6 +195,7 @@ function setupBaseMapBorderLayer(
   }
 
   const baseMapSourceId = "countries-base-map-source";
+  const baseMapFillLayerId = "countries-base-map-fill";
   const baseMapBorderLayerId = "countries-base-map-border";
 
   // Add or update the base map source
@@ -207,25 +212,49 @@ function setupBaseMapBorderLayer(
     }
   }
 
-  // Add or update the border layer
+  // Build filter array for country name matching (used by both fill and border)
+  const filterConditions: any[] = [];
+  for (const name of highlightedCountryNames) {
+    filterConditions.push(
+      ["==", ["get", "name"], name],
+      ["==", ["get", "NAME"], name],
+      ["==", ["get", "NAME_EN"], name],
+      ["==", ["get", "name_en"], name],
+      ["==", ["get", "NAME_LONG"], name],
+      ["==", ["get", "name_long"], name]
+    );
+  }
+  const filter = filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false];
+
+  const fillColor = colors?.fill || "#5a4f3f";
+  const fillOpacity = colors?.fillOpacity || 0.75;
+  const borderColor = colors?.border || MAP_COLORS.boundary;
+  const borderWidth = colors?.borderWidth || 0.5;
+  const borderOpacity = colors?.borderOpacity || 0.5;
+
+  // Add or update the fill layer (must be before border layer)
+  if (!map.getLayer(baseMapFillLayerId)) {
+    map.addLayer(
+      {
+        id: baseMapFillLayerId,
+        type: "fill",
+        source: baseMapSourceId,
+        paint: {
+          "fill-color": fillColor,
+          "fill-opacity": fillOpacity,
+        },
+        filter: filter,
+      },
+      beforeId
+    );
+  } else {
+    map.setFilter(baseMapFillLayerId, filter);
+    map.setPaintProperty(baseMapFillLayerId, "fill-color", fillColor);
+    map.setPaintProperty(baseMapFillLayerId, "fill-opacity", fillOpacity);
+  }
+
+  // Add or update the border layer (after fill layer)
   if (!map.getLayer(baseMapBorderLayerId)) {
-    const borderColor = colors?.border || MAP_COLORS.boundary;
-    const borderWidth = colors?.borderWidth || 0.5;
-    const borderOpacity = colors?.borderOpacity || 0.5;
-
-    // Build filter array for country name matching
-    const filterConditions: any[] = [];
-    for (const name of highlightedCountryNames) {
-      filterConditions.push(
-        ["==", ["get", "name"], name],
-        ["==", ["get", "NAME"], name],
-        ["==", ["get", "NAME_EN"], name],
-        ["==", ["get", "name_en"], name],
-        ["==", ["get", "NAME_LONG"], name],
-        ["==", ["get", "name_long"], name]
-      );
-    }
-
     map.addLayer(
       {
         id: baseMapBorderLayerId,
@@ -240,30 +269,12 @@ function setupBaseMapBorderLayer(
           "line-cap": "butt",
           "line-join": "miter",
         },
-        filter: filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false],
+        filter: filter,
       },
       beforeId
     );
   } else {
-    // Update filter if highlighted countries change
-    const borderColor = colors?.border || MAP_COLORS.boundary;
-    const borderWidth = colors?.borderWidth || 0.5;
-    const borderOpacity = colors?.borderOpacity || 0.5;
-
-    // Build filter array for country name matching
-    const filterConditions: any[] = [];
-    for (const name of highlightedCountryNames) {
-      filterConditions.push(
-        ["==", ["get", "name"], name],
-        ["==", ["get", "NAME"], name],
-        ["==", ["get", "NAME_EN"], name],
-        ["==", ["get", "name_en"], name],
-        ["==", ["get", "NAME_LONG"], name],
-        ["==", ["get", "name_long"], name]
-      );
-    }
-
-    map.setFilter(baseMapBorderLayerId, filterConditions.length > 0 ? ["any", ...filterConditions] : ["literal", false]);
+    map.setFilter(baseMapBorderLayerId, filter);
     map.setPaintProperty(baseMapBorderLayerId, "line-color", borderColor);
     map.setPaintProperty(baseMapBorderLayerId, "line-width", borderWidth);
     map.setPaintProperty(baseMapBorderLayerId, "line-opacity", borderOpacity);
