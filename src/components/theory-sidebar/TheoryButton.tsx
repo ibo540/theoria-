@@ -166,11 +166,13 @@ export default function TheoryButton({
       >
         <div
           ref={svgWrapperRef}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full flex items-center justify-center"
           style={
             {
               "--theory-color": initialColor,
               "--theory-dark-color": DARK_BLACK,
+              transform: "scale(0.75)", // Make icon smaller to make room for text
+              transformOrigin: "center center",
             } as React.CSSProperties & {
               "--theory-color": string;
               "--theory-dark-color": string;
@@ -180,11 +182,13 @@ export default function TheoryButton({
         />
         {/* Theory name label inside icon at the top */}
         <span
-          className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
+          className="absolute top-1 left-1/2 -translate-x-1/2 text-xs font-bold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
           style={{
             color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
-            opacity: isActive ? 1 : hasActiveTheory ? 0.8 : 0.9,
-            textShadow: "0 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5)",
+            opacity: isActive ? 1 : hasActiveTheory ? 0.85 : 0.95,
+            textShadow: "0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6)",
+            fontSize: "11px",
+            letterSpacing: "0.3px",
           }}
         >
           {theoryLabel}
