@@ -531,39 +531,59 @@ export default function WorldMap() {
     if (!map || !hasMapLoadedRef.current) return;
 
     const handleMapMouseMove = (e: maplibregl.MapMouseEvent) => {
-      // Query for country features at mouse position
-      // Check both base map layers and highlight layers
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: [
-          "countries-base-map-fill",
-          "countries-base-map-border",
-          "countries-highlight-fill",
-          "countries-base",
-        ],
-      });
-
-      if (features.length > 0) {
-        // Find a feature with a country name
-        const countryFeature = features.find(
-          (f) => {
-            const props = f.properties;
-            return props && (props.name || props.NAME || props.NAME_EN || props.name_en || props.NAME_LONG || props.name_long);
-          }
-        );
-
-        if (countryFeature) {
-          const props = countryFeature.properties;
-          const countryName = props?.name || props?.NAME || props?.NAME_EN || props?.name_en || props?.NAME_LONG || props?.name_long;
+      // Query all features at mouse position first
+      const allFeatures = map.queryRenderedFeatures(e.point);
+      
+      // Try to find country features from various sources
+      // Check multiple possible layer names and sources
+      const countryFeature = allFeatures.find(
+        (f) => {
+          const props = f.properties;
+          const source = f.source;
           
-          if (countryName) {
-            setHoveredCountry({
-              name: countryName,
-              position: { x: e.point.x, y: e.point.y },
-            });
-            // Change cursor to pointer
-            map.getCanvas().style.cursor = "pointer";
-            return;
-          }
+          // Check if it's from a country-related source
+          const isCountrySource = 
+            source === "countries-base-map-source" ||
+            source === "countries-highlight" ||
+            source === "countries" ||
+            source?.includes("country");
+          
+          // Check if it has country name properties
+          const hasCountryName = props && (
+            props.name || 
+            props.NAME || 
+            props.NAME_EN || 
+            props.name_en || 
+            props.NAME_LONG || 
+            props.name_long ||
+            props.ABBREVN ||
+            props.SUBJECTO
+          );
+          
+          return isCountrySource && hasCountryName;
+        }
+      );
+
+      if (countryFeature) {
+        const props = countryFeature.properties;
+        const countryName = 
+          props?.name || 
+          props?.NAME || 
+          props?.NAME_EN || 
+          props?.name_en || 
+          props?.NAME_LONG || 
+          props?.name_long ||
+          props?.ABBREVN ||
+          props?.SUBJECTO;
+        
+        if (countryName) {
+          setHoveredCountry({
+            name: countryName,
+            position: { x: e.point.x, y: e.point.y },
+          });
+          // Change cursor to pointer
+          map.getCanvas().style.cursor = "pointer";
+          return;
         }
       }
 
