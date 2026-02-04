@@ -16,10 +16,10 @@ interface LayerColors {
 
 const DEFAULT_COLORS: LayerColors = {
   fill: "#5a4f3f",
-  fillOpacity: 0.5,
+  fillOpacity: 0.75, // Match old system opacity
   border: "#8b7a5f",
-  borderWidth: 2,
-  borderOpacity: 0.7,
+  borderWidth: 0.5, // Match old system - thin, clean borders
+  borderOpacity: 0.5, // Match old system opacity
   line: "#d4af37", // Enhanced gold color for connections
   lineWidth: 3.5, // Slightly thicker for better visibility
   lineOpacity: 0.85, // More opaque for better visibility
