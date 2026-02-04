@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 import { gsap } from "gsap";
-import { COLOR_TRANSITION_CONFIG } from "@/lib/map-config";
+import { COLOR_TRANSITION_CONFIG, MAP_COLORS } from "@/lib/map-config";
 
 interface LayerColors {
   fill: string;
@@ -17,7 +17,7 @@ interface LayerColors {
 const DEFAULT_COLORS: LayerColors = {
   fill: "#5a4f3f",
   fillOpacity: 0.75, // Match old system opacity
-  border: "#8b7a5f",
+  border: MAP_COLORS.boundary, // Use same subtle border color as old system
   borderWidth: 0.5, // Match old system - thin, clean borders
   borderOpacity: 0.5, // Match old system opacity
   line: "#d4af37", // Enhanced gold color for connections
@@ -151,6 +151,10 @@ function setupHighlightLayers(
           "line-color": colors.border,
           "line-width": colors.borderWidth,
           "line-opacity": colors.borderOpacity,
+        },
+        layout: {
+          "line-cap": "butt", // Sharp line caps for precision
+          "line-join": "miter", // Sharp joins for precision
         },
       },
       beforeId
