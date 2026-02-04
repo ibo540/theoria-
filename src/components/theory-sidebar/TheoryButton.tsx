@@ -153,7 +153,7 @@ export default function TheoryButton({
         containerRef.current = el;
         if (containerRefCallback) containerRefCallback(el);
       }}
-      className="flex flex-col items-center gap-2"
+      className="flex flex-col items-center"
     >
       <button
         ref={buttonRef}
@@ -178,16 +178,18 @@ export default function TheoryButton({
           }
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
+        {/* Theory name label inside icon at the top */}
+        <span
+          className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
+          style={{
+            color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
+            opacity: isActive ? 1 : hasActiveTheory ? 0.8 : 0.9,
+            textShadow: "0 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          {theoryLabel}
+        </span>
       </button>
-      <span
-        className="text-xs font-medium text-center whitespace-nowrap transition-colors duration-300"
-        style={{
-          color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
-          opacity: isActive ? 1 : hasActiveTheory ? 0.7 : 0.9,
-        }}
-      >
-        {theoryLabel}
-      </span>
     </div>
   );
 }
