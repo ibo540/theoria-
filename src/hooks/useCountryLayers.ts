@@ -639,7 +639,9 @@ export function useCountryLayers(
   connections: GeoJSON.FeatureCollection | null,
   drawnShapes: GeoJSON.FeatureCollection | null,
   isVisible: boolean,
-  colors: Partial<LayerColors> = {}
+  colors: Partial<LayerColors> = {},
+  geojsonUrl?: string,
+  highlightedCountryNames?: string[]
 ) {
   const mergedColors = useMemo(
     () => ({ ...DEFAULT_COLORS, ...colors }),
@@ -656,9 +658,9 @@ export function useCountryLayers(
   // Stable callback for style load handler
   const handleStyleLoad = useCallback(() => {
     if (!map || !map.isStyleLoaded()) return;
-    initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors);
+    initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames);
     layersInitializedRef.current = true;
-  }, [map, highlighted, connections, drawnShapes, isVisible, mergedColors]);
+  }, [map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames]);
 
   useEffect(() => {
     if (!map || !mapLoaded) return;
@@ -696,7 +698,7 @@ export function useCountryLayers(
 
     if (needsInit || dataChanged || goingFromEmptyToData) {
       // Full initialization
-      initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors);
+      initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames);
       layersInitializedRef.current = true;
       previousHighlightedRef.current = highlighted;
       previousConnectionsRef.current = connections;
@@ -709,6 +711,9 @@ export function useCountryLayers(
         updateLayerColors(map, mergedColors);
         previousColorsRef.current = mergedColors;
       }
+      // Update base map border layer if needed
+      const beforeId = findFirstSymbolLayer(map);
+      setupBaseMapBorderLayer(map, geojsonUrl, highlightedCountryNames, beforeId, mergedColors);
       updateLayerVisibility(map, isVisible);
       previousHighlightedRef.current = highlighted;
       previousConnectionsRef.current = connections;
@@ -723,5 +728,7 @@ export function useCountryLayers(
     isVisible,
     mergedColors,
     handleStyleLoad,
+    geojsonUrl,
+    highlightedCountryNames,
   ]);
 }

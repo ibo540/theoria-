@@ -319,6 +319,14 @@ export default function WorldMap() {
   // Setup country layers (only if event is selected)
   // Always pass highlighted/connections/drawnShapes (even if null) so layers can initialize
   // The isVisible flag controls whether they're actually displayed
+  // Get highlighted country names for border layer
+  const highlightedCountryNames = useMemo(() => {
+    if (!activeEvent || !highlighted) return [];
+    return highlighted.features
+      .map(f => f.properties?.name || f.properties?.NAME)
+      .filter(Boolean) as string[];
+  }, [activeEvent, highlighted]);
+
   useCountryLayers(
     mapInstanceRef.current,
     hasMapLoadedRef.current,
@@ -326,7 +334,9 @@ export default function WorldMap() {
     activeEventId ? connections : null,
     activeEventId ? drawnShapes : null,
     highlightsVisible && Boolean(activeEventId),
-    layerColors
+    layerColors,
+    historicalMapConfig?.geojsonPath,
+    highlightedCountryNames
   );
 
   // Merge event-level markers with timeline point markers
