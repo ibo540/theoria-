@@ -267,23 +267,15 @@ function setupConnectionLayers(
     SOURCE_IDS.connections
   ) as maplibregl.GeoJSONSource | null;
 
-  // Use theory color if available, otherwise use default
+  // Always use theory color if available, otherwise use default beige
+  // Ignore any stored color values - connection lines should always use theory color
   const baseLineColor = theoryColor || colors.line;
 
-  // Build expressions that use custom properties if available, but default to theory color
-  const colorExpression: any = [
-    "case",
-    ["has", "color"],
-    ["get", "color"],
-    baseLineColor
-  ];
+  // Always use theory color (ignore stored color values)
+  const colorExpression: any = baseLineColor;
   
-  const widthExpression: any = [
-    "case",
-    ["has", "thickness"],
-    ["get", "thickness"],
-    colors.lineWidth
-  ];
+  // Always use fixed thickness (ignore stored thickness values)
+  const widthExpression: any = colors.lineWidth;
   
   const opacityExpression: any = [
     "case",
