@@ -329,15 +329,21 @@ export default function Sidebar() {
               <div className="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
                 <div className="px-6 py-4 pb-6 space-y-3 mr-2">
                   {filteredEvents.length > 0 ? (
-                    filteredEvents.map((event) => (
-                      <EventItem
-                        key={event.id}
-                        event={event}
-                        isActive={isEventSelected(event.id)}
-                        isLoading={loadingEventId === event.id}
-                        onClick={() => handleEventClick(event.id)}
-                      />
-                    ))
+                    filteredEvents.map(({ baseId, representative }) => {
+                      // Check if this base event is selected by comparing base IDs
+                      const currentBaseId = activeEventId ? getBaseEventId(activeEventId) : null;
+                      const isSelected = currentBaseId === baseId;
+                      
+                      return (
+                        <EventItem
+                          key={baseId}
+                          event={representative}
+                          isActive={isSelected}
+                          isLoading={loadingEventId === representative.id || (isSelected && loadingEventId !== null)}
+                          onClick={() => handleEventClick(baseId)}
+                        />
+                      );
+                    })
                   ) : (
                     <div className="text-center py-8 text-primary-gold/50">
                       No events found matching &quot;{searchQuery}&quot;
