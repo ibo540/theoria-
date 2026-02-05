@@ -1660,9 +1660,9 @@ function CompletedDrawingsRenderer({
               coordinates: line.points,
             },
             properties: {
-              color: line.color || "#d4af37", // Enhanced gold color
-              thickness: line.thickness || 3.5,
-              opacity: line.opacity !== undefined ? line.opacity : 0.85,
+              color: line.color || "#ffe4be", // Default beige (will use theory color on user page)
+              thickness: line.thickness || 4,
+              opacity: line.opacity !== undefined ? line.opacity : 0.9,
             },
           };
           lineFeatures.push(feature);
@@ -1678,9 +1678,9 @@ function CompletedDrawingsRenderer({
             line.controlPoints?.[0] || line.points[1],
             line.points[line.points.length - 1]
           );
-          (feature.properties as any).color = line.color || "#d4af37"; // Enhanced gold color
-          (feature.properties as any).thickness = line.thickness || 3.5;
-          (feature.properties as any).opacity = line.opacity !== undefined ? line.opacity : 0.85;
+          (feature.properties as any).color = line.color || "#ffe4be"; // Default beige (will use theory color on user page)
+          (feature.properties as any).thickness = line.thickness || 4;
+          (feature.properties as any).opacity = line.opacity !== undefined ? line.opacity : 0.9;
           lineFeatures.push(feature);
 
           // Track connection points
@@ -1823,7 +1823,60 @@ function CompletedDrawingsRenderer({
               }
             }
 
-            // Add glow layer
+            // 3D Effect: Multiple shadow layers for depth
+            // Deep shadow (darkest, widest)
+            map.addLayer({
+              id: `${lineLayerId}-shadow-deep`,
+              type: "line",
+              source: lineSourceId,
+              paint: {
+                "line-color": "rgba(0, 0, 0, 0.4)",
+                "line-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  0,
+                  ["+", ["get", "thickness"], 6],
+                  10,
+                  ["+", ["get", "thickness"], 8],
+                ],
+                "line-opacity": 0.5,
+                "line-blur": 4,
+                "line-offset": 2, // Offset for 3D shadow effect
+              },
+              layout: {
+                "line-cap": "round",
+                "line-join": "round",
+              },
+            }, beforeId);
+
+            // Medium shadow
+            map.addLayer({
+              id: `${lineLayerId}-shadow-medium`,
+              type: "line",
+              source: lineSourceId,
+              paint: {
+                "line-color": "rgba(0, 0, 0, 0.25)",
+                "line-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  0,
+                  ["+", ["get", "thickness"], 4],
+                  10,
+                  ["+", ["get", "thickness"], 5],
+                ],
+                "line-opacity": 0.4,
+                "line-blur": 2,
+                "line-offset": 1, // Offset for 3D shadow effect
+              },
+              layout: {
+                "line-cap": "round",
+                "line-join": "round",
+              },
+            }, beforeId);
+
+            // Glow layer (wider, more transparent line behind main line)
             map.addLayer({
               id: `${lineLayerId}-glow`,
               type: "line",
@@ -1835,16 +1888,20 @@ function CompletedDrawingsRenderer({
                   ["linear"],
                   ["zoom"],
                   0,
-                  ["+", ["get", "thickness"], 4],
+                  ["+", ["get", "thickness"], 5],
                   10,
-                  ["+", ["get", "thickness"], 6],
+                  ["+", ["get", "thickness"], 7],
                 ],
                 "line-opacity": [
                   "*",
                   ["get", "opacity"],
-                  0.3
+                  0.4
                 ],
-                "line-blur": 3,
+                "line-blur": 4,
+              },
+              layout: {
+                "line-cap": "round",
+                "line-join": "round",
               },
             }, beforeId);
 
@@ -1887,7 +1944,60 @@ function CompletedDrawingsRenderer({
             }
           }
 
-          // Add glow layer
+          // 3D Effect: Multiple shadow layers for depth
+          // Deep shadow (darkest, widest)
+          map.addLayer({
+            id: `${lineLayerId}-shadow-deep`,
+            type: "line",
+            source: lineSourceId,
+            paint: {
+              "line-color": "rgba(0, 0, 0, 0.4)",
+              "line-width": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0,
+                ["+", ["get", "thickness"], 6],
+                10,
+                ["+", ["get", "thickness"], 8],
+              ],
+              "line-opacity": 0.5,
+              "line-blur": 4,
+              "line-offset": 2, // Offset for 3D shadow effect
+            },
+            layout: {
+              "line-cap": "round",
+              "line-join": "round",
+            },
+          }, beforeId);
+
+          // Medium shadow
+          map.addLayer({
+            id: `${lineLayerId}-shadow-medium`,
+            type: "line",
+            source: lineSourceId,
+            paint: {
+              "line-color": "rgba(0, 0, 0, 0.25)",
+              "line-width": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0,
+                ["+", ["get", "thickness"], 4],
+                10,
+                ["+", ["get", "thickness"], 5],
+              ],
+              "line-opacity": 0.4,
+              "line-blur": 2,
+              "line-offset": 1, // Offset for 3D shadow effect
+            },
+            layout: {
+              "line-cap": "round",
+              "line-join": "round",
+            },
+          }, beforeId);
+
+          // Glow layer (wider, more transparent line behind main line)
           map.addLayer({
             id: `${lineLayerId}-glow`,
             type: "line",
@@ -1899,16 +2009,20 @@ function CompletedDrawingsRenderer({
                 ["linear"],
                 ["zoom"],
                 0,
-                ["+", ["get", "thickness"], 4],
+                ["+", ["get", "thickness"], 5],
                 10,
-                ["+", ["get", "thickness"], 6],
+                ["+", ["get", "thickness"], 7],
               ],
               "line-opacity": [
                 "*",
                 ["get", "opacity"],
-                0.3
+                0.4
               ],
-              "line-blur": 3,
+              "line-blur": 4,
+            },
+            layout: {
+              "line-cap": "round",
+              "line-join": "round",
             },
           }, beforeId);
 
