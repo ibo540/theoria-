@@ -2137,6 +2137,8 @@ function CompletedDrawingsRenderer({
         if (map.getSource(shapeSourceId)) map.removeSource(shapeSourceId);
         if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
         if (map.getLayer(`${lineLayerId}-glow`)) map.removeLayer(`${lineLayerId}-glow`);
+        if (map.getLayer(`${lineLayerId}-shadow-deep`)) map.removeLayer(`${lineLayerId}-shadow-deep`);
+        if (map.getLayer(`${lineLayerId}-shadow-medium`)) map.removeLayer(`${lineLayerId}-shadow-medium`);
         if (map.getSource(lineSourceId)) map.removeSource(lineSourceId);
         if (map.getLayer(connectionPointLayerId)) map.removeLayer(connectionPointLayerId);
         if (map.getLayer(`${connectionPointLayerId}-glow`)) map.removeLayer(`${connectionPointLayerId}-glow`);
