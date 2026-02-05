@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { saveUserToSupabase } from "@/lib/user-utils";
 import { Lock, User, UserCircle } from "lucide-react";
 
 export default function LoginPage() {
@@ -35,6 +36,14 @@ export default function LoginPage() {
     const success = login(username, password, name);
     
     if (success) {
+      // Save user to Supabase (don't block login if this fails)
+      try {
+        await saveUserToSupabase(username, name);
+      } catch (error) {
+        console.warn("Failed to save user to Supabase, but login continues:", error);
+        // Login still succeeds even if Supabase save fails
+      }
+      
       router.push("/admin");
     } else {
       setError("Invalid credentials. Please check your username and password.");
