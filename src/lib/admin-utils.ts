@@ -187,7 +187,7 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
     
     console.log("🔍 DEBUG: Supabase upsert response:", {
       hasData: !!data,
-      dataLength: data?.length || 0,
+      dataLength: Array.isArray(data) ? data.length : (data ? 1 : 0),
       hasError: !!error,
       errorCode: error?.code,
       errorMessage: error?.message
