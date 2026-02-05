@@ -1005,13 +1005,13 @@ export default function WorldMap() {
         </div>
       )}
 
-      {/* Country Name Tooltip - Fixed Position (Top-Right) */}
+      {/* Country Name Tooltip - Fixed Position (Top-Left, under THEORIA) */}
       {hoveredCountry && (
         <div
           className="fixed pointer-events-auto z-[9998]"
           style={{
             top: "80px",
-            right: "20px",
+            left: "20px",
           }}
         >
           <div
