@@ -95,15 +95,18 @@ export default function EventItem({
             <span className={SIDEBAR_TYPOGRAPHY.eventItem.date}>{event.date}</span>
           </div>
         </div>
-        <p
-          className={`${SIDEBAR_TYPOGRAPHY.eventItem.description} transition-colors ${
+        <div
+          className={`${SIDEBAR_TYPOGRAPHY.eventItem.description} transition-colors prose prose-invert max-w-none ${
             isActive
               ? "text-primary-gold/70"
               : "text-primary-gold/50 group-hover:text-primary-gold/60"
           }`}
-        >
-          {event.description}
-        </p>
+          dangerouslySetInnerHTML={{
+            __html: event.description
+              ? event.description.replace(/^<p>|<\/p>$/g, '').trim()
+              : ''
+          }}
+        />
       </div>
     </button>
   );
