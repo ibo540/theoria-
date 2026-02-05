@@ -50,8 +50,9 @@ export function MapDrawingTools({
   const [currentLine, setCurrentLine] = useState<DrawingLine | null>(null);
   const [shapeType, setShapeType] = useState<"circle" | "polygon">("circle");
   const [lineType, setLineType] = useState<"straight" | "curved">("straight");
-  const [lineThickness, setLineThickness] = useState(3);
-  const [lineColor, setLineColor] = useState("#8b5cf6");
+  // Fixed values for connection lines - not user-configurable
+  const lineThickness = 4; // Fixed professional thickness
+  const lineColor = "#ffe4be"; // Fixed beige color (will use theory color on user page)
   const [shapeColor, setShapeColor] = useState("#10b981");
   const [opacity, setOpacity] = useState(0.4);
   const [snapToLines, setSnapToLines] = useState(true); // Enable snap-to-line by default
@@ -740,35 +741,15 @@ export function MapDrawingTools({
               </button>
             </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-white mb-2">Thickness:</label>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={lineThickness}
-              onChange={(e) => setLineThickness(parseInt(e.target.value))}
-              className="w-full"
-            />
-            <span className="text-xs text-gray-300">{lineThickness}px</span>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-white mb-2">Color:</label>
-            <div className="flex gap-2">
-              <input
-                type="color"
-                value={lineColor}
-                onChange={(e) => setLineColor(e.target.value)}
-                className="h-10 w-20 rounded border border-slate-600/50 cursor-pointer"
-              />
-              <input
-                type="text"
-                value={lineColor}
-                onChange={(e) => setLineColor(e.target.value)}
-                className="flex-1 px-3 py-2 rounded border border-slate-600/50 bg-slate-800 text-white"
-                placeholder="#8b5cf6"
-              />
-            </div>
+          {/* Color and thickness are fixed - not user-configurable */}
+          <div className="mb-4 p-3 bg-slate-700/50 rounded-lg border border-slate-600/30">
+            <p className="text-xs text-gray-400 mb-1">Connection Line Style</p>
+            <p className="text-sm text-white">
+              Color: <span className="text-gray-300">Automatic (theory-based)</span>
+            </p>
+            <p className="text-sm text-white">
+              Thickness: <span className="text-gray-300">4px (fixed)</span>
+            </p>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-semibold text-white mb-2">
