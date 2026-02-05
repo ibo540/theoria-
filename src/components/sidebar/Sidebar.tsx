@@ -236,14 +236,15 @@ export default function Sidebar() {
   const handleEventClick = (baseId: string) => {
     // Check if this base event is currently selected (by comparing base IDs)
     const currentBaseId = activeEventId ? getBaseEventId(activeEventId) : null;
-    if (currentBaseId === baseId) {
-      deselectEvent();
-      setActiveTab("overview"); // Reset tab when deselecting
-    } else {
+    
+    // Always select the event on click - don't toggle
+    // If clicking the same event, just ensure it's selected (don't deselect)
+    if (currentBaseId !== baseId) {
       // Select using base ID - if a theory is active, use it; otherwise theory selection will change perspective
       selectEvent(baseId, activeTheory || undefined).catch(console.error);
       setActiveTab("overview"); // Reset tab when selecting new event
     }
+    // If already selected, do nothing (event detail view should already be showing)
   };
 
   const handleClose = () => {
