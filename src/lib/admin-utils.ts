@@ -185,9 +185,12 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       .from('events')
       .upsert(dbEvent, { onConflict: 'id' });
     
+    // Type assertion to fix TypeScript inference issue
+    const responseData = data as any[] | null;
+    
     console.log("🔍 DEBUG: Supabase upsert response:", {
-      hasData: !!data,
-      dataLength: Array.isArray(data) ? data.length : (data ? 1 : 0),
+      hasData: !!responseData,
+      dataLength: Array.isArray(responseData) ? responseData.length : (responseData ? 1 : 0),
       hasError: !!error,
       errorCode: error?.code,
       errorMessage: error?.message
