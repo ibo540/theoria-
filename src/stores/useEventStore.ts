@@ -114,16 +114,29 @@ export const useEventStore = create<EventStore>((set, get) => ({
         if (staticEvent && staticEvent.id === eventId) {
           event = staticEvent;
         } else {
-          // Try Supabase/localStorage
+          // Try Supabase/localStorage with the exact eventId
           const storedEvent = await loadEventFromStorage(eventId);
           if (storedEvent) {
             event = storedEvent;
-          } else if (staticEvent) {
-            // Fallback to static data
-            event = staticEvent;
           } else {
-            // Last resort: check all static events
-            event = EVENTS_DATA.find((e) => e.id === eventId) || null;
+            // If not found by exact ID, try to find any version of this base event
+            // This handles cases where the baseId doesn't match any stored event exactly
+            const eventVersions = await loadEventsByBaseId(baseId);
+            if (eventVersions.length > 0) {
+              // Use the first available version (prefer base event if available)
+              const baseVersion = eventVersions.find(e => getBaseEventId(e.id) === e.id);
+              event = baseVersion || eventVersions[0];
+              finalEventId = event.id;
+            } else if (staticEvent) {
+              // Fallback to static data
+              event = staticEvent;
+            } else {
+              // Last resort: check all static events
+              event = EVENTS_DATA.find((e) => {
+                const eBaseId = getBaseEventId(e.id);
+                return eBaseId === baseId || e.id === eventId;
+              }) || null;
+            }
           }
         }
       }
