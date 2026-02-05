@@ -244,13 +244,13 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       console.log("✅ Event saved successfully to Supabase:", {
         eventId: event.id,
         eventTitle: event.title,
-        dataReturned: data,
+        dataReturned: responseData,
         timestamp: new Date().toISOString()
       });
       
       // Verify the data was actually saved
-      if (data && data.length > 0) {
-        console.log("✅ Confirmed: Event data returned from Supabase:", data[0]);
+      if (responseData && Array.isArray(responseData) && responseData.length > 0) {
+        console.log("✅ Confirmed: Event data returned from Supabase:", responseData[0]);
       } else {
         console.warn("⚠️ Warning: Upsert succeeded but no data returned. This might be normal for upserts.");
       }
