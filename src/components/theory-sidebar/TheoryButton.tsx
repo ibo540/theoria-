@@ -166,11 +166,12 @@ export default function TheoryButton({
       >
         <div
           ref={svgWrapperRef}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full flex items-center justify-center"
           style={
             {
               "--theory-color": initialColor,
               "--theory-dark-color": DARK_BLACK,
+              paddingTop: "16px", // Move icon down to make space for name
             } as React.CSSProperties & {
               "--theory-color": string;
               "--theory-dark-color": string;
