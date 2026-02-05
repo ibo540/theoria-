@@ -221,7 +221,7 @@ export default function Credits({ isOpen, onOpenChange }: CreditsProps) {
                       opacity: 0.7,
                     }}
                   >
-                    Founder
+                    Co-Founder
                   </p>
                 </div>
               </div>
