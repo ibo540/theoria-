@@ -171,7 +171,7 @@ export default function TheoryButton({
             {
               "--theory-color": initialColor,
               "--theory-dark-color": DARK_BLACK,
-              paddingTop: "16px", // Move icon down to make space for name
+              transform: "translateY(8px)", // Move icon down to make space for name
             } as React.CSSProperties & {
               "--theory-color": string;
               "--theory-dark-color": string;
