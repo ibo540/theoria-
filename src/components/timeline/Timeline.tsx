@@ -145,8 +145,28 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
                 : false;
 
               const isTurningPoint = Boolean(point.isTurningPoint);
-              const shouldHighlight =
-                isActive || matchesTheory || isTurningPoint;
+              
+              // Determine colors based on point type and state
+              // Normal points: always beige
+              // Turning points: theory color when active, beige when not active
+              let fillColor = "#ffe4be"; // Default beige for normal points
+              let borderColor = "rgba(212, 175, 55, 0.8)"; // Darker beige border
+              
+              if (isTurningPoint && isActive && activeTheory) {
+                // Turning point that's active - use theory color
+                if (activeTheory === "realism") {
+                  fillColor = "#f9464c"; // Red for realism
+                  borderColor = "#d32f2f"; // Darker red border
+                } else {
+                  fillColor = theoryAccent; // Theory color for other theories
+                  borderColor = theoryAccent; // Same color for border
+                }
+              } else if (isTurningPoint && !isActive) {
+                // Turning point but not active - use beige
+                fillColor = "#ffe4be";
+                borderColor = "rgba(212, 175, 55, 0.8)";
+              }
+              // Normal points (not turning points) always use beige
 
               return (
                 <div
@@ -173,22 +193,14 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
                       style={{
                         width: 24,
                         height: 24,
-                        border: `2px solid ${
-                          shouldHighlight
-                            ? matchesTheory
-                              ? theoryAccent
-                              : "#ffe4be"
-                            : "rgba(255, 228, 190, 0.4)"
-                        }`,
+                        border: `2px solid ${borderColor}`,
                         top: "50%",
                         left: "50%",
                         transform: `translate(-50%, -50%) rotate(45deg) scale(${
                           isHovered || isActive ? 1.2 : 1
                         })`,
-                        boxShadow: shouldHighlight
-                          ? `0 0 18px ${
-                              matchesTheory ? theoryAccent : "#ffe4be"
-                            }55`
+                        boxShadow: isActive && isTurningPoint
+                          ? `0 0 18px ${fillColor}55`
                           : undefined,
                       }}
                     />
@@ -199,22 +211,10 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
                       style={{
                         width: 14,
                         height: 14,
-                        backgroundColor: shouldHighlight
-                          ? matchesTheory
-                            ? theoryAccent
-                            : "#ffe4be"
-                          : "transparent",
-                        border: shouldHighlight
-                          ? "none"
-                          : `2px solid ${
-                              matchesTheory ? theoryAccent : "#ffe4be"
-                            }`,
-                        boxShadow: shouldHighlight
-                          ? `0 0 12px ${
-                              matchesTheory
-                                ? `${theoryAccent}88`
-                                : "rgba(255, 228, 190, 0.6)"
-                            }`
+                        backgroundColor: fillColor,
+                        border: "none",
+                        boxShadow: isActive && isTurningPoint
+                          ? `0 0 12px ${fillColor}88`
                           : "none",
                         transform: `rotate(45deg) scale(${
                           isHovered || isActive ? 1.3 : 1
