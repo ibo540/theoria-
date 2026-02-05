@@ -361,6 +361,14 @@ export default function WorldMap() {
       .filter(Boolean) as string[];
   }, [activeEvent, highlighted]);
 
+  // Get theory color for connection lines
+  const theoryColor = useMemo(() => {
+    if (activeTheory) {
+      return getTheoryColor(activeTheory);
+    }
+    return null;
+  }, [activeTheory, getTheoryColor]);
+
   useCountryLayers(
     mapInstanceRef.current,
     hasMapLoadedRef.current,
@@ -370,7 +378,9 @@ export default function WorldMap() {
     highlightsVisible && Boolean(activeEventId),
     layerColors,
     historicalMapConfig?.geojsonPath,
-    highlightedCountryNames
+    highlightedCountryNames,
+    theoryColor,
+    activeTimelinePointId
   );
 
   // Merge event-level markers with timeline point markers

@@ -2,6 +2,7 @@ import { useEffect, useRef, useMemo, useCallback } from "react";
 import maplibregl, { FilterSpecification } from "maplibre-gl";
 import { gsap } from "gsap";
 import { COLOR_TRANSITION_CONFIG, MAP_COLORS } from "@/lib/map-config";
+import { TheoryType } from "@/stores/useTheoryStore";
 
 interface LayerColors {
   fill: string;
@@ -20,9 +21,9 @@ const DEFAULT_COLORS: LayerColors = {
   border: MAP_COLORS.boundary, // Use same subtle border color as old system
   borderWidth: 0.5, // Match old system - thin, clean borders
   borderOpacity: 0.5, // Match old system opacity
-  line: "#d4af37", // Enhanced gold color for connections
-  lineWidth: 3.5, // Slightly thicker for better visibility
-  lineOpacity: 0.85, // More opaque for better visibility
+  line: "#ffe4be", // Default beige color for connections (will be overridden by theory color)
+  lineWidth: 4, // Slightly thicker for better visibility and 3D effect
+  lineOpacity: 0.9, // More opaque for better visibility
 };
 
 // Layer IDs as constants for consistency
@@ -250,25 +251,31 @@ function setupBaseMapBorderLayer(
 }
 
 /**
- * Setup connection layers
+ * Setup connection layers with 3D effect and animated arrow drawing
+ * Note: Animation is handled separately in useCountryLayers hook
  */
 function setupConnectionLayers(
   map: maplibregl.Map,
   connections: GeoJSON.FeatureCollection | null,
   beforeId: string | undefined,
-  colors: LayerColors
+  colors: LayerColors,
+  theoryColor?: string | null
 ): void {
+  // Note: Animation is handled separately in useCountryLayers hook via useEffect
   const data = connections || { type: "FeatureCollection", features: [] };
   const source = map.getSource(
     SOURCE_IDS.connections
   ) as maplibregl.GeoJSONSource | null;
 
-  // Build expressions that use custom properties if available
+  // Use theory color if available, otherwise use default
+  const baseLineColor = theoryColor || colors.line;
+
+  // Build expressions that use custom properties if available, but default to theory color
   const colorExpression: any = [
     "case",
     ["has", "color"],
     ["get", "color"],
-    colors.line
+    baseLineColor
   ];
   
   const widthExpression: any = [
@@ -291,7 +298,66 @@ function setupConnectionLayers(
       data: data as GeoJSON.FeatureCollection,
     });
 
-    // Add glow layer (wider, more transparent line behind main line)
+    // 3D Effect: Multiple shadow layers for depth
+    // Deep shadow (darkest, widest)
+    map.addLayer(
+      {
+        id: `${LAYER_IDS.connectionsLine}-shadow-deep`,
+        type: "line",
+        source: SOURCE_IDS.connections,
+        paint: {
+          "line-color": "rgba(0, 0, 0, 0.4)",
+          "line-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            ["+", widthExpression, 6],
+            10,
+            ["+", widthExpression, 8],
+          ],
+          "line-opacity": 0.5,
+          "line-blur": 4,
+          "line-offset": [0, 2], // Offset for 3D shadow effect
+        },
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+      },
+      beforeId
+    );
+
+    // Medium shadow
+    map.addLayer(
+      {
+        id: `${LAYER_IDS.connectionsLine}-shadow-medium`,
+        type: "line",
+        source: SOURCE_IDS.connections,
+        paint: {
+          "line-color": "rgba(0, 0, 0, 0.25)",
+          "line-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            ["+", widthExpression, 4],
+            10,
+            ["+", widthExpression, 5],
+          ],
+          "line-opacity": 0.4,
+          "line-blur": 2,
+          "line-offset": [0, 1], // Offset for 3D shadow effect
+        },
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+      },
+      beforeId
+    );
+
+    // Glow layer (wider, more transparent line behind main line)
     map.addLayer(
       {
         id: `${LAYER_IDS.connectionsLine}-glow`,
@@ -304,22 +370,26 @@ function setupConnectionLayers(
             ["linear"],
             ["zoom"],
             0,
-            ["+", widthExpression, 4],
+            ["+", widthExpression, 5],
             10,
-            ["+", widthExpression, 6],
+            ["+", widthExpression, 7],
           ],
           "line-opacity": [
             "*",
             opacityExpression,
-            0.3
+            0.4
           ],
-          "line-blur": 3,
+          "line-blur": 4,
+        },
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
         },
       },
       beforeId
     );
 
-    // Add main line layer
+    // Main line layer with animated drawing effect
     map.addLayer(
       {
         id: LAYER_IDS.connectionsLine,
@@ -333,12 +403,45 @@ function setupConnectionLayers(
           "line-color": colorExpression,
           "line-width": widthExpression,
           "line-opacity": opacityExpression,
+          // Start with line invisible - animation will be handled in useCountryLayers hook
+          "line-dasharray": [0, 10000],
         },
       },
       beforeId
     );
+
+    // Arrow head effect using line styling
+    // We'll create arrow effect using line-cap and a gradient-like approach
+    // The arrow will be created by making the line end wider (using line-width gradient)
   } else {
     source.setData(data as GeoJSON.FeatureCollection);
+    
+    // Update shadow layers
+    const shadowDeepId = `${LAYER_IDS.connectionsLine}-shadow-deep`;
+    if (map.getLayer(shadowDeepId)) {
+      map.setPaintProperty(shadowDeepId, "line-width", [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        ["+", widthExpression, 6],
+        10,
+        ["+", widthExpression, 8],
+      ]);
+    }
+
+    const shadowMediumId = `${LAYER_IDS.connectionsLine}-shadow-medium`;
+    if (map.getLayer(shadowMediumId)) {
+      map.setPaintProperty(shadowMediumId, "line-width", [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        ["+", widthExpression, 4],
+        10,
+        ["+", widthExpression, 5],
+      ]);
+    }
     
     // Update glow layer
     const glowLayerId = `${LAYER_IDS.connectionsLine}-glow`;
@@ -349,14 +452,14 @@ function setupConnectionLayers(
         ["linear"],
         ["zoom"],
         0,
-        ["+", widthExpression, 4],
+        ["+", widthExpression, 5],
         10,
-        ["+", widthExpression, 6],
+        ["+", widthExpression, 7],
       ]);
       map.setPaintProperty(glowLayerId, "line-opacity", [
         "*",
         opacityExpression,
-        0.3
+        0.4
       ]);
     }
     
@@ -378,6 +481,7 @@ function setupConnectionLayers(
         opacityExpression
       );
     }
+
   }
 }
 
@@ -704,7 +808,9 @@ function initializeLayers(
   isVisible: boolean,
   colors: LayerColors,
   geojsonUrl?: string,
-  highlightedCountryNames?: string[]
+  highlightedCountryNames?: string[],
+  theoryColor?: string | null,
+  activeTimelinePointId?: string | null
 ): void {
   if (!map.isStyleLoaded()) {
     console.warn("Map style not loaded yet");
@@ -712,9 +818,11 @@ function initializeLayers(
   }
 
   const beforeId = findFirstSymbolLayer(map);
+  // Setup layers in order: highlights first (bottom), then connections (top)
   setupHighlightLayers(map, highlighted, beforeId, colors);
   setupBaseMapBorderLayer(map, geojsonUrl, highlightedCountryNames, beforeId, colors);
-  setupConnectionLayers(map, connections, beforeId, colors);
+  // Connections should be after highlights to appear on top
+  setupConnectionLayers(map, connections, beforeId, colors, theoryColor);
   setupDrawnShapesLayers(map, drawnShapes, beforeId);
   updateLayerVisibility(map, isVisible);
 }
@@ -728,7 +836,9 @@ export function useCountryLayers(
   isVisible: boolean,
   colors: Partial<LayerColors> = {},
   geojsonUrl?: string,
-  highlightedCountryNames?: string[]
+  highlightedCountryNames?: string[],
+  theoryColor?: string | null,
+  activeTimelinePointId?: string | null
 ) {
   const mergedColors = useMemo(
     () => ({ ...DEFAULT_COLORS, ...colors }),
@@ -745,9 +855,9 @@ export function useCountryLayers(
   // Stable callback for style load handler
   const handleStyleLoad = useCallback(() => {
     if (!map || !map.isStyleLoaded()) return;
-    initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames);
+    initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames, theoryColor, activeTimelinePointId);
     layersInitializedRef.current = true;
-  }, [map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames]);
+  }, [map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames, theoryColor, activeTimelinePointId]);
 
   useEffect(() => {
     if (!map || !mapLoaded) return;
@@ -785,7 +895,7 @@ export function useCountryLayers(
 
     if (needsInit || dataChanged || goingFromEmptyToData) {
       // Full initialization
-      initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames);
+      initializeLayers(map, highlighted, connections, drawnShapes, isVisible, mergedColors, geojsonUrl, highlightedCountryNames, theoryColor, activeTimelinePointId);
       layersInitializedRef.current = true;
       previousHighlightedRef.current = highlighted;
       previousConnectionsRef.current = connections;
@@ -817,5 +927,70 @@ export function useCountryLayers(
     handleStyleLoad,
     geojsonUrl,
     highlightedCountryNames,
+    theoryColor,
+    activeTimelinePointId,
   ]);
+
+  // Animate line drawing when timeline point is reached
+  const animationRef = useRef<gsap.core.Tween | null>(null);
+  
+  useEffect(() => {
+    if (!map || !activeTimelinePointId || !map.getLayer(LAYER_IDS.connectionsLine)) {
+      // Kill animation if timeline point changes or layer doesn't exist
+      if (animationRef.current) {
+        animationRef.current.kill();
+        animationRef.current = null;
+      }
+      return;
+    }
+
+    // Kill any existing animation
+    if (animationRef.current) {
+      animationRef.current.kill();
+    }
+
+    // Start with line invisible (dash array with 0 dash, full gap)
+    map.setPaintProperty(
+      LAYER_IDS.connectionsLine,
+      "line-dasharray",
+      [0, 10000]
+    );
+
+    // Animate to fully visible over 2 seconds using GSAP
+    const obj = { progress: 0 };
+    animationRef.current = gsap.to(obj, {
+      progress: 1,
+      duration: 2,
+      ease: "power2.out",
+      onUpdate: function () {
+        const progress = obj.progress;
+        // Calculate dash array: dash grows, gap shrinks
+        // Use large values to ensure smooth animation
+        const dashLength = 10000 * progress;
+        const gapLength = 10000 * (1 - progress);
+        
+        map.setPaintProperty(
+          LAYER_IDS.connectionsLine,
+          "line-dasharray",
+          [dashLength, gapLength]
+        );
+      },
+      onComplete: function () {
+        // Animation complete - make line solid (no dashes)
+        map.setPaintProperty(
+          LAYER_IDS.connectionsLine,
+          "line-dasharray",
+          [10000, 0]
+        );
+        animationRef.current = null;
+      },
+    });
+
+    return () => {
+      if (animationRef.current) {
+        animationRef.current.kill();
+        animationRef.current = null;
+      }
+    };
+  }, [map, activeTimelinePointId]);
 }
