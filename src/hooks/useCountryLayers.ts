@@ -299,7 +299,7 @@ function setupConnectionLayers(
     });
 
     // 3D Effect: Multiple shadow layers for depth
-    // Deep shadow (darkest, widest)
+    // Deep shadow (darkest, widest) - using line-offset for 3D effect
     map.addLayer(
       {
         id: `${LAYER_IDS.connectionsLine}-shadow-deep`,
@@ -318,7 +318,7 @@ function setupConnectionLayers(
           ],
           "line-opacity": 0.5,
           "line-blur": 4,
-          "line-offset": [0, 2], // Offset for 3D shadow effect
+          "line-offset": 2, // Offset for 3D shadow effect (perpendicular to line)
         },
         layout: {
           "line-cap": "round",
@@ -347,7 +347,7 @@ function setupConnectionLayers(
           ],
           "line-opacity": 0.4,
           "line-blur": 2,
-          "line-offset": [0, 1], // Offset for 3D shadow effect
+          "line-offset": 1, // Offset for 3D shadow effect (perpendicular to line)
         },
         layout: {
           "line-cap": "round",
