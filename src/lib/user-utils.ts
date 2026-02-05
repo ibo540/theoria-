@@ -42,6 +42,7 @@ export async function saveUserToSupabase(username: string, name: string): Promis
     }
 
     // Upsert (insert or update) user
+    // Note: Supabase upsert requires all columns or we need to specify which ones to update
     const { data, error } = await supabase
       .from('users')
       .upsert(
@@ -50,8 +51,12 @@ export async function saveUserToSupabase(username: string, name: string): Promis
           name: userData.name,
           created_at: userData.created_at,
         },
-        { onConflict: 'username' }
-      );
+        { 
+          onConflict: 'username',
+          ignoreDuplicates: false // Update if exists
+        }
+      )
+      .select(); // Request data back to verify
 
     if (error) {
       console.error("❌ Error saving user to Supabase:", {
