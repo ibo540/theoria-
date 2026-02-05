@@ -198,7 +198,7 @@ export default function Sidebar() {
       // Get all theories for this base event
       const theories = sortedEvents
         .map(e => e.theory)
-        .filter((t): t is string => !!t);
+        .filter((t): t is NonNullable<typeof t> => !!t);
 
       return {
         baseId,
