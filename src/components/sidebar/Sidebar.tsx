@@ -7,7 +7,7 @@ import EventItem from "@/components/sidebar/EventItem";
 import Button from "@/components/ui/Buttons/p-button/Button";
 import { EVENTS_DATA, EventData } from "@/data/events";
 import { useEventStore } from "@/stores/useEventStore";
-import { loadAllEventsFromStorage } from "@/lib/admin-utils";
+import { loadAllEventsFromStorage, getBaseEventId } from "@/lib/admin-utils";
 import { SidebarFrame } from "./SidebarFrame";
 import { SidebarTabs } from "./SidebarTabs";
 import { SidebarTabContent } from "./SidebarTabContent";
@@ -163,34 +163,83 @@ export default function Sidebar() {
     setActiveTab(tabId);
   };
 
-  // Filter events based on search query
+  // Group events by base ID to show only one card per event
+  const groupedBaseEvents = useMemo(() => {
+    const grouped = new Map<string, EventData[]>();
+
+    allEvents.forEach((event) => {
+      const baseId = getBaseEventId(event.id);
+      
+      if (!grouped.has(baseId)) {
+        grouped.set(baseId, []);
+      }
+
+      const existing = grouped.get(baseId)!;
+      // Prevent exact duplicates (same ID)
+      if (!existing.some(e => e.id === event.id)) {
+        existing.push(event);
+      }
+    });
+
+    // Convert to array and get representative event for each group
+    return Array.from(grouped.entries()).map(([baseId, eventList]) => {
+      // Sort: Base event (no theory or matching baseID) first, then theories
+      const sortedEvents = [...eventList].sort((a, b) => {
+        const aIsBase = a.id === baseId;
+        const bIsBase = b.id === baseId;
+        if (aIsBase && !bIsBase) return -1;
+        if (!aIsBase && bIsBase) return 1;
+        return 0;
+      });
+
+      // Representative is the base event or first event in the list
+      const representative = sortedEvents[0];
+
+      // Get all theories for this base event
+      const theories = sortedEvents
+        .map(e => e.theory)
+        .filter((t): t is string => !!t);
+
+      return {
+        baseId,
+        representative,
+        theories,
+        allEvents: sortedEvents,
+      };
+    });
+  }, [allEvents]);
+
+  // Filter grouped events based on search query
   const filteredEvents = useMemo(() => {
     if (!searchQuery.trim()) {
-      return allEvents;
+      return groupedBaseEvents;
     }
 
     const query = searchQuery.toLowerCase().trim();
-    return allEvents.filter((event) => {
-      const matchesTitle = event.title.toLowerCase().includes(query);
-      const matchesDescription = event.description
-        .toLowerCase()
+    return groupedBaseEvents.filter(({ representative }) => {
+      const matchesTitle = representative.title.toLowerCase().includes(query);
+      const matchesDescription = representative.description
+        ?.toLowerCase()
         .includes(query);
-      const matchesDate = event.date.toLowerCase().includes(query);
-      const matchesActors = event.actors?.some((actor) => {
+      const matchesDate = representative.date.toLowerCase().includes(query);
+      const matchesActors = representative.actors?.some((actor) => {
         const actorName = typeof actor === "string" ? actor : actor.name;
         return actorName.toLowerCase().includes(query);
       });
 
       return matchesTitle || matchesDescription || matchesDate || matchesActors;
     });
-  }, [searchQuery, allEvents]);
+  }, [searchQuery, groupedBaseEvents]);
 
-  const handleEventClick = (eventId: string) => {
-    if (isEventSelected(eventId)) {
+  const handleEventClick = (baseId: string) => {
+    // Check if this base event is currently selected (by comparing base IDs)
+    const currentBaseId = activeEventId ? getBaseEventId(activeEventId) : null;
+    if (currentBaseId === baseId) {
       deselectEvent();
       setActiveTab("overview"); // Reset tab when deselecting
     } else {
-      selectEvent(eventId).catch(console.error);
+      // Select using base ID - theory selection will change perspective
+      selectEvent(baseId).catch(console.error);
       setActiveTab("overview"); // Reset tab when selecting new event
     }
   };
