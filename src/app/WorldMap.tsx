@@ -424,14 +424,28 @@ export default function WorldMap() {
   
   // When theory changes, reload event with theory-specific data
   useEffect(() => {
-    if (activeEvent && activeTheory) {
+    if (activeEvent) {
       const baseEventId = getBaseEventId(activeEvent.id);
-      // Only reload if the theory actually changed and we have a base event
-      if (previousTheoryRef.current !== activeTheory) {
-        // Reload event with the selected theory
-        selectEvent(baseEventId, activeTheory).catch(console.error);
-        previousTheoryRef.current = activeTheory;
+      
+      if (activeTheory) {
+        // Theory is selected - reload event with theory-specific data
+        // Only reload if the theory actually changed
+        if (previousTheoryRef.current !== activeTheory) {
+          console.log("🔄 Theory changed, reloading event with theory:", activeTheory);
+          selectEvent(baseEventId, activeTheory).catch(console.error);
+          previousTheoryRef.current = activeTheory;
+        }
+      } else {
+        // Theory was deselected - reload event without theory
+        if (previousTheoryRef.current !== null) {
+          console.log("🔄 Theory deselected, reloading event without theory");
+          selectEvent(baseEventId).catch(console.error);
+          previousTheoryRef.current = null;
+        }
       }
+    } else if (activeTheory && previousTheoryRef.current !== activeTheory) {
+      // Theory selected but no event - this shouldn't happen, but reset tracking
+      previousTheoryRef.current = activeTheory;
     }
   }, [activeTheory, activeEvent, selectEvent]);
   

@@ -7,6 +7,7 @@ import EventItem from "@/components/sidebar/EventItem";
 import Button from "@/components/ui/Buttons/p-button/Button";
 import { EVENTS_DATA, EventData } from "@/data/events";
 import { useEventStore } from "@/stores/useEventStore";
+import { useTheoryStore } from "@/stores/useTheoryStore";
 import { loadAllEventsFromStorage, getBaseEventId } from "@/lib/admin-utils";
 import { SidebarFrame } from "./SidebarFrame";
 import { SidebarTabs } from "./SidebarTabs";
@@ -63,6 +64,7 @@ export default function Sidebar() {
   const deselectEvent = useEventStore((state) => state.deselectEvent);
   const isEventSelected = useEventStore((state) => state.isEventSelected);
   const loadingEventId = useEventStore((state) => state.loadingEventId);
+  const activeTheory = useTheoryStore((state) => state.activeTheory);
 
   // Load events from Supabase/localStorage and merge with static events
   useEffect(() => {
@@ -238,8 +240,8 @@ export default function Sidebar() {
       deselectEvent();
       setActiveTab("overview"); // Reset tab when deselecting
     } else {
-      // Select using base ID - theory selection will change perspective
-      selectEvent(baseId).catch(console.error);
+      // Select using base ID - if a theory is active, use it; otherwise theory selection will change perspective
+      selectEvent(baseId, activeTheory || undefined).catch(console.error);
       setActiveTab("overview"); // Reset tab when selecting new event
     }
   };
