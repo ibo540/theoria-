@@ -159,11 +159,14 @@ function getOverviewSections(event: EventData): SidebarSection[] {
           >
             Description
           </h4>
-          <p
-            className={`${SIDEBAR_TYPOGRAPHY.content.normal} text-primary-gold/85`}
-          >
-            {event.fullDescription}
-          </p>
+          <div
+            className={`${SIDEBAR_TYPOGRAPHY.content.normal} text-primary-gold/85 prose prose-invert max-w-none`}
+            dangerouslySetInnerHTML={{
+              __html: event.fullDescription
+                ? event.fullDescription.replace(/^<p>|<\/p>$/g, '').trim()
+                : ''
+            }}
+          />
         </div>
       </div>
     ),
@@ -392,11 +395,12 @@ function getTimelineSections(event: EventData): SidebarSection[] {
                 {point.label}
               </h4>
               {point.description && (
-                <p
-                  className={`${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/80`}
-                >
-                  {point.description}
-                </p>
+                <div
+                  className={`${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/80 prose prose-invert max-w-none`}
+                  dangerouslySetInnerHTML={{
+                    __html: point.description.replace(/^<p>|<\/p>$/g, '').trim()
+                  }}
+                />
               )}
               {point.eventType && (
                 <span

@@ -27,6 +27,11 @@ interface CountryHighlight {
 }
 
 export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info';
+  } | null>(null);
+
   // Determine which historical map to use
   const historicalMapConfig = (() => {
     if (!event) {
@@ -318,7 +323,33 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
   }, [event.highlightedCountries, event.countryHighlights]);
 
   return (
-    <div className="p-8 space-y-8">
+    <>
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed top-4 right-4 z-[9999] max-w-md">
+          <div
+            className={`p-4 rounded-lg shadow-xl border backdrop-blur-sm ${
+              notification.type === 'success'
+                ? 'bg-green-600/90 border-green-500 text-white'
+                : notification.type === 'error'
+                ? 'bg-red-600/90 border-red-500 text-white'
+                : 'bg-blue-600/90 border-blue-500 text-white'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <p className="text-sm font-medium flex-1">{notification.message}</p>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-white/80 hover:text-white transition-colors"
+                type="button"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="p-8 space-y-8">
       <div className="border-b border-slate-600/50 pb-4">
         <h2 className="text-2xl font-bold text-white">Map Highlights</h2>
         <p className="text-gray-300 mt-1">
@@ -463,9 +494,19 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
 
               // Show notification with detected countries
               if (detectedCountries.length > 0) {
-                alert(`Shape detected ${detectedCountries.length} countr${detectedCountries.length === 1 ? 'y' : 'ies'}: ${detectedCountries.join(', ')}`);
+                setNotification({
+                  message: `Shape detected ${detectedCountries.length} countr${detectedCountries.length === 1 ? 'y' : 'ies'}: ${detectedCountries.join(', ')}`,
+                  type: 'success'
+                });
+                // Auto-hide after 5 seconds
+                setTimeout(() => setNotification(null), 5000);
               } else {
-                alert('No countries detected in this shape. You may need to adjust the shape or manually add countries.');
+                setNotification({
+                  message: 'No countries detected in this shape. You may need to adjust the shape or manually add countries.',
+                  type: 'info'
+                });
+                // Auto-hide after 5 seconds
+                setTimeout(() => setNotification(null), 5000);
               }
 
               setEvent({
@@ -1048,7 +1089,8 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
           }}
         />
       ) */}
-    </div>
+      </div>
+    </>
   );
 }
 
