@@ -180,7 +180,7 @@ export default function TheoryButton({
         />
         {/* Theory name label inside icon at the top */}
         <span
-          className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
+          className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-bold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
           style={{
             color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
             opacity: isActive ? 1 : hasActiveTheory ? 0.8 : 0.9,
