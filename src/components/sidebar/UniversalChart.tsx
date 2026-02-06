@@ -137,7 +137,14 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="top" 
-                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                        style={{ 
+                                            fill: "#ffe4be", 
+                                            fontSize: 11, 
+                                            fontWeight: "bold",
+                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+                                            stroke: "rgba(0,0,0,0.5)",
+                                            strokeWidth: 0.5
+                                        }}
                                     />
                                 </Line>
                             ))}
@@ -189,7 +196,14 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="top" 
-                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                        style={{ 
+                                            fill: "#ffe4be", 
+                                            fontSize: 11, 
+                                            fontWeight: "bold",
+                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+                                            stroke: "rgba(0,0,0,0.5)",
+                                            strokeWidth: 0.5
+                                        }}
                                     />
                                 </Area>
                             ))}
@@ -214,7 +228,10 @@ export default function UniversalChart({
                                     fillOpacity={0.4}
                                 />
                             ))}
-                            <Legend wrapperStyle={{ fontSize: "10px", textTransform: "uppercase" }} />
+                            <Legend 
+                                wrapperStyle={{ fontSize: "11px", textTransform: "uppercase" }} 
+                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                            />
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
                         </RadarChart>
                     </ResponsiveContainer>
@@ -252,11 +269,12 @@ export default function UniversalChart({
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                             <XAxis 
                                 type="number" 
-                                stroke="#666" 
-                                fontSize={10} 
+                                stroke="#ccc" 
+                                fontSize={12}
+                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
                                 hide={!xAxisLabel}
                             >
-                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600 }} />}
                             </XAxis>
                             <YAxis
                                 type="category"
