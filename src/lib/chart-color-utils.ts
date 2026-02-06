@@ -78,25 +78,25 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 /**
- * Predefined palette of distinct, vibrant colors that work well together
- * These colors are chosen to be easily distinguishable
+ * Calm, muted color palette for charts
+ * These colors are chosen to be subtle and easy on the eyes
  */
 const DISTINCT_COLOR_PALETTE = [
-  "#f9464c", // Red (Realism)
-  "#3b82f6", // Blue
-  "#10b981", // Green
-  "#f59e0b", // Amber/Orange
-  "#8b5cf6", // Purple
-  "#ec4899", // Pink
-  "#06b6d4", // Cyan
-  "#f97316", // Orange
-  "#84cc16", // Lime
-  "#6366f1", // Indigo
-  "#14b8a6", // Teal
-  "#ef4444", // Light Red
-  "#0ea5e9", // Sky Blue
-  "#22c55e", // Light Green
-  "#a855f7", // Light Purple
+  "#8b7355", // Muted brown
+  "#6b8e9f", // Soft blue-gray
+  "#7a8b7a", // Muted green-gray
+  "#9b8b7a", // Warm gray
+  "#7d8ba3", // Soft blue
+  "#8b8b7a", // Neutral gray-green
+  "#6b7d8b", // Cool gray-blue
+  "#8b7d6b", // Warm taupe
+  "#7a8b8b", // Blue-gray
+  "#8b7a7a", // Muted rose
+  "#6b8b7a", // Sage green
+  "#8b8b8b", // Medium gray
+  "#7a7d8b", // Lavender-gray
+  "#8b7d8b", // Muted purple-gray
+  "#7a8b7d", // Soft teal-gray
 ];
 
 /**
@@ -141,10 +141,10 @@ export function getChartColors(
   baseColor: string | undefined,
   count: number,
   defaultColors: string[] = [
-    "#d97706", // amber-600
-    "#b45309", // amber-700
-    "#92400e", // amber-800
-    "#78350f", // amber-900
+    "#8b7355", // Muted brown
+    "#6b8e9f", // Soft blue-gray
+    "#7a8b7a", // Muted green-gray
+    "#9b8b7a", // Warm gray
   ]
 ): string[] {
   if (baseColor && count > 0) {

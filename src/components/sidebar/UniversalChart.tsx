@@ -51,11 +51,12 @@ interface UniversalChartProps {
     yAxisLabel?: string; // Custom Y-axis label
 }
 
+// Calm, muted color palette for charts
 const THEME_COLORS = [
-    "#d97706", // amber-600 (Primary)
-    "#b45309", // amber-700
-    "#92400e", // amber-800
-    "#78350f", // amber-900
+    "#8b7355", // Muted brown
+    "#6b8e9f", // Soft blue-gray
+    "#7a8b7a", // Muted green-gray
+    "#9b8b7a", // Warm gray
 ];
 
 const CUSTOM_TOOLTIP_STYLE = {
@@ -133,21 +134,7 @@ export default function UniversalChart({
                                     activeDot={{ r: 6, fill: colors[index % colors.length] }}
                                     animationDuration={0}
                                     animationBegin={0}
-                                >
-                                    <LabelList 
-                                        dataKey={key} 
-                                        position="top" 
-                                        style={{ 
-                                            fill: "#ffffff", 
-                                            fontSize: 12, 
-                                            fontWeight: "bold",
-                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
-                                            stroke: "#000000",
-                                            strokeWidth: 1.5,
-                                            paintOrder: "stroke fill"
-                                        }}
-                                    />
-                                </Line>
+                                />
                             ))}
                         </LineChart>
                     </ResponsiveContainer>
@@ -193,21 +180,7 @@ export default function UniversalChart({
                                     fillOpacity={0.6}
                                     animationDuration={0}
                                     animationBegin={0}
-                                >
-                                    <LabelList 
-                                        dataKey={key} 
-                                        position="top" 
-                                        style={{ 
-                                            fill: "#ffffff", 
-                                            fontSize: 12, 
-                                            fontWeight: "bold",
-                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
-                                            stroke: "#000000",
-                                            strokeWidth: 1.5,
-                                            paintOrder: "stroke fill"
-                                        }}
-                                    />
-                                </Area>
+                                />
                             ))}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -298,21 +271,7 @@ export default function UniversalChart({
                                     radius={[0, 4, 4, 0]}
                                     animationDuration={0}
                                     animationBegin={0}
-                                >
-                                    {/* Always show values on bars */}
-                                    <LabelList 
-                                        dataKey={key} 
-                                        position="right" 
-                                        style={{ 
-                                            fill: "#ffffff", 
-                                            fontSize: 12, 
-                                            fontWeight: "bold",
-                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
-                                            stroke: "#000000",
-                                            strokeWidth: 1.5,
-                                            paintOrder: "stroke fill"
-                                        }}
-                                    />
+                                />
                                     {/* Optional: Add cell coloring if single series */}
                                     {dataKeys.length === 1 && data.map((entry, idx) => (
                                         <Cell key={`cell-${idx}`} fill={entry.color || colors[idx % colors.length]} />
