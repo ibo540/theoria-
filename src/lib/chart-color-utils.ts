@@ -78,35 +78,55 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 /**
- * Generate distinct color variations from a base color
+ * Predefined palette of distinct, vibrant colors that work well together
+ * These colors are chosen to be easily distinguishable
+ */
+const DISTINCT_COLOR_PALETTE = [
+  "#f9464c", // Red (Realism)
+  "#3b82f6", // Blue
+  "#10b981", // Green
+  "#f59e0b", // Amber/Orange
+  "#8b5cf6", // Purple
+  "#ec4899", // Pink
+  "#06b6d4", // Cyan
+  "#f97316", // Orange
+  "#84cc16", // Lime
+  "#6366f1", // Indigo
+  "#14b8a6", // Teal
+  "#ef4444", // Light Red
+  "#0ea5e9", // Sky Blue
+  "#22c55e", // Light Green
+  "#a855f7", // Light Purple
+];
+
+/**
+ * Generate distinct colors for chart series
+ * Uses the theory color as primary, then selects distinct colors from palette
  * @param baseColor - The theory color (hex format)
- * @param count - Number of variations needed
- * @returns Array of distinct colors that maintain the theory color identity
+ * @param count - Number of colors needed
+ * @returns Array of distinct colors with theory color as first
  */
 export function generateColorVariations(baseColor: string, count: number): string[] {
   if (count === 0) return [];
   if (count === 1) return [baseColor];
 
-  const { h, s, l } = hexToHsl(baseColor);
-  const colors: string[] = [baseColor]; // First color is always the base
-
-  // Generate variations by adjusting hue, saturation, and lightness
-  // while staying within the same color family
+  const colors: string[] = [baseColor]; // First color is always the theory color
+  
+  // Find the theory color in the palette to avoid duplicates
+  const baseColorIndex = DISTINCT_COLOR_PALETTE.findIndex(
+    color => color.toLowerCase() === baseColor.toLowerCase()
+  );
+  
+  // Create a filtered palette excluding the theory color
+  const availableColors = baseColorIndex >= 0
+    ? [...DISTINCT_COLOR_PALETTE.slice(0, baseColorIndex), ...DISTINCT_COLOR_PALETTE.slice(baseColorIndex + 1)]
+    : DISTINCT_COLOR_PALETTE;
+  
+  // Select distinct colors from the palette
   for (let i = 1; i < count; i++) {
-    const progress = i / (count - 1);
-    
-    // Vary hue slightly (±30 degrees) to create distinct but related colors
-    const hueVariation = (progress - 0.5) * 40; // ±20 degrees
-    const newH = (h + hueVariation + 360) % 360;
-    
-    // Vary saturation (60-100%) to keep colors vibrant
-    const newS = Math.max(60, Math.min(100, s + (progress - 0.5) * 20));
-    
-    // Vary lightness (40-70%) to ensure good contrast
-    const lightnessVariation = (progress - 0.5) * 30;
-    const newL = Math.max(40, Math.min(70, l + lightnessVariation));
-    
-    colors.push(hslToHex(newH, newS, newL));
+    // Cycle through available colors, ensuring we get distinct ones
+    const colorIndex = (i - 1) % availableColors.length;
+    colors.push(availableColors[colorIndex]);
   }
 
   return colors;
