@@ -276,6 +276,37 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   };
 
   return (
+    <>
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed top-4 right-4 z-[9999] max-w-md">
+          <div
+            className={`p-4 rounded-lg shadow-xl border backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-300 ${
+              notification.type === "success"
+                ? "bg-green-600/90 border-green-500 text-white"
+                : notification.type === "error"
+                ? "bg-red-600/90 border-red-500 text-white"
+                : "bg-blue-600/90 border-blue-500 text-white"
+            }`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1">
+                {notification.type === "success" && <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />}
+                {notification.type === "info" && <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />}
+                {notification.type === "error" && <X className="w-5 h-5 flex-shrink-0 mt-0.5" />}
+                <p className="text-sm font-medium flex-1">{notification.message}</p>
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-white/80 hover:text-white transition-colors flex-shrink-0"
+                type="button"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
