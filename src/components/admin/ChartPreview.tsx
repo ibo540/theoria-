@@ -3,19 +3,22 @@
 import React from "react";
 import { ChartData } from "@/data/events";
 import UniversalChart from "@/components/sidebar/UniversalChart";
-import { THEORY_COLORS } from "@/lib/theoryTokens";
+import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
 
 interface ChartPreviewProps {
   chart: ChartData;
 }
 
 export function ChartPreview({ chart }: ChartPreviewProps) {
-  // Get theory color if chart is associated with a theory
-  const getTheoryColorValue = (theory: string): string | undefined => {
-    return THEORY_COLORS[theory as keyof typeof THEORY_COLORS];
-  };
-
-  const theoryColor = chart.theory ? getTheoryColorValue(chart.theory) : undefined;
+  // Get theory color using the same function as country highlighting
+  const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
+  
+  const theoryColor = chart.theory 
+    ? getTheoryColor(chart.theory as TheoryType)
+    : undefined;
+  
+  // Create color variations with opacity for multi-series charts
+  // Use the exact theory color for primary, with opacity variations
   const colors = theoryColor
     ? [theoryColor, theoryColor + "CC", theoryColor + "99", theoryColor + "66"]
     : undefined;

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import UniversalChart, { ChartType } from "./UniversalChart";
 import { ChartData } from "@/data/events";
-import { THEORY_COLORS } from "@/lib/theoryTokens";
+import { useTheoryStore } from "@/stores/useTheoryStore";
 
 interface SidebarTabContentProps {
   tabId: SidebarTabId;
@@ -663,6 +663,7 @@ function getTheoriesSections(event: EventData): SidebarSection[] {
 
 function getStatisticsSections(event: EventData): SidebarSection[] {
   const sections: SidebarSection[] = [];
+  const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
 
   // Charts section
   if (event.stats?.charts && event.stats.charts.length > 0) {
@@ -674,21 +675,13 @@ function getStatisticsSections(event: EventData): SidebarSection[] {
         <div className="space-y-6">
           {event.stats.charts.map((chart) => {
             // Get theory color if chart is associated with a theory
-            // Use actual color values from globals.css
-            const getTheoryColorValue = (theory: string): string | undefined => {
-              const colorMap: Record<string, string> = {
-                realism: "#f9464c", // --red
-                neorealism: "#91beef", // --navy
-                liberalism: "#7edef9", // --blue
-                neoliberal: "#bbe581", // --green
-                englishschool: "#f5d6f9", // --purple
-                constructivism: "#f3db66", // --yellow
-              };
-              return colorMap[theory];
-            };
-
-            const theoryColor = chart.theory ? getTheoryColorValue(chart.theory) : undefined;
+            // Use the exact same color values as country highlighting
+            const theoryColor = chart.theory 
+              ? getTheoryColor(chart.theory as TheoryType)
+              : undefined;
+            
             // Create color variations with opacity for multi-series charts
+            // Use the exact theory color for primary, with opacity variations
             const colors = theoryColor 
               ? [theoryColor, theoryColor + "CC", theoryColor + "99", theoryColor + "66"]
               : undefined;
