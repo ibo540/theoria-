@@ -279,7 +279,7 @@ export default function UniversalChart({
                                     radius={[0, 4, 4, 0]}
                                     animationDuration={0}
                                     animationBegin={0}
-                                />
+                                >
                                     {/* Optional: Add cell coloring if single series */}
                                     {dataKeys.length === 1 && data.map((entry, idx) => (
                                         <Cell key={`cell-${idx}`} fill={entry.color || colors[idx % colors.length]} />
