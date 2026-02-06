@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     BarChart,
     Bar,
@@ -23,6 +23,8 @@ import {
     Cell,
     PieChart as RechartsPieChart,
     Pie,
+    Label,
+    LabelList,
 } from "recharts";
 import { BarChart2, ChevronDown, ChevronUp, Activity, PieChart as PieIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,6 +46,8 @@ interface UniversalChartProps {
     dataKeys?: string[]; // Keys to plot (default: ['value'])
     colors?: string[];   // Colors for each key
     height?: number;
+    xAxisLabel?: string; // Custom X-axis label
+    yAxisLabel?: string; // Custom Y-axis label
 }
 
 const THEME_COLORS = [
@@ -71,8 +75,11 @@ export default function UniversalChart({
     dataKeys = ["value"],
     colors = THEME_COLORS,
     height = 250,
+    xAxisLabel,
+    yAxisLabel,
 }: UniversalChartProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(true);
 
     const renderChart = () => {
         switch (type) {
@@ -86,12 +93,18 @@ export default function UniversalChart({
                                 stroke="#666"
                                 fontSize={10}
                                 tick={{ fill: "#888" }}
-                            />
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                            </XAxis>
                             <YAxis
                                 stroke="#666"
                                 fontSize={10}
                                 tick={{ fill: "#888" }}
-                            />
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
+                            </YAxis>
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
                             <Legend wrapperStyle={{ paddingTop: "10px", fontSize: "10px", textTransform: "uppercase" }} />
                             {dataKeys.map((key, index) => (
@@ -103,7 +116,15 @@ export default function UniversalChart({
                                     strokeWidth={2}
                                     dot={{ fill: "#000", stroke: colors[index % colors.length], strokeWidth: 2 }}
                                     activeDot={{ r: 6, fill: colors[index % colors.length] }}
-                                />
+                                    animationDuration={isAnimating ? 1000 : 0}
+                                    animationBegin={index * 100}
+                                >
+                                    <LabelList 
+                                        dataKey={key} 
+                                        position="top" 
+                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                    />
+                                </Line>
                             ))}
                         </LineChart>
                     </ResponsiveContainer>
@@ -114,8 +135,21 @@ export default function UniversalChart({
                     <ResponsiveContainer width="100%" height={height}>
                         <AreaChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                            <XAxis dataKey="label" stroke="#666" fontSize={10} />
-                            <YAxis stroke="#666" fontSize={10} />
+                            <XAxis 
+                                dataKey="label" 
+                                stroke="#666" 
+                                fontSize={10}
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                            </XAxis>
+                            <YAxis 
+                                stroke="#666" 
+                                fontSize={10}
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
+                            </YAxis>
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
                             <Legend wrapperStyle={{ paddingTop: "10px", fontSize: "10px", textTransform: "uppercase" }} />
                             {dataKeys.map((key, index) => (
@@ -127,7 +161,15 @@ export default function UniversalChart({
                                     stroke={colors[index % colors.length]}
                                     fill={colors[index % colors.length]}
                                     fillOpacity={0.6}
-                                />
+                                    animationDuration={isAnimating ? 1000 : 0}
+                                    animationBegin={index * 100}
+                                >
+                                    <LabelList 
+                                        dataKey={key} 
+                                        position="top" 
+                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                    />
+                                </Area>
                             ))}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -167,7 +209,8 @@ export default function UniversalChart({
                                 outerRadius={80}
                                 fill="#8884d8"
                                 dataKey="value"
-                                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                                label={({ name, value, percent }) => `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`}
+                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color || colors[index % colors.length]} />
@@ -184,7 +227,15 @@ export default function UniversalChart({
                     <ResponsiveContainer width="100%" height={height}>
                         <BarChart data={data} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
-                            <XAxis type="number" stroke="#666" fontSize={10} hide />
+                            <XAxis 
+                                type="number" 
+                                stroke="#666" 
+                                fontSize={10} 
+                                hide={!xAxisLabel}
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                            </XAxis>
                             <YAxis
                                 type="category"
                                 dataKey="label"
@@ -192,7 +243,10 @@ export default function UniversalChart({
                                 fontSize={10}
                                 width={80}
                                 tick={{ fill: "#ccc" }}
-                            />
+                                animationDuration={isAnimating ? 1000 : 0}
+                            >
+                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
+                            </YAxis>
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
                             {dataKeys.map((key, index) => (
                                 <Bar
@@ -201,7 +255,15 @@ export default function UniversalChart({
                                     fill={colors[index % colors.length]}
                                     barSize={12}
                                     radius={[0, 4, 4, 0]}
+                                    animationDuration={isAnimating ? 1000 : 0}
+                                    animationBegin={index * 100}
                                 >
+                                    {/* Always show values on bars */}
+                                    <LabelList 
+                                        dataKey={key} 
+                                        position="right" 
+                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                    />
                                     {/* Optional: Add cell coloring if single series */}
                                     {dataKeys.length === 1 && data.map((entry, idx) => (
                                         <Cell key={`cell-${idx}`} fill={entry.color || colors[idx % colors.length]} />

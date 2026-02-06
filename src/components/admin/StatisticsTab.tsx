@@ -451,6 +451,32 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                   placeholder="Chart description..."
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  X-Axis Label (optional)
+                </label>
+                <input
+                  type="text"
+                  value={previewChart.xAxisLabel || ""}
+                  onChange={(e) => handleUpdatePreviewChart("xAxisLabel", e.target.value || undefined)}
+                  className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  placeholder="e.g., Countries, Years, Categories"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  Y-Axis Label (optional)
+                </label>
+                <input
+                  type="text"
+                  value={previewChart.yAxisLabel || ""}
+                  onChange={(e) => handleUpdatePreviewChart("yAxisLabel", e.target.value || undefined)}
+                  className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  placeholder="e.g., Values, Percentage, Count"
+                />
+              </div>
             </div>
 
             <ChartPreview chart={previewChart} />
@@ -572,6 +598,32 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                       onChange={(e) => handleUpdateChartField("description", e.target.value || undefined)}
                       className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
                       placeholder="Chart description..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      X-Axis Label (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={editingChart?.xAxisLabel || ""}
+                      onChange={(e) => handleUpdateChartField("xAxisLabel", e.target.value || undefined)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="e.g., Countries, Years, Categories"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Y-Axis Label (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={editingChart?.yAxisLabel || ""}
+                      onChange={(e) => handleUpdateChartField("yAxisLabel", e.target.value || undefined)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="e.g., Values, Percentage, Count"
                     />
                   </div>
                 </div>

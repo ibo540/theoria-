@@ -411,6 +411,10 @@ export interface ChartData {
   dataKeys?: string[];
   /** Theory this chart is associated with (for color theming) */
   theory?: "realism" | "neorealism" | "liberalism" | "neoliberal" | "englishschool" | "constructivism";
+  /** Custom X-axis label */
+  xAxisLabel?: string;
+  /** Custom Y-axis label */
+  yAxisLabel?: string;
 }
 
 /**

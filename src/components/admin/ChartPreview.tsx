@@ -34,6 +34,8 @@ export function ChartPreview({ chart }: ChartPreviewProps) {
           dataKeys={chart.dataKeys}
           colors={colors}
           height={300}
+          xAxisLabel={chart.xAxisLabel}
+          yAxisLabel={chart.yAxisLabel}
         />
       </div>
     </div>

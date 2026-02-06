@@ -703,6 +703,8 @@ function getStatisticsSections(event: EventData): SidebarSection[] {
                 dataKeys={chart.dataKeys}
                 colors={colors}
                 height={300}
+                xAxisLabel={chart.xAxisLabel}
+                yAxisLabel={chart.yAxisLabel}
               />
             );
           })}
