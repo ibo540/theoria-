@@ -138,12 +138,13 @@ export default function UniversalChart({
                                         dataKey={key} 
                                         position="top" 
                                         style={{ 
-                                            fill: "#ffe4be", 
-                                            fontSize: 11, 
+                                            fill: "#ffffff", 
+                                            fontSize: 12, 
                                             fontWeight: "bold",
-                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
-                                            stroke: "rgba(0,0,0,0.5)",
-                                            strokeWidth: 0.5
+                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
+                                            stroke: "#000000",
+                                            strokeWidth: 1.5,
+                                            paintOrder: "stroke fill"
                                         }}
                                     />
                                 </Line>
@@ -197,12 +198,13 @@ export default function UniversalChart({
                                         dataKey={key} 
                                         position="top" 
                                         style={{ 
-                                            fill: "#ffe4be", 
-                                            fontSize: 11, 
+                                            fill: "#ffffff", 
+                                            fontSize: 12, 
                                             fontWeight: "bold",
-                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
-                                            stroke: "rgba(0,0,0,0.5)",
-                                            strokeWidth: 0.5
+                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
+                                            stroke: "#000000",
+                                            strokeWidth: 1.5,
+                                            paintOrder: "stroke fill"
                                         }}
                                     />
                                 </Area>
@@ -302,12 +304,13 @@ export default function UniversalChart({
                                         dataKey={key} 
                                         position="right" 
                                         style={{ 
-                                            fill: "#ffe4be", 
-                                            fontSize: 11, 
+                                            fill: "#ffffff", 
+                                            fontSize: 12, 
                                             fontWeight: "bold",
-                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
-                                            stroke: "rgba(0,0,0,0.5)",
-                                            strokeWidth: 0.5
+                                            textShadow: "0 0 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)",
+                                            stroke: "#000000",
+                                            strokeWidth: 1.5,
+                                            paintOrder: "stroke fill"
                                         }}
                                     />
                                     {/* Optional: Add cell coloring if single series */}
