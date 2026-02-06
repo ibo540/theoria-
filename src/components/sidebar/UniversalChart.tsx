@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
     BarChart,
     Bar,
@@ -81,7 +82,13 @@ export default function UniversalChart({
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const chartRef = React.useRef<HTMLDivElement>(null);
+
+    // Ensure component is mounted before using portal
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const renderChart = (fullscreenHeight?: number) => {
         const chartHeight = fullscreenHeight || height;
@@ -340,70 +347,79 @@ export default function UniversalChart({
                 )}
             </AnimatePresence>
 
-            {/* Fullscreen Modal */}
-            <AnimatePresence>
-                {isFullscreen && (
-                    <>
-                        {/* Backdrop */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 bg-black/90 z-[9999] backdrop-blur-sm"
-                            onClick={() => setIsFullscreen(false)}
-                        />
+            {/* Fullscreen Modal - Rendered via Portal */}
+            {mounted && createPortal(
+                <AnimatePresence>
+                    {isFullscreen && (
+                        <>
+                            {/* Backdrop */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="fixed inset-0 bg-black/90 z-[9999] backdrop-blur-sm"
+                                onClick={() => setIsFullscreen(false)}
+                            />
 
-                        {/* Fullscreen Chart Container */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ 
-                                duration: 0.5,
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 30
-                            }}
-                            className="fixed inset-4 md:inset-8 lg:inset-16 z-[10000] bg-black/95 border border-primary-gold/30 rounded-lg overflow-hidden shadow-2xl"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-primary-gold/20 bg-neutral-900/50">
-                                <div className="flex-1">
-                                    <h2 className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/90 text-xl mb-2`}>
-                                        {title}
-                                    </h2>
-                                    {description && (
-                                        <p className={`${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/70 italic`}>
-                                            {description}
-                                        </p>
-                                    )}
+                            {/* Fullscreen Chart Container */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ 
+                                    duration: 0.4,
+                                    ease: [0.4, 0, 0.2, 1]
+                                }}
+                                className="fixed inset-4 md:inset-8 lg:inset-16 z-[10000] bg-black/95 border border-primary-gold/30 rounded-lg overflow-hidden shadow-2xl"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{ 
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    margin: '1rem',
+                                }}
+                            >
+                                {/* Header */}
+                                <div className="flex items-center justify-between p-6 border-b border-primary-gold/20 bg-neutral-900/50">
+                                    <div className="flex-1">
+                                        <h2 className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/90 text-xl mb-2`}>
+                                            {title}
+                                        </h2>
+                                        {description && (
+                                            <p className={`${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/70 italic`}>
+                                                {description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => setIsFullscreen(false)}
+                                        className="p-2 text-primary-gold/60 hover:text-primary-gold/90 transition-colors rounded hover:bg-neutral-800/50 ml-4"
+                                        title="Close fullscreen"
+                                    >
+                                        <X size={24} />
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={() => setIsFullscreen(false)}
-                                    className="p-2 text-primary-gold/60 hover:text-primary-gold/90 transition-colors rounded hover:bg-neutral-800/50 ml-4"
-                                    title="Close fullscreen"
-                                >
-                                    <X size={24} />
-                                </button>
-                            </div>
 
-                            {/* Chart Content */}
-                            <div className="p-6 h-[calc(100%-120px)] overflow-auto">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.2 }}
-                                    className="w-full h-full"
-                                >
-                                    {renderChart(Math.max(600, window.innerHeight * 0.6))}
-                                </motion.div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                                {/* Chart Content */}
+                                <div className="p-6 h-[calc(100%-120px)] overflow-auto">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: 0.2 }}
+                                        className="w-full h-full"
+                                    >
+                                        {renderChart(Math.max(600, typeof window !== 'undefined' ? window.innerHeight * 0.6 : 600))}
+                                    </motion.div>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 }
