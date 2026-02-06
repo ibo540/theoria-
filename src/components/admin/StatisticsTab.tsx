@@ -795,5 +795,6 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
         ))}
       </div>
     </div>
+    </>
   );
 }
