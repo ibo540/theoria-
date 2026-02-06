@@ -309,11 +309,23 @@ export default function UniversalChart({
                         className="overflow-hidden"
                     >
                         <div className="p-4">
-                            <h4 className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/80 mb-4`}>
-                                {title}
-                            </h4>
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/80`}>
+                                    {title}
+                                </h4>
+                                <button
+                                    onClick={() => setIsFullscreen(true)}
+                                    className="p-2 text-primary-gold/60 hover:text-primary-gold/90 transition-colors rounded hover:bg-neutral-800/50"
+                                    title="Expand to fullscreen"
+                                >
+                                    <Maximize2 size={16} />
+                                </button>
+                            </div>
 
-                            <div className="w-full">
+                            <div 
+                                className="w-full cursor-pointer"
+                                onClick={() => setIsFullscreen(true)}
+                            >
                                 {renderChart()}
                             </div>
 
