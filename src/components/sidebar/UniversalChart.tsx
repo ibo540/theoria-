@@ -191,8 +191,8 @@ export default function UniversalChart({
                                     stroke={colors[index % colors.length]}
                                     fill={colors[index % colors.length]}
                                     fillOpacity={0.6}
-                                    animationDuration={isAnimating ? 1000 : 0}
-                                    animationBegin={index * 100}
+                                    animationDuration={0}
+                                    animationBegin={0}
                                 >
                                     <LabelList 
                                         dataKey={key} 
