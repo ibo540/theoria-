@@ -100,21 +100,28 @@ export default function UniversalChart({
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis
                                 dataKey="label"
-                                stroke="#666"
-                                fontSize={10}
-                                tick={{ fill: "#888" }}
+                                stroke="#ccc"
+                                fontSize={12}
+                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
                             >
-                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600 }} />}
                             </XAxis>
                             <YAxis
-                                stroke="#666"
-                                fontSize={10}
-                                tick={{ fill: "#888" }}
+                                stroke="#ccc"
+                                fontSize={12}
+                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
                             >
-                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
+                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
-                            <Legend wrapperStyle={{ paddingTop: "10px", fontSize: "10px", textTransform: "uppercase" }} />
+                            <Legend 
+                                wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
+                                iconType="line"
+                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                            />
                             {dataKeys.map((key, index) => (
                                 <Line
                                     key={key}
@@ -145,19 +152,28 @@ export default function UniversalChart({
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis 
                                 dataKey="label" 
-                                stroke="#666" 
-                                fontSize={10}
+                                stroke="#ccc" 
+                                fontSize={12}
+                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
                             >
-                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
+                                {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600 }} />}
                             </XAxis>
                             <YAxis 
-                                stroke="#666" 
-                                fontSize={10}
+                                stroke="#ccc" 
+                                fontSize={12}
+                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
                             >
-                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
+                                {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
-                            <Legend wrapperStyle={{ paddingTop: "10px", fontSize: "10px", textTransform: "uppercase" }} />
+                            <Legend 
+                                wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
+                                iconType="line"
+                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                            />
                             {dataKeys.map((key, index) => (
                                 <Area
                                     key={key}
@@ -186,7 +202,7 @@ export default function UniversalChart({
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <RadarChart outerRadius="70%" data={data}>
                             <PolarGrid stroke="#333" />
-                            <PolarAngleAxis dataKey="label" tick={{ fill: "#888", fontSize: 10 }} />
+                            <PolarAngleAxis dataKey="label" tick={{ fill: "#ffe4be", fontSize: 12, fontWeight: 500 }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#444" tick={false} />
                             {dataKeys.map((key, index) => (
                                 <Radar
@@ -216,6 +232,7 @@ export default function UniversalChart({
                                 fill="#8884d8"
                                 dataKey="value"
                                 label={({ name, value, percent }) => `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`}
+                                labelLine={{ stroke: "#ffe4be", strokeWidth: 1 }}
                                 animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {data.map((entry, index) => (
@@ -266,7 +283,14 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="right" 
-                                        style={{ fill: colors[index % colors.length], fontSize: 10, fontWeight: "bold" }}
+                                        style={{ 
+                                            fill: "#ffe4be", 
+                                            fontSize: 11, 
+                                            fontWeight: "bold",
+                                            textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+                                            stroke: "rgba(0,0,0,0.5)",
+                                            strokeWidth: 0.5
+                                        }}
                                     />
                                     {/* Optional: Add cell coloring if single series */}
                                     {dataKeys.length === 1 && data.map((entry, idx) => (

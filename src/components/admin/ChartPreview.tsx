@@ -4,6 +4,7 @@ import React from "react";
 import { ChartData } from "@/data/events";
 import UniversalChart from "@/components/sidebar/UniversalChart";
 import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
+import { getChartColors } from "@/lib/chart-color-utils";
 
 interface ChartPreviewProps {
   chart: ChartData;
@@ -17,10 +18,13 @@ export function ChartPreview({ chart }: ChartPreviewProps) {
     ? getTheoryColor(chart.theory as TheoryType)
     : undefined;
   
-  // Create color variations with opacity for multi-series charts
-  // Use the exact theory color for primary, with opacity variations
+  // Determine number of data series (dataKeys or default to 1)
+  const seriesCount = chart.dataKeys?.length || 1;
+  
+  // Generate distinct color variations from theory color
+  // This maintains theory identity while ensuring readability
   const colors = theoryColor
-    ? [theoryColor, theoryColor + "CC", theoryColor + "99", theoryColor + "66"]
+    ? getChartColors(theoryColor, seriesCount)
     : undefined;
 
   return (
