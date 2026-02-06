@@ -80,7 +80,7 @@ export default function UniversalChart({
     yAxisLabel,
 }: UniversalChartProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(true);
+    const [isAnimating, setIsAnimating] = useState(false); // Disable animations to keep labels visible
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const chartRef = React.useRef<HTMLDivElement>(null);
