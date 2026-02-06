@@ -26,7 +26,7 @@ import {
     Label,
     LabelList,
 } from "recharts";
-import { BarChart2, ChevronDown, ChevronUp, Activity, PieChart as PieIcon } from "lucide-react";
+import { BarChart2, ChevronDown, ChevronUp, Activity, PieChart as PieIcon, X, Maximize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SIDEBAR_TYPOGRAPHY } from "./typography";
 
@@ -80,6 +80,8 @@ export default function UniversalChart({
 }: UniversalChartProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(true);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const chartRef = React.useRef<HTMLDivElement>(null);
 
     const renderChart = () => {
         switch (type) {
@@ -130,7 +132,7 @@ export default function UniversalChart({
 
             case "area":
                 return (
-                    <ResponsiveContainer width="100%" height={height}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <AreaChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis 
@@ -173,7 +175,7 @@ export default function UniversalChart({
 
             case "radar":
                 return (
-                    <ResponsiveContainer width="100%" height={height}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <RadarChart outerRadius="70%" data={data}>
                             <PolarGrid stroke="#333" />
                             <PolarAngleAxis dataKey="label" tick={{ fill: "#888", fontSize: 10 }} />
@@ -196,7 +198,7 @@ export default function UniversalChart({
 
             case "pie":
                 return (
-                    <ResponsiveContainer width="100%" height={height}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <RechartsPieChart>
                             <Pie
                                 data={data}
@@ -220,7 +222,7 @@ export default function UniversalChart({
             case "bar":
             default:
                 return (
-                    <ResponsiveContainer width="100%" height={height}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                             <XAxis 
@@ -322,6 +324,71 @@ export default function UniversalChart({
                             )}
                         </div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Fullscreen Modal */}
+            <AnimatePresence>
+                {isFullscreen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 bg-black/90 z-[9999] backdrop-blur-sm"
+                            onClick={() => setIsFullscreen(false)}
+                        />
+
+                        {/* Fullscreen Chart Container */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ 
+                                duration: 0.5,
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 30
+                            }}
+                            className="fixed inset-4 md:inset-8 lg:inset-16 z-[10000] bg-black/95 border border-primary-gold/30 rounded-lg overflow-hidden shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-primary-gold/20 bg-neutral-900/50">
+                                <div className="flex-1">
+                                    <h2 className={`${SIDEBAR_TYPOGRAPHY.content.label} text-primary-gold/90 text-xl mb-2`}>
+                                        {title}
+                                    </h2>
+                                    {description && (
+                                        <p className={`${SIDEBAR_TYPOGRAPHY.content.small} text-primary-gold/70 italic`}>
+                                            {description}
+                                        </p>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => setIsFullscreen(false)}
+                                    className="p-2 text-primary-gold/60 hover:text-primary-gold/90 transition-colors rounded hover:bg-neutral-800/50 ml-4"
+                                    title="Close fullscreen"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            {/* Chart Content */}
+                            <div className="p-6 h-[calc(100%-120px)] overflow-auto">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="w-full h-full"
+                                >
+                                    {renderChart(Math.max(600, window.innerHeight * 0.6))}
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </div>
