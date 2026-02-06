@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import UniversalChart, { ChartType } from "./UniversalChart";
 import { ChartData } from "@/data/events";
-import { useTheoryStore } from "@/stores/useTheoryStore";
+import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
 
 interface SidebarTabContentProps {
   tabId: SidebarTabId;
