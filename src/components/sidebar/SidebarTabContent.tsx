@@ -21,6 +21,7 @@ import {
 import UniversalChart, { ChartType } from "./UniversalChart";
 import { ChartData } from "@/data/events";
 import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
+import { getChartColors } from "@/lib/chart-color-utils";
 
 interface SidebarTabContentProps {
   tabId: SidebarTabId;
