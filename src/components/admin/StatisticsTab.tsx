@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info } from "lucide-react";
 import { EventData, ChartData } from "@/data/events";
 import { DataUploader } from "./DataUploader";
 import { SpreadsheetEditor } from "./SpreadsheetEditor";
@@ -44,6 +44,11 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const [previewChart, setPreviewChart] = useState<ChartData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "info" | "error";
+    id: number;
+  } | null>(null);
 
   const handleAddChart = () => {
     const newChart: ChartData = {
@@ -140,7 +145,10 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
     
     if (data.length > MAX_ROWS) {
       console.warn(`⚠️ Large dataset detected (${data.length} rows). Limiting to first ${MAX_ROWS} rows for editing.`);
-      alert(`Large dataset detected (${data.length} rows). Showing first ${MAX_ROWS} rows for editing. All data will be used when creating charts.`);
+      showNotification(
+        `Large dataset detected (${data.length} rows). Showing first ${MAX_ROWS} rows for editing. All data will be used when creating charts.`,
+        "info"
+      );
     }
     
     setUploadedData({ headers, data: limitedData });
@@ -179,7 +187,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
 
   const handleCreateChartFromData = async () => {
     if (!uploadedData || selectedValueColumns.length === 0) {
-      alert("Please select at least one value column.");
+      showNotification("Please select at least one value column.", "error");
       return;
     }
 
@@ -210,7 +218,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
       });
 
       if (chartData.length === 0) {
-        alert("No valid data to create chart from.");
+        showNotification("No valid data to create chart from.", "error");
         setIsProcessing(false);
         return;
       }
