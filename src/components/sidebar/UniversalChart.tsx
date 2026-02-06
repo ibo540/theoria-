@@ -93,7 +93,6 @@ export default function UniversalChart({
                                 stroke="#666"
                                 fontSize={10}
                                 tick={{ fill: "#888" }}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
                             </XAxis>
@@ -101,7 +100,6 @@ export default function UniversalChart({
                                 stroke="#666"
                                 fontSize={10}
                                 tick={{ fill: "#888" }}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
                             </YAxis>
@@ -139,14 +137,12 @@ export default function UniversalChart({
                                 dataKey="label" 
                                 stroke="#666" 
                                 fontSize={10}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
                             </XAxis>
                             <YAxis 
                                 stroke="#666" 
                                 fontSize={10}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
                             </YAxis>
@@ -232,7 +228,6 @@ export default function UniversalChart({
                                 stroke="#666" 
                                 fontSize={10} 
                                 hide={!xAxisLabel}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#888", fontSize: 11 }} />}
                             </XAxis>
@@ -243,7 +238,6 @@ export default function UniversalChart({
                                 fontSize={10}
                                 width={80}
                                 tick={{ fill: "#ccc" }}
-                                animationDuration={isAnimating ? 1000 : 0}
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
                             </YAxis>
