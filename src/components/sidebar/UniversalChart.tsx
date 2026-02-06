@@ -137,7 +137,6 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="top" 
-                                        isAnimationActive={false}
                                         style={{ 
                                             fill: "#ffe4be", 
                                             fontSize: 11, 
@@ -197,7 +196,6 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="top" 
-                                        isAnimationActive={false}
                                         style={{ 
                                             fill: "#ffe4be", 
                                             fontSize: 11, 
@@ -303,7 +301,6 @@ export default function UniversalChart({
                                     <LabelList 
                                         dataKey={key} 
                                         position="right" 
-                                        isAnimationActive={false}
                                         style={{ 
                                             fill: "#ffe4be", 
                                             fontSize: 11, 
