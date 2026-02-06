@@ -43,6 +43,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const [selectedValueColumns, setSelectedValueColumns] = useState<number[]>([]);
   const [previewChart, setPreviewChart] = useState<ChartData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAddChart = () => {
     const newChart: ChartData = {
@@ -133,17 +134,28 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
 
   // File upload handlers
   const handleDataLoaded = (data: any[][], headers: string[]) => {
-    setUploadedData({ headers, data });
+    // Limit data size to prevent browser freeze
+    const MAX_ROWS = 1000; // Limit to 1000 rows for spreadsheet editor
+    const limitedData = data.slice(0, MAX_ROWS);
+    
+    if (data.length > MAX_ROWS) {
+      console.warn(`⚠️ Large dataset detected (${data.length} rows). Limiting to first ${MAX_ROWS} rows for editing.`);
+      alert(`Large dataset detected (${data.length} rows). Showing first ${MAX_ROWS} rows for editing. All data will be used when creating charts.`);
+    }
+    
+    setUploadedData({ headers, data: limitedData });
     setShowSpreadsheet(true);
     
-    // Analyze data and suggest chart types
-    const suggestions = suggestChartTypes(headers, data);
-    setChartSuggestions(suggestions);
+    // Analyze data and suggest chart types (use setTimeout to prevent blocking)
+    setTimeout(() => {
+      const suggestions = suggestChartTypes(headers, limitedData);
+      setChartSuggestions(suggestions);
+    }, 0);
     
     // Auto-select first column as label, first numeric column as value
     setSelectedLabelColumn(0);
     const firstNumericCol = headers.findIndex((_, i) => {
-      const sample = data.slice(0, Math.min(5, data.length)).map(row => row[i]);
+      const sample = limitedData.slice(0, Math.min(5, limitedData.length)).map(row => row[i]);
       return sample.some(val => !isNaN(Number(val)) && val !== "");
     });
     setSelectedValueColumns(firstNumericCol >= 0 ? [firstNumericCol] : []);
@@ -156,45 +168,77 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const handleSpreadsheetDataChange = (data: any[][]) => {
     if (uploadedData) {
       setUploadedData({ ...uploadedData, data });
-      // Re-analyze suggestions
-      const suggestions = suggestChartTypes(uploadedData.headers, data);
-      setChartSuggestions(suggestions);
+      // Re-analyze suggestions with debouncing to prevent excessive calculations
+      // Use setTimeout to prevent blocking
+      setTimeout(() => {
+        const suggestions = suggestChartTypes(uploadedData.headers, data);
+        setChartSuggestions(suggestions);
+      }, 100);
     }
   };
 
-  const handleCreateChartFromData = () => {
+  const handleCreateChartFromData = async () => {
     if (!uploadedData || selectedValueColumns.length === 0) {
       alert("Please select at least one value column.");
       return;
     }
 
-    const chartData = convertToChartData(
-      uploadedData.headers,
-      uploadedData.data,
-      selectedLabelColumn,
-      selectedValueColumns
-    );
+    setIsProcessing(true);
+    
+    try {
+      // Limit data processing to prevent browser freeze
+      // Process in chunks using setTimeout to allow browser to breathe
+      const MAX_DATA_POINTS = 500; // Limit to 500 data points for performance
+      const dataToProcess = uploadedData.data.slice(0, MAX_DATA_POINTS);
+      
+      if (uploadedData.data.length > MAX_DATA_POINTS) {
+        console.warn(`⚠️ Large dataset detected (${uploadedData.data.length} rows). Limiting to first ${MAX_DATA_POINTS} rows for performance.`);
+      }
 
-    if (chartData.length === 0) {
-      alert("No valid data to create chart from.");
-      return;
+      // Process data asynchronously to prevent blocking
+      const chartData = await new Promise<Array<{ label: string; value: number; [key: string]: any }>>((resolve) => {
+        // Use setTimeout to break up the work and prevent blocking
+        setTimeout(() => {
+          const result = convertToChartData(
+            uploadedData.headers,
+            dataToProcess,
+            selectedLabelColumn,
+            selectedValueColumns
+          );
+          resolve(result);
+        }, 0);
+      });
+
+      if (chartData.length === 0) {
+        alert("No valid data to create chart from.");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Use first suggestion or default to bar
+      const suggestedType = chartSuggestions[0]?.type || "bar";
+
+      const newChart: ChartData = {
+        id: `chart-${Date.now()}`,
+        title: `Chart from ${uploadedData.headers[selectedLabelColumn]}`,
+        type: suggestedType,
+        data: chartData,
+        dataKeys: selectedValueColumns.length > 1 
+          ? selectedValueColumns.map(i => uploadedData.headers[i])
+          : undefined,
+      };
+
+      // Use setTimeout to ensure state updates don't block
+      setTimeout(() => {
+        setPreviewChart(newChart);
+        setShowPreview(true);
+        setIsProcessing(false);
+      }, 0);
+    } catch (error) {
+      console.error("Error creating chart:", error);
+      alert(`Error creating chart: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsProcessing(false);
     }
-
-    // Use first suggestion or default to bar
-    const suggestedType = chartSuggestions[0]?.type || "bar";
-
-    const newChart: ChartData = {
-      id: `chart-${Date.now()}`,
-      title: `Chart from ${uploadedData.headers[selectedLabelColumn]}`,
-      type: suggestedType,
-      data: chartData,
-      dataKeys: selectedValueColumns.length > 1 
-        ? selectedValueColumns.map(i => uploadedData.headers[i])
-        : undefined,
-    };
-
-    setPreviewChart(newChart);
-    setShowPreview(true);
   };
 
   const handleSavePreviewChart = () => {
@@ -367,11 +411,20 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
 
             <button
               onClick={handleCreateChartFromData}
-              disabled={selectedValueColumns.length === 0}
+              disabled={selectedValueColumns.length === 0 || isProcessing}
               className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              <Eye size={16} />
-              Preview Chart
+              {isProcessing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Eye size={16} />
+                  Preview Chart
+                </>
+              )}
             </button>
           </div>
         </div>

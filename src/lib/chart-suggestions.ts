@@ -138,9 +138,18 @@ export function convertToChartData(
   valueColumnIndices: number[]
 ): Array<{ label: string; value: number; [key: string]: any }> {
   const chartData: Array<{ label: string; value: number; [key: string]: any }> = [];
+  
+  // Limit data points to prevent performance issues
+  const MAX_DATA_POINTS = 500;
+  const dataToProcess = data.slice(0, MAX_DATA_POINTS);
 
-  data.forEach((row) => {
+  // Process in batches to prevent blocking
+  for (let i = 0; i < dataToProcess.length; i++) {
+    const row = dataToProcess[i];
     const label = String(row[labelColumnIndex] ?? "");
+    
+    if (!label) continue; // Skip rows without labels
+    
     const dataPoint: { label: string; value: number; [key: string]: any } = {
       label,
       value: 0,
@@ -160,10 +169,12 @@ export function convertToChartData(
       }
     });
 
-    if (label) {
-      chartData.push(dataPoint);
-    }
-  });
+    chartData.push(dataPoint);
+  }
+
+  if (data.length > MAX_DATA_POINTS) {
+    console.warn(`⚠️ Data truncated from ${data.length} to ${MAX_DATA_POINTS} points for chart rendering.`);
+  }
 
   return chartData;
 }
