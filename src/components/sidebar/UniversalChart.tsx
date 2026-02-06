@@ -117,7 +117,11 @@ export default function UniversalChart({
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
-                            <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
+                            <Tooltip 
+                                contentStyle={CUSTOM_TOOLTIP_STYLE} 
+                                itemStyle={{ color: "#fff" }}
+                                cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
+                            />
                             <Legend 
                                 wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
                                 iconType="line"
@@ -163,7 +167,11 @@ export default function UniversalChart({
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
-                            <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
+                            <Tooltip 
+                                contentStyle={CUSTOM_TOOLTIP_STYLE} 
+                                itemStyle={{ color: "#fff" }}
+                                cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
+                            />
                             <Legend 
                                 wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
                                 iconType="line"
@@ -177,7 +185,7 @@ export default function UniversalChart({
                                     stackId="1" // Stacked by default for Area
                                     stroke={colors[index % colors.length]}
                                     fill={colors[index % colors.length]}
-                                    fillOpacity={0.6}
+                                    fillOpacity={0.4}
                                     animationDuration={0}
                                     animationBegin={0}
                                 />
