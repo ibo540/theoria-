@@ -78,25 +78,25 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 /**
- * Calm, muted color palette for charts
- * These colors are chosen to be subtle and easy on the eyes
+ * Calm color palette matching website theme
+ * Based on website colors but with reduced saturation for a softer look
  */
 const DISTINCT_COLOR_PALETTE = [
-  "#8b7355", // Muted brown
-  "#6b8e9f", // Soft blue-gray
-  "#7a8b7a", // Muted green-gray
-  "#9b8b7a", // Warm gray
-  "#7d8ba3", // Soft blue
-  "#8b8b7a", // Neutral gray-green
-  "#6b7d8b", // Cool gray-blue
-  "#8b7d6b", // Warm taupe
-  "#7a8b8b", // Blue-gray
-  "#8b7a7a", // Muted rose
-  "#6b8b7a", // Sage green
-  "#8b8b8b", // Medium gray
-  "#7a7d8b", // Lavender-gray
-  "#8b7d8b", // Muted purple-gray
-  "#7a8b7d", // Soft teal-gray
+  "#d4b896", // Soft gold (from primary-gold #ffe4be)
+  "#a8c8d4", // Soft blue (from #7edef9)
+  "#c4d4a8", // Soft green (from #bbe581)
+  "#d4a8c8", // Soft purple (from #f5d6f9)
+  "#a8b8d4", // Soft navy (from #91beef)
+  "#d4c4a8", // Soft yellow (from #f3db66)
+  "#c8a8b8", // Soft rose (from red #f9464c)
+  "#b8c8d4", // Light blue-gray
+  "#c8d4b8", // Light green-gray
+  "#d4b8c8", // Light purple-gray
+  "#b8d4c8", // Soft teal
+  "#c8b8d4", // Soft lavender
+  "#d4c8b8", // Warm beige
+  "#b8c4d4", // Cool blue-gray
+  "#c4c8d4", // Neutral blue-gray
 ];
 
 /**
@@ -141,10 +141,10 @@ export function getChartColors(
   baseColor: string | undefined,
   count: number,
   defaultColors: string[] = [
-    "#8b7355", // Muted brown
-    "#6b8e9f", // Soft blue-gray
-    "#7a8b7a", // Muted green-gray
-    "#9b8b7a", // Warm gray
+    "#d4b896", // Soft gold (from primary-gold #ffe4be)
+    "#a8c8d4", // Soft blue (from #7edef9)
+    "#c4d4a8", // Soft green (from #bbe581)
+    "#d4a8c8", // Soft purple (from #f5d6f9)
   ]
 ): string[] {
   if (baseColor && count > 0) {

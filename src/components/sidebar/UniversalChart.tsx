@@ -51,12 +51,12 @@ interface UniversalChartProps {
     yAxisLabel?: string; // Custom Y-axis label
 }
 
-// Calm, muted color palette for charts
+// Calm color palette matching website theme (reduced saturation)
 const THEME_COLORS = [
-    "#8b7355", // Muted brown
-    "#6b8e9f", // Soft blue-gray
-    "#7a8b7a", // Muted green-gray
-    "#9b8b7a", // Warm gray
+    "#d4b896", // Soft gold (from primary-gold #ffe4be)
+    "#a8c8d4", // Soft blue (from #7edef9)
+    "#c4d4a8", // Soft green (from #bbe581)
+    "#d4a8c8", // Soft purple (from #f5d6f9)
 ];
 
 const CUSTOM_TOOLTIP_STYLE = {
