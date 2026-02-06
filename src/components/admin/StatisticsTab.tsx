@@ -50,6 +50,11 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
     id: number;
   } | null>(null);
 
+  const showNotification = (message: string, type: "success" | "info" | "error" = "info") => {
+    setNotification({ message, type, id: Date.now() });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
   const handleAddChart = () => {
     const newChart: ChartData = {
       id: `chart-${Date.now()}`,
@@ -170,7 +175,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   };
 
   const handleDataError = (error: string) => {
-    alert(`Error: ${error}`);
+    showNotification(error, "error");
   };
 
   const handleSpreadsheetDataChange = (data: any[][]) => {
