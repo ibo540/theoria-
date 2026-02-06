@@ -83,11 +83,12 @@ export default function UniversalChart({
     const [isFullscreen, setIsFullscreen] = useState(false);
     const chartRef = React.useRef<HTMLDivElement>(null);
 
-    const renderChart = () => {
+    const renderChart = (fullscreenHeight?: number) => {
+        const chartHeight = fullscreenHeight || height;
         switch (type) {
             case "line":
                 return (
-                    <ResponsiveContainer width="100%" height={height}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <LineChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis
