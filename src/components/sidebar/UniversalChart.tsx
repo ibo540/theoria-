@@ -131,8 +131,8 @@ export default function UniversalChart({
                                     strokeWidth={2}
                                     dot={{ fill: "#000", stroke: colors[index % colors.length], strokeWidth: 2 }}
                                     activeDot={{ r: 6, fill: colors[index % colors.length] }}
-                                    animationDuration={isAnimating ? 1000 : 0}
-                                    animationBegin={index * 100}
+                                    animationDuration={0}
+                                    animationBegin={0}
                                 >
                                     <LabelList 
                                         dataKey={key} 
@@ -296,8 +296,8 @@ export default function UniversalChart({
                                     fill={colors[index % colors.length]}
                                     barSize={12}
                                     radius={[0, 4, 4, 0]}
-                                    animationDuration={isAnimating ? 1000 : 0}
-                                    animationBegin={index * 100}
+                                    animationDuration={0}
+                                    animationBegin={0}
                                 >
                                     {/* Always show values on bars */}
                                     <LabelList 
