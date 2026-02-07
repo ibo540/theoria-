@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings } from "lucide-react";
 import { EventData, ChartData } from "@/data/events";
 import { DataUploader } from "./DataUploader";
 import { SpreadsheetEditor } from "./SpreadsheetEditor";
 import { ChartPreview } from "./ChartPreview";
+import { ColorPalettePicker } from "./ColorPalettePicker";
 import { suggestChartTypes, convertToChartData } from "@/lib/chart-suggestions";
 
 interface StatisticsTabProps {
@@ -536,6 +537,15 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                 </select>
               </div>
 
+              {/* Custom Colors */}
+              <div className="md:col-span-2">
+                <ColorPalettePicker
+                  colors={previewChart.customColors || []}
+                  onChange={(colors) => handleUpdatePreviewChart("customColors", colors.length > 0 ? colors : undefined)}
+                  maxColors={previewChart.dataKeys?.length || 1}
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-medium text-gray-300 mb-1">
                   Description (optional)
@@ -573,6 +583,143 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                   className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
                   placeholder="e.g., Values, Percentage, Count"
                 />
+              </div>
+            </div>
+
+            {/* Excel-like Formatting Options */}
+            <div className="border-t border-slate-700 pt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Settings size={16} className="text-gray-400" />
+                <h4 className="text-sm font-semibold text-white">Chart Formatting (Excel-like)</h4>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Gridlines */}
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={previewChart.formatting?.showGridlines !== false}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        showGridlines: e.target.checked,
+                      })}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    Show Gridlines
+                  </label>
+                </div>
+
+                {/* Data Labels */}
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={previewChart.formatting?.showDataLabels === true}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        showDataLabels: e.target.checked,
+                      })}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    Show Data Labels
+                  </label>
+                </div>
+
+                {/* Legend Position */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Legend Position
+                  </label>
+                  <select
+                    value={previewChart.formatting?.legendPosition || "top"}
+                    onChange={(e) => handleUpdatePreviewChart("formatting", {
+                      ...previewChart.formatting,
+                      legendPosition: e.target.value as "top" | "bottom" | "left" | "right" | "none",
+                    })}
+                    className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                  >
+                    <option value="top">Top</option>
+                    <option value="bottom">Bottom</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                    <option value="none">None</option>
+                  </select>
+                </div>
+
+                {/* Background Color */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Background Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={previewChart.formatting?.backgroundColor || "#000000"}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        backgroundColor: e.target.value,
+                      })}
+                      className="w-12 h-10 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={previewChart.formatting?.backgroundColor || "#000000"}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        backgroundColor: e.target.value,
+                      })}
+                      className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="#000000"
+                    />
+                  </div>
+                </div>
+
+                {/* Border Color */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Border Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={previewChart.formatting?.borderColor || "#333333"}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        borderColor: e.target.value,
+                      })}
+                      className="w-12 h-10 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={previewChart.formatting?.borderColor || "#333333"}
+                      onChange={(e) => handleUpdatePreviewChart("formatting", {
+                        ...previewChart.formatting,
+                        borderColor: e.target.value,
+                      })}
+                      className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="#333333"
+                    />
+                  </div>
+                </div>
+
+                {/* Border Width */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Border Width: {previewChart.formatting?.borderWidth || 0}px
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="5"
+                    value={previewChart.formatting?.borderWidth || 0}
+                    onChange={(e) => handleUpdatePreviewChart("formatting", {
+                      ...previewChart.formatting,
+                      borderWidth: parseInt(e.target.value),
+                    })}
+                    className="w-full"
+                  />
+                </div>
               </div>
             </div>
 

@@ -415,6 +415,30 @@ export interface ChartData {
   xAxisLabel?: string;
   /** Custom Y-axis label */
   yAxisLabel?: string;
+  /** Custom colors for each data series (overrides theory colors) */
+  customColors?: string[];
+  /** Chart formatting options (Excel-like features) */
+  formatting?: {
+    /** Show gridlines */
+    showGridlines?: boolean;
+    /** Legend position */
+    legendPosition?: "top" | "bottom" | "left" | "right" | "none";
+    /** Show data labels on chart elements */
+    showDataLabels?: boolean;
+    /** Chart background color */
+    backgroundColor?: string;
+    /** Chart border color */
+    borderColor?: string;
+    /** Chart border width */
+    borderWidth?: number;
+    /** Chart padding */
+    padding?: {
+      top?: number;
+      right?: number;
+      bottom?: number;
+      left?: number;
+    };
+  };
 }
 
 /**

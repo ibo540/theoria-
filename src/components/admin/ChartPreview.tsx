@@ -59,6 +59,8 @@ export function ChartPreview({ chart }: ChartPreviewProps) {
           height={300}
           xAxisLabel={chart.xAxisLabel}
           yAxisLabel={chart.yAxisLabel}
+          customColors={chart.customColors}
+          formatting={chart.formatting}
         />
       </div>
     </div>

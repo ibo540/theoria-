@@ -49,6 +49,15 @@ interface UniversalChartProps {
     height?: number;
     xAxisLabel?: string; // Custom X-axis label
     yAxisLabel?: string; // Custom Y-axis label
+    customColors?: string[]; // Custom colors from admin (overrides colors)
+    formatting?: {
+        showGridlines?: boolean;
+        legendPosition?: "top" | "bottom" | "left" | "right" | "none";
+        showDataLabels?: boolean;
+        backgroundColor?: string;
+        borderColor?: string;
+        borderWidth?: number;
+    };
 }
 
 // Calm color palette matching website theme (reduced saturation)
@@ -79,7 +88,17 @@ export default function UniversalChart({
     height = 250,
     xAxisLabel,
     yAxisLabel,
+    customColors,
+    formatting,
 }: UniversalChartProps) {
+    // Use custom colors if provided, otherwise use theory colors or default
+    const chartColors = customColors && customColors.length > 0 
+        ? customColors 
+        : colors;
+    
+    const showGridlines = formatting?.showGridlines !== false;
+    const legendPosition = formatting?.legendPosition || "top";
+    const showDataLabels = formatting?.showDataLabels === true;
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false); // Disable animations to keep labels visible
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -98,7 +117,7 @@ export default function UniversalChart({
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <LineChart data={data} margin={{ bottom: 20, right: 10, left: 10, top: 10 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                            {showGridlines && <CartesianGrid strokeDasharray="3 3" stroke="#333" />}
                             <XAxis
                                 dataKey="label"
                                 stroke="#ccc"
@@ -128,17 +147,26 @@ export default function UniversalChart({
                                 itemStyle={{ color: "#fff" }}
                                 cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
                             />
-                            <Legend 
-                                wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
-                                iconType="line"
-                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
-                            />
+                            {legendPosition !== "none" && (
+                                <Legend 
+                                    wrapperStyle={{ 
+                                        paddingTop: legendPosition === "top" ? "10px" : "0",
+                                        paddingBottom: legendPosition === "bottom" ? "10px" : "0",
+                                        fontSize: "11px", 
+                                        textTransform: "uppercase" 
+                                    }}
+                                    iconType="line"
+                                    verticalAlign={legendPosition === "top" ? "top" : legendPosition === "bottom" ? "bottom" : "middle"}
+                                    align={legendPosition === "left" ? "left" : legendPosition === "right" ? "right" : "center"}
+                                    formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                                />
+                            )}
                             {dataKeys.map((key, index) => (
                                 <Line
                                     key={key}
                                     type="monotone"
                                     dataKey={key}
-                                    stroke={colors[index % colors.length]}
+                                    stroke={chartColors[index % chartColors.length]}
                                     strokeWidth={2}
                                     dot={{ fill: "#000", stroke: colors[index % colors.length], strokeWidth: 2 }}
                                     activeDot={{ r: 6, fill: colors[index % colors.length] }}
@@ -178,19 +206,28 @@ export default function UniversalChart({
                                 itemStyle={{ color: "#fff" }}
                                 cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
                             />
-                            <Legend 
-                                wrapperStyle={{ paddingTop: "10px", fontSize: "11px", textTransform: "uppercase" }} 
-                                iconType="line"
-                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
-                            />
+                            {legendPosition !== "none" && (
+                                <Legend 
+                                    wrapperStyle={{ 
+                                        paddingTop: legendPosition === "top" ? "10px" : "0",
+                                        paddingBottom: legendPosition === "bottom" ? "10px" : "0",
+                                        fontSize: "11px", 
+                                        textTransform: "uppercase" 
+                                    }}
+                                    iconType="line"
+                                    verticalAlign={legendPosition === "top" ? "top" : legendPosition === "bottom" ? "bottom" : "middle"}
+                                    align={legendPosition === "left" ? "left" : legendPosition === "right" ? "right" : "center"}
+                                    formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                                />
+                            )}
                             {dataKeys.map((key, index) => (
                                 <Area
                                     key={key}
                                     type="monotone"
                                     dataKey={key}
                                     stackId="1" // Stacked by default for Area
-                                    stroke={colors[index % colors.length]}
-                                    fill={colors[index % colors.length]}
+                                    stroke={chartColors[index % chartColors.length]}
+                                    fill={chartColors[index % chartColors.length]}
                                     fillOpacity={0.4}
                                     animationDuration={0}
                                     animationBegin={0}
@@ -212,15 +249,19 @@ export default function UniversalChart({
                                     key={key}
                                     name={key}
                                     dataKey={key}
-                                    stroke={colors[index % colors.length]}
-                                    fill={colors[index % colors.length]}
+                                    stroke={chartColors[index % chartColors.length]}
+                                    fill={chartColors[index % chartColors.length]}
                                     fillOpacity={0.4}
                                 />
                             ))}
-                            <Legend 
-                                wrapperStyle={{ fontSize: "11px", textTransform: "uppercase" }} 
-                                formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
-                            />
+                            {legendPosition !== "none" && (
+                                <Legend 
+                                    wrapperStyle={{ fontSize: "11px", textTransform: "uppercase" }} 
+                                    verticalAlign={legendPosition === "top" ? "top" : legendPosition === "bottom" ? "bottom" : "middle"}
+                                    align={legendPosition === "left" ? "left" : legendPosition === "right" ? "right" : "center"}
+                                    formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
+                                />
+                            )}
                             <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
                         </RadarChart>
                     </ResponsiveContainer>
@@ -280,7 +321,7 @@ export default function UniversalChart({
                                 <Bar
                                     key={key}
                                     dataKey={key}
-                                    fill={colors[index % colors.length]}
+                                    fill={chartColors[index % chartColors.length]}
                                     barSize={12}
                                     radius={[0, 4, 4, 0]}
                                     animationDuration={0}
