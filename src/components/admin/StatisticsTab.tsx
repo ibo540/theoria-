@@ -870,6 +870,152 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                       placeholder="e.g., Values, Percentage, Count"
                     />
                   </div>
+
+                  {/* Custom Colors */}
+                  <div className="md:col-span-2">
+                    <ColorPalettePicker
+                      colors={editingChart?.customColors || []}
+                      onChange={(colors) => handleUpdateChartField("customColors", colors.length > 0 ? colors : undefined)}
+                      maxColors={editingChart?.dataKeys?.length || 1}
+                    />
+                  </div>
+                </div>
+
+                {/* Excel-like Formatting Options */}
+                <div className="border-t border-slate-700 pt-4 mt-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Settings size={16} className="text-gray-400" />
+                    <h4 className="text-sm font-semibold text-white">Chart Formatting (Excel-like)</h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Gridlines */}
+                    <div>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={editingChart?.formatting?.showGridlines !== false}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            showGridlines: e.target.checked,
+                          })}
+                          className="w-4 h-4 text-blue-600 rounded"
+                        />
+                        Show Gridlines
+                      </label>
+                    </div>
+
+                    {/* Data Labels */}
+                    <div>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={editingChart?.formatting?.showDataLabels === true}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            showDataLabels: e.target.checked,
+                          })}
+                          className="w-4 h-4 text-blue-600 rounded"
+                        />
+                        Show Data Labels
+                      </label>
+                    </div>
+
+                    {/* Legend Position */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Legend Position
+                      </label>
+                      <select
+                        value={editingChart?.formatting?.legendPosition || "top"}
+                        onChange={(e) => handleUpdateChartField("formatting", {
+                          ...editingChart?.formatting,
+                          legendPosition: e.target.value as "top" | "bottom" | "left" | "right" | "none",
+                        })}
+                        className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      >
+                        <option value="top">Top</option>
+                        <option value="bottom">Bottom</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                        <option value="none">None</option>
+                      </select>
+                    </div>
+
+                    {/* Background Color */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Background Color
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={editingChart?.formatting?.backgroundColor || "#000000"}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            backgroundColor: e.target.value,
+                          })}
+                          className="w-12 h-10 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={editingChart?.formatting?.backgroundColor || "#000000"}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            backgroundColor: e.target.value,
+                          })}
+                          className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                          placeholder="#000000"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Border Color */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Border Color
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={editingChart?.formatting?.borderColor || "#333333"}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            borderColor: e.target.value,
+                          })}
+                          className="w-12 h-10 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={editingChart?.formatting?.borderColor || "#333333"}
+                          onChange={(e) => handleUpdateChartField("formatting", {
+                            ...editingChart?.formatting,
+                            borderColor: e.target.value,
+                          })}
+                          className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                          placeholder="#333333"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Border Width */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Border Width: {editingChart?.formatting?.borderWidth || 0}px
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="5"
+                        value={editingChart?.formatting?.borderWidth || 0}
+                        onChange={(e) => handleUpdateChartField("formatting", {
+                          ...editingChart?.formatting,
+                          borderWidth: parseInt(e.target.value),
+                        })}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-4">
