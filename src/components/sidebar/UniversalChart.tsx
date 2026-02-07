@@ -97,7 +97,7 @@ export default function UniversalChart({
             case "line":
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
-                        <LineChart data={data}>
+                        <LineChart data={data} margin={{ bottom: 20, right: 10, left: 10, top: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis
                                 dataKey="label"
