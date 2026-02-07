@@ -103,10 +103,17 @@ export default function UniversalChart({
                                 dataKey="label"
                                 stroke="#ccc"
                                 fontSize={12}
-                                tick={{ fill: "#ffe4be", fontSize: 11, fontWeight: 500 }}
+                                tick={{ 
+                                    fill: "#ffe4be", 
+                                    fontSize: 12, 
+                                    fontWeight: 600,
+                                    textShadow: "0 1px 2px rgba(0,0,0,0.8)"
+                                }}
                                 angle={-45}
                                 textAnchor="end"
-                                height={80}
+                                height={100}
+                                interval={0}
+                                padding={{ left: 10, right: 10 }}
                             >
                                 {xAxisLabel && <Label value={xAxisLabel} position="insideBottom" offset={-5} style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600 }} />}
                             </XAxis>
@@ -147,7 +154,7 @@ export default function UniversalChart({
             case "area":
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
-                        <AreaChart data={data}>
+                        <AreaChart data={data} margin={{ bottom: 20, right: 10, left: 10, top: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis 
                                 dataKey="label" 
