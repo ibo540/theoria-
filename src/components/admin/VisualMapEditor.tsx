@@ -1021,7 +1021,7 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
                             <span className="text-xs text-white font-medium">{theoryName}</span>
                           </button>
                         );
-                      })}
+                      })()}
                     </div>
                     <button
                       onClick={() => setEditingColorFor(null)}
