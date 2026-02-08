@@ -198,9 +198,13 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
         setShowButtons(false);
       }
       return () => {
-        window.removeEventListener("resize", updatePosition);
+        // No cleanup needed when hiding
       };
     }
+
+    // Create wrapper functions for event listeners
+    const handleResize = () => updatePosition(true);
+    const handleResizeObserver = () => updatePosition(true);
 
     // Initial position update (no animation on first render)
     updatePosition(false);
@@ -211,15 +215,15 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
       updatePosition(true); // Animate to new position
     }, 650);
     
-    window.addEventListener("resize", () => updatePosition(true));
-    const observer = new ResizeObserver(() => updatePosition(true));
+    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResizeObserver);
     if (sidebarRef.current) {
       observer.observe(sidebarRef.current);
     }
 
     return () => {
       clearTimeout(animationTimeoutId);
-      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("resize", handleResize);
       observer.disconnect();
     };
   }, [activeEventId, sidebarWidth, isTimelineNavigating, showButtons]);
