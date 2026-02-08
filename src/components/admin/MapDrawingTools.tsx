@@ -74,30 +74,35 @@ export function MapDrawingTools({
     const b = parseInt(hex.substring(4, 6), 16);
 
     // Generate 4 variations: lightest, light, medium, dark (main)
-    // Lightest: blend with white (75% white) - very light for visibility
-    const r1 = Math.min(255, Math.floor(r + (255 - r) * 0.75));
-    const g1 = Math.min(255, Math.floor(g + (255 - g) * 0.75));
-    const b1 = Math.min(255, Math.floor(b + (255 - b) * 0.75));
+    // Lightest: blend with white (80% white) - very light for visibility
+    const r1 = Math.min(255, Math.round(r + (255 - r) * 0.8));
+    const g1 = Math.min(255, Math.round(g + (255 - g) * 0.8));
+    const b1 = Math.min(255, Math.round(b + (255 - b) * 0.8));
     
-    // Light: blend with white (50% white) - light but visible
-    const r2 = Math.min(255, Math.floor(r + (255 - r) * 0.5));
-    const g2 = Math.min(255, Math.floor(g + (255 - g) * 0.5));
-    const b2 = Math.min(255, Math.floor(b + (255 - b) * 0.5));
+    // Light: blend with white (55% white) - light but visible
+    const r2 = Math.min(255, Math.round(r + (255 - r) * 0.55));
+    const g2 = Math.min(255, Math.round(g + (255 - g) * 0.55));
+    const b2 = Math.min(255, Math.round(b + (255 - b) * 0.55));
     
-    // Medium: blend with white (25% white) - medium tone
-    const r3 = Math.min(255, Math.floor(r + (255 - r) * 0.25));
-    const g3 = Math.min(255, Math.floor(g + (255 - g) * 0.25));
-    const b3 = Math.min(255, Math.floor(b + (255 - b) * 0.25));
+    // Medium: blend with white (30% white) - medium tone
+    const r3 = Math.min(255, Math.round(r + (255 - r) * 0.3));
+    const g3 = Math.min(255, Math.round(g + (255 - g) * 0.3));
+    const b3 = Math.min(255, Math.round(b + (255 - b) * 0.3));
 
     // Convert back to hex - ensure uppercase for consistency
     const toHex = (n: number) => Math.round(n).toString(16).padStart(2, '0').toUpperCase();
     
-    return [
+    const colors = [
       `#${toHex(r1)}${toHex(g1)}${toHex(b1)}`, // Lightest
       `#${toHex(r2)}${toHex(g2)}${toHex(b2)}`, // Light
       `#${toHex(r3)}${toHex(g3)}${toHex(b3)}`, // Medium
       mainColor.toUpperCase(), // Dark (main color)
     ];
+    
+    // Debug: log colors to console
+    console.log('Generated colors for', mainColor, ':', colors);
+    
+    return colors;
   }
 
   // Get colors based on selected theory
