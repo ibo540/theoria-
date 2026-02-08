@@ -61,6 +61,7 @@ export function useCountryIcons(
       
       console.log("🔍 useCountryIcons - Total icons:", icons.length);
       console.log("🔍 useCountryIcons - Icons with timelinePointId:", icons.filter(i => i.timelinePointId).length);
+      console.log("🔍 useCountryIcons - Icon types:", icons.map(i => ({ id: i.id, country: i.country, iconType: i.iconType, timelinePointId: i.timelinePointId })));
 
       // Filter icons - show all icons that are linked to timeline points
       // Icons remain visible on the map even after closing the popup
@@ -135,7 +136,10 @@ export function useCountryIcons(
         innerDiv.style.justifyContent = "center";
         // Use the icon type from the icon data, fallback to map-pin
         const iconType = icon.iconType || "map-pin";
-        innerDiv.innerHTML = getIconSVG(iconType);
+        console.log(`🎨 Rendering icon ${icon.id} (${icon.country}) with type: ${iconType}`);
+        const iconSVG = getIconSVG(iconType);
+        console.log(`🎨 Icon SVG for ${iconType}:`, iconSVG.substring(0, 100) + "...");
+        innerDiv.innerHTML = iconSVG;
         
         outerDiv.appendChild(innerDiv);
         el.appendChild(outerDiv);

@@ -80,17 +80,22 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           icon => icon.timelinePointId === pointId
         );
 
+        const iconType = getIconTypeFromEventType(point.eventType || "diplomatic");
+        console.log(`🎯 Creating icon for event type "${point.eventType}" → icon type "${iconType}"`);
+        
         const newIcon: CountryIcon = {
           id: existingIconIndex >= 0
             ? updatedCountryIcons[existingIconIndex].id
             : `icon-${Date.now()}`,
           country: countryName,
-          iconType: getIconTypeFromEventType(point.eventType || "diplomatic"), // Map event type to icon type
+          iconType: iconType, // Map event type to icon type
           coordinates: coords,
           title: point.label, // Use timeline point label as icon title
           description: point.description || "", // Use timeline point description
           timelinePointId: pointId, // REQUIRED: Link to this timeline point
         };
+        
+        console.log("✅ Created icon:", { id: newIcon.id, country: newIcon.country, iconType: newIcon.iconType, timelinePointId: newIcon.timelinePointId });
 
         if (existingIconIndex >= 0) {
           updatedCountryIcons[existingIconIndex] = newIcon;
