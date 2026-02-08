@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ChartData } from "@/data/events";
 import UniversalChart from "@/components/sidebar/UniversalChart";
 import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
-import { getChartColors } from "@/lib/chart-color-utils";
+import { ChevronRight, ChevronLeft, Palette } from "lucide-react";
 
 interface ChartStyleSelectorProps {
   chart: ChartData;
@@ -82,7 +82,7 @@ export function ChartStyleSelector({
   onFormattingChange,
   selectedColors,
 }: ChartStyleSelectorProps) {
-  const [activeTab, setActiveTab] = useState<"style" | "colour">("style");
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
 
@@ -142,189 +142,79 @@ export function ChartStyleSelector({
     );
   };
 
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="w-full h-full flex items-center justify-center gap-2 bg-slate-800/50 border border-slate-600/50 rounded-lg hover:bg-slate-800/70 transition-colors text-white"
+      >
+        <Palette size={20} />
+        <span className="text-sm font-medium">Show Style Options</span>
+        <ChevronRight size={16} />
+      </button>
+    );
+  }
+
   return (
-    <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg overflow-hidden">
-      {/* Tabs */}
-      <div className="flex border-b border-slate-700">
+    <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg overflow-hidden h-full flex flex-col">
+      {/* Header with close button */}
+      <div className="flex items-center justify-between p-3 border-b border-slate-700">
+        <h3 className="text-sm font-semibold text-white">Chart Styles</h3>
         <button
-          onClick={() => setActiveTab("style")}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === "style"
-              ? "text-white border-b-2 border-green-500 bg-slate-800/50"
-              : "text-gray-400 hover:text-white hover:bg-slate-800/30"
-          }`}
+          onClick={() => setIsOpen(false)}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors"
+          title="Hide Style Options"
         >
-          Style
-        </button>
-        <button
-          onClick={() => setActiveTab("colour")}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === "colour"
-              ? "text-white border-b-2 border-green-500 bg-slate-800/50"
-              : "text-gray-400 hover:text-white hover:bg-slate-800/30"
-          }`}
-        >
-          Colour
+          <ChevronLeft size={16} />
         </button>
       </div>
 
-      {/* Tab Content */}
-      <div className="p-4 max-h-96 overflow-y-auto">
-        {activeTab === "style" && (
-          <div className="space-y-3">
-            {theoryColor && (
-              <div className="mb-3 pb-3 border-b border-slate-700">
-                <p className="text-xs text-gray-400 mb-2">
-                  Recommended styles for {chart.theory ? chart.theory.charAt(0).toUpperCase() + chart.theory.slice(1) : "this theory"}:
-                </p>
-              </div>
-            )}
-            {recommendedStyles.map((style) => {
-              const isSelected = selectedStyleId === style.id;
-              return (
-                <div
-                  key={style.id}
-                  className="cursor-pointer hover:bg-slate-700/30 rounded-lg p-2 transition-colors"
-                  onClick={() => {
-                    setSelectedStyleId(style.id);
-                    // Apply style colors
-                    const styleColors = style.colors.slice(0, seriesCount);
-                    onColorChange(styleColors);
-                    
-                    // Apply style formatting
-                    const newFormatting = {
-                      ...chart.formatting,
-                      showGridlines: style.id === "style1" || style.id === "style3",
-                      legendPosition: "bottom" as const,
-                      showDataLabels: style.id === "style3",
-                      backgroundColor: style.id === "style3" ? "#1e293b" : chart.formatting?.backgroundColor,
-                    };
-                    if (onFormattingChange) {
-                      onFormattingChange(newFormatting);
-                    }
-                  }}
-                >
-                  {renderStylePreview(style, isSelected)}
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-xs text-gray-300 font-medium">{style.name}</p>
-                    <p className="text-xs text-gray-500">{style.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {activeTab === "colour" && (
-          <div className="space-y-4">
-            <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wide">
-              Monochromatic
-            </h4>
-            <MonochromaticColorPicker
-              selectedColors={colors}
-              onColorChange={onColorChange}
-              seriesCount={seriesCount}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Monochromatic Color Picker Component
-interface MonochromaticColorPickerProps {
-  selectedColors: string[];
-  onColorChange: (colors: string[]) => void;
-  seriesCount: number;
-}
-
-function MonochromaticColorPicker({
-  selectedColors,
-  onColorChange,
-  seriesCount,
-}: MonochromaticColorPickerProps) {
-  // Generate monochromatic color palettes
-  const generateMonochromaticPalette = (baseColor: string, steps: number = 8): string[] => {
-    // Convert hex to RGB
-    const hex = baseColor.replace("#", "");
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-
-    const palette: string[] = [];
-    for (let i = 0; i < steps; i++) {
-      const factor = i / (steps - 1);
-      // Create gradient from dark to light
-      const newR = Math.round(r * (1 - factor * 0.5) + 255 * factor * 0.3);
-      const newG = Math.round(g * (1 - factor * 0.5) + 255 * factor * 0.3);
-      const newB = Math.round(b * (1 - factor * 0.5) + 255 * factor * 0.3);
-      palette.push(
-        `#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`
-      );
-    }
-    return palette;
-  };
-
-  // Predefined base colors for monochromatic palettes
-  const baseColors = [
-    "#3b82f6", // Blue
-    "#ef4444", // Red
-    "#10b981", // Green
-    "#8b5cf6", // Purple
-    "#06b6d4", // Cyan
-    "#f59e0b", // Orange
-    "#64748b", // Gray
-    "#3b82f6", // Light Blue
-    "#ec4899", // Pink
-    "#84cc16", // Lime Green
-  ];
-
-  const handlePaletteSelect = (baseColor: string) => {
-    const palette = generateMonochromaticPalette(baseColor, 8);
-    // Select colors evenly spaced from the palette based on series count
-    const selected = [];
-    for (let i = 0; i < seriesCount; i++) {
-      const index = Math.round((i / (seriesCount - 1 || 1)) * (palette.length - 1));
-      selected.push(palette[index]);
-    }
-    onColorChange(selected);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-8 gap-1">
-        {baseColors.map((baseColor, index) => {
-          const palette = generateMonochromaticPalette(baseColor, 8);
-          const isSelected =
-            selectedColors.length > 0 &&
-            palette.some((color) =>
-              selectedColors.some(
-                (selected) => selected.toLowerCase() === color.toLowerCase()
-              )
-            );
-
-          return (
-            <div key={index} className="space-y-1">
-              <button
-                onClick={() => handlePaletteSelect(baseColor)}
-                className={`w-full aspect-square rounded border-2 transition-all ${
-                  isSelected
-                    ? "border-white ring-2 ring-green-500"
-                    : "border-slate-600 hover:border-slate-400"
-                }`}
-                style={{
-                  background: `linear-gradient(to bottom, ${palette[0]}, ${palette[palette.length - 1]})`,
-                }}
-                title={`Monochromatic ${baseColor}`}
-              />
+      {/* Style Content */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-3">
+          {theoryColor && (
+            <div className="mb-3 pb-3 border-b border-slate-700">
+              <p className="text-xs text-gray-400">
+                Recommended styles for {chart.theory ? chart.theory.charAt(0).toUpperCase() + chart.theory.slice(1) : "this theory"}:
+              </p>
             </div>
-          );
-        })}
+          )}
+          {recommendedStyles.map((style) => {
+            const isSelected = selectedStyleId === style.id;
+            return (
+              <div
+                key={style.id}
+                className="cursor-pointer hover:bg-slate-700/30 rounded-lg p-2 transition-colors"
+                onClick={() => {
+                  setSelectedStyleId(style.id);
+                  // Apply style colors
+                  const styleColors = style.colors.slice(0, seriesCount);
+                  onColorChange(styleColors);
+                  
+                  // Apply style formatting
+                  const newFormatting = {
+                    ...chart.formatting,
+                    showGridlines: style.id === "style1" || style.id === "style3",
+                    legendPosition: "bottom" as const,
+                    showDataLabels: style.id === "style3",
+                    backgroundColor: style.id === "style3" ? "#1e293b" : chart.formatting?.backgroundColor,
+                  };
+                  if (onFormattingChange) {
+                    onFormattingChange(newFormatting);
+                  }
+                }}
+              >
+                {renderStylePreview(style, isSelected)}
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-xs text-gray-300 font-medium">{style.name}</p>
+                  <p className="text-xs text-gray-500">{style.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <p className="text-xs text-gray-500 text-center">
-        Click a color to apply monochromatic palette
-      </p>
     </div>
   );
 }
+
