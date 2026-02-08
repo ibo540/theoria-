@@ -24,12 +24,14 @@ export function useCountryIcons(
   }, [onIconClick]);
 
   // Create a stable reference for countryIcons to prevent unnecessary re-renders
+  // Include iconType in the key to ensure re-render when icon types change
   const countryIconsKey = useMemo(() => {
     if (!activeEvent?.countryIcons) return '';
     return JSON.stringify(activeEvent.countryIcons.map(icon => ({
       id: icon.id,
       coordinates: icon.coordinates,
-      timelinePointId: icon.timelinePointId
+      timelinePointId: icon.timelinePointId,
+      iconType: icon.iconType
     })));
   }, [activeEvent?.countryIcons]);
 
