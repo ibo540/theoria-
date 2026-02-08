@@ -122,6 +122,14 @@ export function MapDrawingTools({
   const [shapeColor, setShapeColor] = useState(defaultColor);
   const [opacity, setOpacity] = useState(0.4);
   const [snapToLines, setSnapToLines] = useState(true); // Enable snap-to-line by default
+  
+  // Update colors when theory changes
+  useEffect(() => {
+    const newColors = getAvailableColors();
+    const newDefault = newColors[newColors.length - 1];
+    setLineColor(newDefault);
+    setShapeColor(newDefault);
+  }, [eventTheory]);
   const [snappedPoint, setSnappedPoint] = useState<[number, number] | null>(null);
   
   const drawingLayerRef = useRef<string | null>(null);
