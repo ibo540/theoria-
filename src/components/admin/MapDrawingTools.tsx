@@ -198,10 +198,13 @@ export function MapDrawingTools({
     if (!map || !currentShape) return;
     
     try {
-      const radius = Math.sqrt(
-        Math.pow(point[0] - center[0], 2) + 
-        Math.pow(point[1] - center[1], 2)
-      ) * 111; // Approximate km conversion
+      // Calculate radius in kilometers, accounting for latitude distortion
+      // Longitude distance needs to be adjusted by cosine of latitude
+      const latDiff = point[1] - center[1];
+      const lngDiff = point[0] - center[0];
+      const latKm = latDiff * 111; // 1 degree latitude ≈ 111 km
+      const lngKm = lngDiff * 111 * Math.cos(center[1] * Math.PI / 180); // Adjust for latitude
+      const radius = Math.sqrt(latKm * latKm + lngKm * lngKm);
       
       // Create circle GeoJSON
       const circle = createCircleGeoJSON(center, radius);
