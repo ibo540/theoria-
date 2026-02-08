@@ -162,9 +162,24 @@ export default function WorldMap() {
         return;
       }
       
+      // Check if theory is selected - required to view event details
+      if (!activeTheory) {
+        setShowTheoryNotification(true);
+        setTimeout(() => setShowTheoryNotification(false), 5000);
+        return;
+      }
+      
       console.log("Setting selectedIcon to:", icon);
       setSelectedIcon(icon);
       console.log("selectedIcon state should be updated");
+      
+      // Mark that user has interacted (clicked on icon)
+      hasUserClickedTimelineRef.current = true;
+      
+      // Hide theory icons with animation
+      if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+        (window as any).setIsTimelineNavigating(true);
+      }
       
       // Zoom to icon location
       if (mapInstanceRef.current) {
@@ -183,7 +198,7 @@ export default function WorldMap() {
         });
       }
     },
-    []
+    [activeTheory]
   );
 
   // Update popup position when map moves or icon changes
