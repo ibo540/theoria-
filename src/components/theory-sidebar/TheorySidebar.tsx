@@ -18,6 +18,7 @@ const theories: TheoryType[] = [
 
 interface TheorySidebarProps {
   theoryButtonRefs?: React.MutableRefObject<HTMLElement[]>;
+  isTimelineNavigating?: boolean;
 }
 
 // Animation constants - synchronized with TheoryButton
@@ -29,6 +30,7 @@ const GAP_ANIMATION_EASE = "expo.out";
 
 export default function TheorySidebar({
   theoryButtonRefs,
+  isTimelineNavigating = false,
 }: TheorySidebarProps) {
   const activeTheory = useTheoryStore((state) => state.activeTheory);
   const toggleTheory = useTheoryStore((state) => state.toggleTheory);
@@ -129,6 +131,8 @@ export default function TheorySidebar({
 
   const previousHasActiveTheoryRef = useRef<boolean>(false);
   const gapAnimationRef = useRef<gsap.core.Tween | null>(null);
+  const timelineNavigationAnimationRef = useRef<gsap.core.Timeline | null>(null);
+  const previousIsTimelineNavigatingRef = useRef<boolean>(false);
 
   // Animate gap when selecting/deselecting theory - synchronized with button animations
   useEffect(() => {
@@ -164,6 +168,65 @@ export default function TheorySidebar({
       },
     });
   }, [hasActiveTheory]);
+
+  // Handle timeline navigation animations - hide/show icons one by one
+  useEffect(() => {
+    if (!containerRef.current || !asideRef.current) return;
+
+    const buttonElements = Array.from(containerRef.current.children).filter(
+      (el) => el.tagName === "DIV"
+    ) as HTMLElement[];
+
+    if (buttonElements.length === 0) return;
+
+    // Skip if state hasn't changed
+    if (previousIsTimelineNavigatingRef.current === isTimelineNavigating) {
+      return;
+    }
+
+    previousIsTimelineNavigatingRef.current = isTimelineNavigating;
+
+    // Kill any existing timeline navigation animation
+    if (timelineNavigationAnimationRef.current) {
+      timelineNavigationAnimationRef.current.kill();
+    }
+
+    if (isTimelineNavigating) {
+      // Hide icons - slide up one by one
+      timelineNavigationAnimationRef.current = gsap.timeline();
+      timelineNavigationAnimationRef.current.to(buttonElements, {
+        y: -150,
+        opacity: 0,
+        duration: 0.5,
+        ease: "expo.in",
+        stagger: { each: 0.08, from: "start" }, // Staggered animation, one by one
+        force3D: true,
+        onComplete: () => {
+          // Keep them hidden but allow them to be shown again
+          gsap.set(buttonElements, { pointerEvents: "none" });
+        },
+      });
+    } else {
+      // Show icons - slide down one by one
+      // First ensure they're visible
+      asideRef.current.style.visibility = "visible";
+      gsap.set(buttonElements, { pointerEvents: "auto" });
+      
+      timelineNavigationAnimationRef.current = gsap.timeline();
+      timelineNavigationAnimationRef.current.fromTo(
+        buttonElements,
+        { y: -150, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "expo.out",
+          stagger: { each: 0.08, from: "start" }, // Staggered animation, one by one
+          force3D: true,
+        }
+      );
+    }
+  }, [isTimelineNavigating]);
 
   return (
     <aside

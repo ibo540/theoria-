@@ -185,9 +185,15 @@ export default function WorldMap() {
     []
   );
 
-  // Handle icon popup close - zoom out to default view
+  // Handle icon popup close - zoom out to default view and show theory icons
   const handleIconClose = useCallback(() => {
     setSelectedIcon(null);
+    
+    // Show theory icons again with animation
+    if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+      (window as any).setIsTimelineNavigating(false);
+    }
+    
     if (mapInstanceRef.current) {
       mapInstanceRef.current.flyTo({
         center: MAP_CONFIG.initialCenter,
@@ -560,9 +566,19 @@ export default function WorldMap() {
         // Show the icon detail popup
         // Note: useTimelineFocus hook will handle zooming to the icon location
         setSelectedIcon(linkedIcon);
+        
+        // Hide theory icons with animation
+        if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+          (window as any).setIsTimelineNavigating(true);
+        }
       } else {
         // No linked icon, close popup
         setSelectedIcon(null);
+        
+        // Show theory icons again
+        if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+          (window as any).setIsTimelineNavigating(false);
+        }
       }
     }
 
