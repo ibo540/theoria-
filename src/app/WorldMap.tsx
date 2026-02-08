@@ -201,76 +201,26 @@ export default function WorldMap() {
     [activeTheory]
   );
 
-  // Update popup position when map moves or icon changes
+  // Set fixed popup position when icon is selected (don't update with map movement)
   useEffect(() => {
-    if (!selectedIcon || !mapInstanceRef.current || !selectedIcon.coordinates) {
+    if (!selectedIcon || !selectedIcon.coordinates) {
       setPopupPosition(null);
       return;
     }
 
-    const updatePosition = () => {
-      if (!mapInstanceRef.current || !selectedIcon?.coordinates) return;
-      
-      const lng = typeof selectedIcon.coordinates[1] === 'number' ? selectedIcon.coordinates[1] : 0;
-      const lat = typeof selectedIcon.coordinates[0] === 'number' ? selectedIcon.coordinates[0] : 0;
-      
-      if (lat !== 0 && lng !== 0) {
-        const point = mapInstanceRef.current.project([lng, lat]);
-        
-        // Popup dimensions (approximate)
-        const popupWidth = 400;
-        const popupHeight = 300;
-        const offsetX = 120; // Offset to the right
-        const offsetY = -100; // Slight vertical offset
-        
-        // Calculate initial position
-        let x = point.x + offsetX;
-        let y = point.y + offsetY;
-        
-        // Get viewport dimensions
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        
-        // Keep popup within viewport bounds
-        // Check right edge
-        if (x + popupWidth > viewportWidth) {
-          // If it would go off the right edge, position to the left of the icon instead
-          x = point.x - popupWidth - 20; // 20px gap from icon
-        }
-        
-        // Check left edge
-        if (x < 0) {
-          x = 20; // 20px margin from left edge
-        }
-        
-        // Check bottom edge
-        if (y + popupHeight / 2 > viewportHeight) {
-          y = viewportHeight - popupHeight / 2 - 20; // 20px margin from bottom
-        }
-        
-        // Check top edge
-        if (y - popupHeight / 2 < 0) {
-          y = popupHeight / 2 + 20; // 20px margin from top
-        }
-        
-        setPopupPosition({ x, y });
-      }
-    };
-
-    updatePosition();
-
-    // Update position on map move/zoom
-    const map = mapInstanceRef.current;
-    if (map) {
-      map.on('move', updatePosition);
-      map.on('zoom', updatePosition);
-      
-      return () => {
-        map.off('move', updatePosition);
-        map.off('zoom', updatePosition);
-      };
-    }
-  }, [selectedIcon]);
+    // Calculate fixed position based on viewport (not map coordinates)
+    // This keeps the popup in a fixed screen position while the map moves
+    const popupWidth = 400;
+    const popupHeight = 300;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Position popup on the right side of the screen with some margin
+    const x = viewportWidth - popupWidth - 24; // 24px margin from right
+    const y = viewportHeight / 2; // Center vertically
+    
+    setPopupPosition({ x, y });
+  }, [selectedIcon?.id]); // Only update when icon changes, not on map movement
 
   // Handle icon popup close - zoom out to default view and show theory icons
   const handleIconClose = useCallback(() => {

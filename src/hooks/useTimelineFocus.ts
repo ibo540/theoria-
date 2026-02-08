@@ -84,9 +84,42 @@ export function useTimelineFocus(map: maplibregl.Map | null) {
       return;
     }
 
+    // Helper function to get zoom level based on country size
+    const getCountryZoom = (countryName: string): number => {
+      // Large countries that need lower zoom to see the whole country
+      const largeCountries = [
+        'Russia', 'United States', 'Canada', 'China', 'Brazil', 
+        'Australia', 'India', 'Argentina', 'Kazakhstan', 'Algeria',
+        'Democratic Republic of the Congo', 'Saudi Arabia', 'Mexico',
+        'Indonesia', 'Sudan', 'Libya', 'Iran', 'Mongolia', 'Chad',
+        'Niger', 'Mali', 'Angola', 'South Africa', 'Colombia', 'Bolivia',
+        'Mauritania', 'Egypt', 'Tanzania', 'Nigeria', 'Venezuela'
+      ];
+      
+      // Medium-large countries
+      const mediumLargeCountries = [
+        'Turkey', 'France', 'Spain', 'Germany', 'Poland', 'Italy',
+        'United Kingdom', 'Romania', 'Greece', 'Bulgaria', 'Hungary',
+        'Portugal', 'Austria', 'Czech Republic', 'Serbia', 'Iraq',
+        'Morocco', 'Uzbekistan', 'Sweden', 'Paraguay', 'Zimbabwe',
+        'Japan', 'Philippines', 'Vietnam', 'Thailand', 'Myanmar',
+        'Afghanistan', 'Somalia', 'Kenya', 'Madagascar', 'Cameroon'
+      ];
+      
+      const country = countryName.trim();
+      
+      if (largeCountries.some(c => country.toLowerCase().includes(c.toLowerCase()))) {
+        return 3; // Very low zoom for large countries
+      } else if (mediumLargeCountries.some(c => country.toLowerCase().includes(c.toLowerCase()))) {
+        return 4; // Medium zoom for medium-large countries
+      } else {
+        return 5; // Default zoom for smaller countries
+      }
+    };
+
     // Check if point has focus location, or try to use linked icon coordinates
     let focusLocation = activePoint.focusLocation;
-    let focusZoom = activePoint.focusZoom || 5;
+    let focusZoom = activePoint.focusZoom;
 
     // If no focusLocation, try to find linked country icon
     if (!focusLocation || !isValidCoordinate(focusLocation)) {
@@ -97,12 +130,29 @@ export function useTimelineFocus(map: maplibregl.Map | null) {
       if (linkedIcon && linkedIcon.coordinates) {
         // Use icon coordinates as focus location
         focusLocation = linkedIcon.coordinates;
-        focusZoom = 6; // Higher zoom to better see the country
+        // Calculate zoom based on country size if not explicitly set
+        if (!focusZoom && linkedIcon.country) {
+          focusZoom = getCountryZoom(linkedIcon.country);
+        } else {
+          focusZoom = focusZoom || 5; // Default zoom
+        }
       } else {
         console.warn(
           `Timeline point "${activePoint.label}" has no valid focusLocation or linked icon`
         );
         return;
+      }
+    } else {
+      // If focusLocation is set but no zoom, try to get country from linked icon
+      if (!focusZoom) {
+        const linkedIcon = activeEvent.countryIcons?.find(
+          icon => icon.timelinePointId === activeTimelinePointId
+        );
+        if (linkedIcon?.country) {
+          focusZoom = getCountryZoom(linkedIcon.country);
+        } else {
+          focusZoom = 5; // Default zoom
+        }
       }
     }
 
