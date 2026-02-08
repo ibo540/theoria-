@@ -887,14 +887,61 @@ export default function WorldMap() {
       )}
 
       {/* Icon Detail Popup - Styled to match timeline tooltip */}
-      {selectedIcon && (
-        <div 
-          className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none"
-          style={{ zIndex: 9999, backgroundColor: 'transparent' }}
-        >
+      {selectedIcon && (() => {
+        // Calculate popup position to the side of the icon
+        let popupStyle: React.CSSProperties = {
+          position: 'fixed',
+          zIndex: 9999,
+          pointerEvents: 'auto',
+        };
+
+        if (mapInstanceRef.current && selectedIcon.coordinates) {
+          const lng = typeof selectedIcon.coordinates[1] === 'number' ? selectedIcon.coordinates[1] : 0;
+          const lat = typeof selectedIcon.coordinates[0] === 'number' ? selectedIcon.coordinates[0] : 0;
+          
+          if (lat !== 0 && lng !== 0) {
+            // Convert lat/lng to pixel coordinates
+            const point = mapInstanceRef.current.project([lng, lat]);
+            
+            // Position popup to the right side of the icon with some offset
+            // Add offset to move it away from the center of the country
+            const offsetX = 120; // Offset to the right of the icon
+            const offsetY = -100; // Slight vertical offset
+            
+            popupStyle = {
+              ...popupStyle,
+              left: `${point.x + offsetX}px`,
+              top: `${point.y + offsetY}px`,
+              transform: 'translateY(-50%)', // Center vertically on the icon
+              maxWidth: '400px',
+              width: 'auto',
+            };
+          } else {
+            // Fallback to bottom-right if coordinates are invalid
+            popupStyle = {
+              ...popupStyle,
+              bottom: '120px',
+              right: '24px',
+              maxWidth: '400px',
+              width: 'auto',
+            };
+          }
+        } else {
+          // Fallback to bottom-right if map instance is not available
+          popupStyle = {
+            ...popupStyle,
+            bottom: '120px',
+            right: '24px',
+            maxWidth: '400px',
+            width: 'auto',
+          };
+        }
+
+        return (
           <div
-            className="px-6 py-5 rounded-md shadow-2xl max-w-lg w-full animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
+            className="px-6 py-5 rounded-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200"
             style={{
+              ...popupStyle,
               backgroundColor: "rgba(0, 0, 0, 0.96)",
               border: "1.5px solid rgba(255, 228, 190, 0.4)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
