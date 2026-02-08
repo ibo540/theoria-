@@ -105,11 +105,6 @@ export function ChartStyleSelector({
   
   // Get theory-based recommended styles
   const recommendedStyles = getTheoryBasedStyles(theoryColor);
-  
-  // Use selected colors if available, otherwise use first recommended style
-  const colors = selectedColors && selectedColors.length > 0
-    ? selectedColors
-    : recommendedStyles[0]?.colors || ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
   // Render style preview
   const renderStylePreview = (style: typeof recommendedStyles[0], isSelected: boolean) => {
