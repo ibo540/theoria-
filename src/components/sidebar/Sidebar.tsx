@@ -144,10 +144,13 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
     const updatePosition = () => {
       if (sidebarRef.current) {
         const rect = sidebarRef.current.getBoundingClientRect();
-        setButtonPosition({
-          left: rect.right + 8,
-          top: rect.top,
-        });
+        // Only update position if sidebar is visible (not hidden)
+        if (rect.width > 0 && rect.height > 0) {
+          setButtonPosition({
+            left: rect.right + 8,
+            top: rect.top,
+          });
+        }
       }
     };
 
@@ -162,7 +165,7 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
       window.removeEventListener("resize", updatePosition);
       observer.disconnect();
     };
-  }, [activeEventId, sidebarWidth]);
+  }, [activeEventId, sidebarWidth, isTimelineNavigating]);
 
   // Handle tab change
   const handleTabChange = (tabId: SidebarTabId) => {
@@ -285,12 +288,15 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   return (
     <>
-      {activeEvent && (
+      {activeEvent && !isTimelineNavigating && (
         <div
           className="fixed flex flex-col gap-2 z-1"
           style={{
             left: `${buttonPosition.left}px`,
             top: `${buttonPosition.top}px`,
+            opacity: isTimelineNavigating ? 0 : 1,
+            pointerEvents: isTimelineNavigating ? "none" : "auto",
+            transition: "opacity 0.3s ease-out",
           }}
         >
           <Button

@@ -79,12 +79,6 @@ export const SidebarFrame = forwardRef<HTMLElement, SidebarFrameProps>(
           asideRef.current.style.visibility = "visible";
           asideRef.current.style.pointerEvents = "auto";
           asideRef.current.style.width = `${width}px`;
-          // Reset overflow after animation completes
-          setTimeout(() => {
-            if (asideRef.current && !isTimelineNavigating) {
-              asideRef.current.style.overflow = "visible";
-            }
-          }, 650); // Slightly longer than animation duration
         }
 
         // Calculate the distance to move from
@@ -93,7 +87,16 @@ export const SidebarFrame = forwardRef<HTMLElement, SidebarFrameProps>(
         // Set initial position (off-screen to the left)
         gsap.set(asideRef.current, { x: -moveDistance, opacity: 0 });
 
-        timelineNavigationAnimationRef.current = gsap.timeline();
+        timelineNavigationAnimationRef.current = gsap.timeline({
+          onComplete: () => {
+            // Reset overflow after animation completes
+            if (asideRef.current && !isTimelineNavigating) {
+              asideRef.current.style.overflow = "visible";
+            }
+            // Trigger a resize event to update button positions
+            window.dispatchEvent(new Event("resize"));
+          },
+        });
         timelineNavigationAnimationRef.current.to(asideRef.current, {
           x: 0, // Return to original position
           opacity: 1,
