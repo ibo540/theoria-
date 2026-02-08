@@ -405,10 +405,12 @@ export function MapDrawingTools({
           } else {
             // Second click: set radius and complete
             const center = startPointRef.current;
-            const radius = Math.sqrt(
-              Math.pow(lngLat[0] - center[0], 2) + 
-              Math.pow(lngLat[1] - center[1], 2)
-            ) * 111; // Approximate km conversion
+            // Calculate radius in kilometers, accounting for latitude distortion
+            const latDiff = lngLat[1] - center[1];
+            const lngDiff = lngLat[0] - center[0];
+            const latKm = latDiff * 111; // 1 degree latitude ≈ 111 km
+            const lngKm = lngDiff * 111 * Math.cos(center[1] * Math.PI / 180); // Adjust for latitude
+            const radius = Math.sqrt(latKm * latKm + lngKm * lngKm);
             
             if (currentShape && onShapeComplete) {
               onShapeComplete({
