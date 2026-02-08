@@ -35,11 +35,6 @@ export type IconVersion = "v-3" | "v-4";
 interface TheoryStore {
   activeTheory: TheoryType | null;
   iconVersion: IconVersion;
-  // Comparison mode
-  comparisonMode: boolean;
-  primaryTheory: TheoryType | null;
-  secondaryTheory: TheoryType | null;
-  
   setActiveTheory: (theory: TheoryType | null) => void;
   toggleTheory: (theory: TheoryType) => void;
   setIconVersion: (version: IconVersion) => void;
@@ -48,61 +43,16 @@ interface TheoryStore {
   getTheoryDarkColor: (theory: TheoryType) => string;
   getCurrentTheoryColor: () => string | null;
   getCurrentTheoryDarkColor: () => string | null;
-  
-  // Comparison mode actions
-  enableComparison: (theory1: TheoryType, theory2: TheoryType) => void;
-  disableComparison: () => void;
-  setPrimaryTheory: (theory: TheoryType | null) => void;
-  setSecondaryTheory: (theory: TheoryType | null) => void;
 }
 
 export const useTheoryStore = create<TheoryStore>((set, get) => ({
   activeTheory: null,
   iconVersion: "v-4" as IconVersion,
-  comparisonMode: false,
-  primaryTheory: null,
-  secondaryTheory: null,
-  
-  setActiveTheory: (theory) => {
-    // If setting a theory, disable comparison mode
-    set({ 
-      activeTheory: theory,
-      comparisonMode: false,
-      primaryTheory: null,
-      secondaryTheory: null,
-    });
-  },
-  toggleTheory: (theory) => {
-    const state = get();
-    // If in comparison mode, handle differently
-    if (state.comparisonMode) {
-      // If clicking primary theory, switch to single mode
-      if (state.primaryTheory === theory) {
-        set({
-          activeTheory: state.secondaryTheory,
-          comparisonMode: false,
-          primaryTheory: null,
-          secondaryTheory: null,
-        });
-      } else if (state.secondaryTheory === theory) {
-        // If clicking secondary, switch to single mode with primary
-        set({
-          activeTheory: state.primaryTheory,
-          comparisonMode: false,
-          primaryTheory: null,
-          secondaryTheory: null,
-        });
-      } else {
-        // Replace secondary theory
-        set({ secondaryTheory: theory });
-      }
-    } else {
-      // Normal toggle behavior
-      set({
-        activeTheory: state.activeTheory === theory ? null : theory,
-      });
-    }
-  },
+  setActiveTheory: (theory) => set({ activeTheory: theory }),
+  toggleTheory: (theory) =>
+    set((state) => ({
+      activeTheory: state.activeTheory === theory ? null : theory,
+    })),
   setIconVersion: (version) => set({ iconVersion: version }),
   toggleIconVersion: () =>
     set((state) => ({
@@ -117,40 +67,5 @@ export const useTheoryStore = create<TheoryStore>((set, get) => ({
   getCurrentTheoryDarkColor: () => {
     const { activeTheory } = get();
     return activeTheory ? theoryDarkColors[activeTheory] : null;
-  },
-  
-  // Comparison mode actions
-  enableComparison: (theory1, theory2) => {
-    set({
-      comparisonMode: true,
-      primaryTheory: theory1,
-      secondaryTheory: theory2,
-      activeTheory: theory1, // Keep activeTheory for backward compatibility
-    });
-  },
-  disableComparison: () => {
-    const state = get();
-    set({
-      comparisonMode: false,
-      primaryTheory: null,
-      secondaryTheory: null,
-      activeTheory: state.primaryTheory, // Keep primary as active
-    });
-  },
-  setPrimaryTheory: (theory) => {
-    set({ primaryTheory: theory });
-    if (theory) {
-      set({ activeTheory: theory }); // Update activeTheory for backward compatibility
-    }
-  },
-  setSecondaryTheory: (theory) => {
-    set({ secondaryTheory: theory });
-    if (theory && !get().primaryTheory) {
-      // If no primary, make this primary
-      set({ primaryTheory: theory, activeTheory: theory });
-    } else if (theory && get().primaryTheory) {
-      // Enable comparison if both are set
-      set({ comparisonMode: true });
-    }
   },
 }));
