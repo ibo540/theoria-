@@ -62,6 +62,7 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   const sidebarRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [showButtons, setShowButtons] = useState(false);
   const activeEventId = useEventStore((state) => state.activeEventId);
   const activeEvent = useEventStore((state) => state.activeEvent);
   const selectEvent = useEventStore((state) => state.selectEvent);
@@ -157,38 +158,48 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
             left: rect.right + 8,
             top: rect.top,
           });
+          // Show buttons only after position is calculated
+          if (!isTimelineNavigating) {
+            setShowButtons(true);
+          }
         }
       }
     };
 
-    // Initial position update
-    updatePosition();
-    
-    // If sidebar is coming back from hidden state, wait a bit for animation
-    if (!isTimelineNavigating) {
-      // Small delay to ensure sidebar is fully visible before calculating position
-      const timeoutId = setTimeout(updatePosition, 100);
-      // Also update after animation completes (600ms)
-      const animationTimeoutId = setTimeout(updatePosition, 700);
-      
-      window.addEventListener("resize", updatePosition);
-      const observer = new ResizeObserver(updatePosition);
-      if (sidebarRef.current) {
-        observer.observe(sidebarRef.current);
-      }
-
-      return () => {
-        clearTimeout(timeoutId);
-        clearTimeout(animationTimeoutId);
-        window.removeEventListener("resize", updatePosition);
-        observer.disconnect();
-      };
-    } else {
-      // When hiding, just remove listeners
+    // Hide buttons immediately when timeline navigation starts
+    if (isTimelineNavigating) {
+      setShowButtons(false);
       return () => {
         window.removeEventListener("resize", updatePosition);
       };
     }
+
+    // Initial position update
+    updatePosition();
+    
+    // If sidebar is coming back from hidden state, wait for animation to complete
+    // Small delay to ensure sidebar is fully visible before calculating position
+    const timeoutId = setTimeout(() => {
+      updatePosition();
+    }, 100);
+    
+    // Also update after animation completes (600ms + small buffer)
+    const animationTimeoutId = setTimeout(() => {
+      updatePosition();
+    }, 700);
+    
+    window.addEventListener("resize", updatePosition);
+    const observer = new ResizeObserver(updatePosition);
+    if (sidebarRef.current) {
+      observer.observe(sidebarRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(animationTimeoutId);
+      window.removeEventListener("resize", updatePosition);
+      observer.disconnect();
+    };
   }, [activeEventId, sidebarWidth, isTimelineNavigating]);
 
   // Handle tab change
@@ -312,15 +323,15 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   return (
     <>
-      {activeEvent && !isTimelineNavigating && (
+      {activeEvent && showButtons && !isTimelineNavigating && (
         <div
           className="fixed flex flex-col gap-2 z-1"
           style={{
             left: `${buttonPosition.left}px`,
             top: `${buttonPosition.top}px`,
-            opacity: isTimelineNavigating ? 0 : 1,
-            pointerEvents: isTimelineNavigating ? "none" : "auto",
-            transition: "opacity 0.3s ease-out",
+            opacity: showButtons ? 1 : 0,
+            pointerEvents: showButtons ? "auto" : "none",
+            transition: "opacity 0.2s ease-out",
           }}
         >
           <Button
