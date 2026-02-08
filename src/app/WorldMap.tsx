@@ -203,11 +203,6 @@ export default function WorldMap() {
     setSelectedMarker(null);
     setFocusedMarker(null);
     setSelectedIcon(null);
-    
-    // Restore sidebar and theory icons if they were hidden
-    if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
-      (window as any).setIsTimelineNavigating(false);
-    }
 
     // Zoom out to default view
     if (mapInstanceRef.current) {
