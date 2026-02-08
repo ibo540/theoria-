@@ -201,10 +201,44 @@ export default function WorldMap() {
       
       if (lat !== 0 && lng !== 0) {
         const point = mapInstanceRef.current.project([lng, lat]);
-        setPopupPosition({
-          x: point.x + 120, // Offset to the right
-          y: point.y - 100, // Slight vertical offset
-        });
+        
+        // Popup dimensions (approximate)
+        const popupWidth = 400;
+        const popupHeight = 300;
+        const offsetX = 120; // Offset to the right
+        const offsetY = -100; // Slight vertical offset
+        
+        // Calculate initial position
+        let x = point.x + offsetX;
+        let y = point.y + offsetY;
+        
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Keep popup within viewport bounds
+        // Check right edge
+        if (x + popupWidth > viewportWidth) {
+          // If it would go off the right edge, position to the left of the icon instead
+          x = point.x - popupWidth - 20; // 20px gap from icon
+        }
+        
+        // Check left edge
+        if (x < 0) {
+          x = 20; // 20px margin from left edge
+        }
+        
+        // Check bottom edge
+        if (y + popupHeight / 2 > viewportHeight) {
+          y = viewportHeight - popupHeight / 2 - 20; // 20px margin from bottom
+        }
+        
+        // Check top edge
+        if (y - popupHeight / 2 < 0) {
+          y = popupHeight / 2 + 20; // 20px margin from top
+        }
+        
+        setPopupPosition({ x, y });
       }
     };
 
