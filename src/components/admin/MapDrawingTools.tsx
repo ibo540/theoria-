@@ -749,29 +749,22 @@ export function MapDrawingTools({
                   key={`${color}-${index}`}
                   type="button"
                   onClick={() => setShapeColor(color)}
-                  className={`h-12 w-full rounded border-2 transition-all hover:scale-110 ${
+                  className={`relative h-12 w-full rounded border-2 transition-all hover:scale-110 overflow-hidden ${
                     shapeColor === color
                       ? "border-white ring-2 ring-white/50 shadow-lg"
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
-                  style={{ 
-                    backgroundColor: color,
-                    background: color,
-                    minWidth: '48px',
-                    minHeight: '48px',
-                    // Ensure visibility with a subtle border if color is too light
-                    boxShadow: shapeColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
-                    // Force color display - remove any text color
-                    color: 'transparent',
-                    // Override any default button styles
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    // Ensure the background is visible
-                    borderColor: shapeColor === color ? 'white' : 'rgba(148, 163, 184, 0.5)',
-                  } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
-                  {/* Invisible text to ensure button has content */}
+                  {/* Color display div - fills entire button */}
+                  <div
+                    className="absolute inset-0 w-full h-full"
+                    style={{
+                      backgroundColor: color,
+                      background: color,
+                    }}
+                  />
+                  {/* Invisible text for accessibility */}
                   <span className="sr-only">{color}</span>
                 </button>
               ))}
@@ -858,29 +851,22 @@ export function MapDrawingTools({
                   key={`${color}-${index}`}
                   type="button"
                   onClick={() => setLineColor(color)}
-                  className={`h-12 w-full rounded border-2 transition-all hover:scale-110 ${
+                  className={`relative h-12 w-full rounded border-2 transition-all hover:scale-110 overflow-hidden ${
                     lineColor === color
                       ? "border-white ring-2 ring-white/50 shadow-lg"
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
-                  style={{ 
-                    backgroundColor: color,
-                    background: color,
-                    minWidth: '48px',
-                    minHeight: '48px',
-                    // Ensure visibility with a subtle border if color is too light
-                    boxShadow: lineColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
-                    // Force color display - remove any text color
-                    color: 'transparent',
-                    // Override any default button styles
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    // Ensure the background is visible
-                    borderColor: lineColor === color ? 'white' : 'rgba(148, 163, 184, 0.5)',
-                  } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
-                  {/* Invisible text to ensure button has content */}
+                  {/* Color display div - fills entire button */}
+                  <div
+                    className="absolute inset-0 w-full h-full"
+                    style={{
+                      backgroundColor: color,
+                      background: color,
+                    }}
+                  />
+                  {/* Invisible text for accessibility */}
                   <span className="sr-only">{color}</span>
                 </button>
               ))}
