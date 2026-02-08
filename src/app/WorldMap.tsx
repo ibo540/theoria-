@@ -642,6 +642,7 @@ export default function WorldMap() {
     // Show popup if:
     // 1. User has clicked on timeline (counter increased or point changed), OR
     // 2. Timeline point changed from previous
+    // BUT: Don't override if user clicked directly on icon (selectedIcon already set via handleIconClick)
     if (hasUserClickedTimelineRef.current) {
       lastActiveTimelinePointRef.current = activeTimelinePointId;
 
@@ -651,21 +652,28 @@ export default function WorldMap() {
       );
 
       if (linkedIcon) {
-        // Show the icon detail popup
-        // Note: useTimelineFocus hook will handle zooming to the icon location
-        setSelectedIcon(linkedIcon);
-        
-        // Hide theory icons with animation
-        if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
-          (window as any).setIsTimelineNavigating(true);
+        // Only set selectedIcon if it's not already set (user clicked icon directly)
+        // OR if the linked icon is different from the currently selected one
+        if (!selectedIcon || selectedIcon.id !== linkedIcon.id) {
+          // Show the icon detail popup
+          // Note: useTimelineFocus hook will handle zooming to the icon location
+          setSelectedIcon(linkedIcon);
+          
+          // Hide theory icons with animation
+          if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+            (window as any).setIsTimelineNavigating(true);
+          }
         }
       } else {
-        // No linked icon, close popup
-        setSelectedIcon(null);
-        
-        // Show theory icons again
-        if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
-          (window as any).setIsTimelineNavigating(false);
+        // No linked icon, close popup only if it was set by timeline click
+        // Don't close if user clicked icon directly
+        if (!selectedIcon || selectedIcon.timelinePointId === activeTimelinePointId) {
+          setSelectedIcon(null);
+          
+          // Show theory icons again
+          if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+            (window as any).setIsTimelineNavigating(false);
+          }
         }
       }
     }
