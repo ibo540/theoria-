@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings, ChevronLeft, ChevronRight } from "lucide-react";
 import { EventData, ChartData } from "@/data/events";
 import { DataUploader } from "./DataUploader";
 import { SpreadsheetEditor } from "./SpreadsheetEditor";
@@ -48,6 +48,8 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [notification, setNotification] = useState<{
     message: string;
@@ -535,20 +537,42 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
           </div>
 
           {/* Main Content - Fullscreen Layout */}
-          <div className="flex-1 overflow-hidden flex">
-            {/* Left Sidebar - Style & Color Selector */}
-            <div className="w-80 border-r border-slate-700 bg-slate-800/30 overflow-y-auto p-4">
-              <ChartStyleSelector
-                chart={previewChart}
-                onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
-                onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
-                onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
-                selectedColors={previewChart.customColors}
-              />
-            </div>
+          <div className="flex-1 overflow-hidden flex relative">
+            {/* Left Sidebar Toggle Button */}
+            {!leftSidebarOpen && (
+              <button
+                onClick={() => setLeftSidebarOpen(true)}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-r-lg p-2 text-white transition-all"
+                title="Show Style Options"
+              >
+                <ChevronRight size={20} />
+              </button>
+            )}
 
-            {/* Center - Chart Preview */}
-            <div className="flex-1 overflow-y-auto p-6 bg-slate-900/50">
+            {/* Left Sidebar - Style & Color Selector */}
+            {leftSidebarOpen && (
+              <div className="w-80 border-r border-slate-700 bg-slate-800/30 overflow-y-auto p-4 relative">
+                <button
+                  onClick={() => setLeftSidebarOpen(false)}
+                  className="absolute top-2 right-2 z-10 p-1.5 bg-slate-700/80 hover:bg-slate-700 rounded text-white transition-all"
+                  title="Hide Style Options"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <ChartStyleSelector
+                  chart={previewChart}
+                  onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
+                  onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
+                  onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
+                  selectedColors={previewChart.customColors}
+                />
+              </div>
+            )}
+
+            {/* Center - Chart Preview (expands when sidebars are hidden) */}
+            <div className={`flex-1 overflow-y-auto p-6 bg-slate-900/50 transition-all ${
+              !leftSidebarOpen && !rightSidebarOpen ? 'px-12' : ''
+            }`}>
               <ChartPreview
                 chart={previewChart}
                 onChartUpdate={(updatedChart) => {
@@ -558,8 +582,27 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
               />
             </div>
 
+            {/* Right Sidebar Toggle Button */}
+            {!rightSidebarOpen && (
+              <button
+                onClick={() => setRightSidebarOpen(true)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-l-lg p-2 text-white transition-all"
+                title="Show Settings"
+              >
+                <ChevronLeft size={20} />
+              </button>
+            )}
+
             {/* Right Sidebar - Data Selector & Settings */}
-            <div className="w-80 border-l border-slate-700 bg-slate-800/30 overflow-y-auto p-4 space-y-4">
+            {rightSidebarOpen && (
+              <div className="w-80 border-l border-slate-700 bg-slate-800/30 overflow-y-auto p-4 space-y-4 relative">
+                <button
+                  onClick={() => setRightSidebarOpen(false)}
+                  className="absolute top-2 left-2 z-10 p-1.5 bg-slate-700/80 hover:bg-slate-700 rounded text-white transition-all"
+                  title="Hide Settings"
+                >
+                  <ChevronRight size={16} />
+                </button>
               {/* Data Selector */}
               {uploadedData && (
                 <DataSelector
@@ -786,7 +829,8 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Footer Actions */}
