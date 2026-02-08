@@ -35,7 +35,6 @@ const TABS: SidebarTab[] = [
   { id: "overview", label: "Overview" },
   { id: "timeline", label: "Timeline" },
   { id: "actors", label: "Actors" },
-  { id: "theories", label: "Theories" },
   { id: "statistics", label: "Statistics" },
 ];
 
@@ -142,7 +141,7 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   // Update button position based on sidebar position
   useEffect(() => {
-    const updatePosition = () => {
+    const updatePosition = (animate = false) => {
       if (sidebarRef.current) {
         const rect = sidebarRef.current.getBoundingClientRect();
         // Only update position if sidebar is visible (not hidden)
@@ -154,13 +153,31 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
                          rect.height > 0;
         
         if (isVisible) {
-          setButtonPosition({
+          const newPosition = {
             left: rect.right + 8,
             top: rect.top,
-          });
+          };
+          
+          // If buttons are already shown and we're animating, use GSAP for smooth transition
+          if (showButtons && animate && buttonsRef.current) {
+            gsap.to(buttonsRef.current, {
+              left: newPosition.left,
+              top: newPosition.top,
+              duration: 0.3,
+              ease: "power2.out",
+              force3D: true,
+            });
+          } else {
+            // Set position immediately (first time or no animation needed)
+            setButtonPosition(newPosition);
+          }
+          
           // Show buttons only after position is calculated
-          if (!isTimelineNavigating) {
-            setShowButtons(true);
+          if (!isTimelineNavigating && !showButtons) {
+            // Small delay to ensure position is set before showing
+            setTimeout(() => {
+              setShowButtons(true);
+            }, 50);
           }
         }
       }
@@ -168,39 +185,44 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
     // Hide buttons immediately when timeline navigation starts
     if (isTimelineNavigating) {
-      setShowButtons(false);
+      if (buttonsRef.current) {
+        gsap.to(buttonsRef.current, {
+          opacity: 0,
+          duration: 0.2,
+          ease: "power2.in",
+          onComplete: () => {
+            setShowButtons(false);
+          },
+        });
+      } else {
+        setShowButtons(false);
+      }
       return () => {
         window.removeEventListener("resize", updatePosition);
       };
     }
 
-    // Initial position update
-    updatePosition();
+    // Initial position update (no animation on first render)
+    updatePosition(false);
     
     // If sidebar is coming back from hidden state, wait for animation to complete
-    // Small delay to ensure sidebar is fully visible before calculating position
-    const timeoutId = setTimeout(() => {
-      updatePosition();
-    }, 100);
-    
-    // Also update after animation completes (600ms + small buffer)
+    // Calculate position after sidebar animation completes (600ms)
     const animationTimeoutId = setTimeout(() => {
-      updatePosition();
-    }, 700);
+      updatePosition(true); // Animate to new position
+    }, 650);
     
-    window.addEventListener("resize", updatePosition);
-    const observer = new ResizeObserver(updatePosition);
+    window.addEventListener("resize", () => updatePosition(true));
+    const observer = new ResizeObserver(() => updatePosition(true));
     if (sidebarRef.current) {
       observer.observe(sidebarRef.current);
     }
 
     return () => {
-      clearTimeout(timeoutId);
       clearTimeout(animationTimeoutId);
       window.removeEventListener("resize", updatePosition);
       observer.disconnect();
     };
-  }, [activeEventId, sidebarWidth, isTimelineNavigating]);
+  }, [activeEventId, sidebarWidth, isTimelineNavigating, showButtons]);
 
   // Handle tab change
   const handleTabChange = (tabId: SidebarTabId) => {
@@ -323,15 +345,16 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   return (
     <>
-      {activeEvent && showButtons && !isTimelineNavigating && (
+      {activeEvent && (
         <div
+          ref={buttonsRef}
           className="fixed flex flex-col gap-2 z-1"
           style={{
             left: `${buttonPosition.left}px`,
             top: `${buttonPosition.top}px`,
-            opacity: showButtons ? 1 : 0,
-            pointerEvents: showButtons ? "auto" : "none",
-            transition: "opacity 0.2s ease-out",
+            opacity: showButtons && !isTimelineNavigating ? 1 : 0,
+            pointerEvents: showButtons && !isTimelineNavigating ? "auto" : "none",
+            visibility: showButtons && !isTimelineNavigating ? "visible" : "hidden",
           }}
         >
           <Button
