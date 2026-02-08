@@ -285,8 +285,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const totalCountries = events.reduce((sum, e) => sum + (e.highlightedCountries?.length || 0), 0);
-  const totalTimelinePoints = events.reduce((sum, e) => sum + (e.timelinePoints?.length || 0), 0);
 
   // Memoize grouped events to prevent unnecessary recalculations and duplicate renders
   const groupedBaseEvents = useMemo(() => {
@@ -414,11 +412,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-6 mb-12">
           {[
-            { label: "Total Events", value: events.length, icon: FileText, gradient: "from-blue-500 to-blue-600", bgGradient: "from-blue-500/20 to-blue-600/20", borderColor: "border-blue-500/30" },
-            { label: "Highlighted Countries", value: totalCountries, icon: MapPin, gradient: "from-emerald-500 to-emerald-600", bgGradient: "from-emerald-500/20 to-emerald-600/20", borderColor: "border-emerald-500/30" },
-            { label: "Timeline Points", value: totalTimelinePoints, icon: Clock, gradient: "from-violet-500 to-violet-600", bgGradient: "from-violet-500/20 to-violet-600/20", borderColor: "border-violet-500/30" }
+            { label: "Total Events", value: events.length, icon: FileText, gradient: "from-blue-500 to-blue-600", bgGradient: "from-blue-500/20 to-blue-600/20", borderColor: "border-blue-500/30" }
           ].map((stat, idx) => (
             <div
               key={idx}
