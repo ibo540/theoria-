@@ -731,15 +731,6 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                       : undefined;
                     const recommendedStyles = getTheoryBasedStyles(theoryColor);
                     const seriesCount = previewChart.dataKeys?.length || 1;
-                    const sampleData = previewChart.data.length > 0
-                      ? previewChart.data.slice(0, 5)
-                      : [
-                          { label: "A", value: 5000 },
-                          { label: "B", value: 12000 },
-                          { label: "C", value: 8000 },
-                          { label: "D", value: 15000 },
-                          { label: "E", value: 10000 },
-                        ];
 
                     return (
                       <div>
@@ -758,9 +749,10 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                             };
 
                             return (
-                              <div
+                              <button
                                 key={style.id}
-                                className={`cursor-pointer rounded-lg p-2 border transition-all ${
+                                type="button"
+                                className={`w-full text-left rounded-lg p-3 border transition-all ${
                                   isSelected
                                     ? "border-green-500 ring-2 ring-green-500/50 bg-green-500/10"
                                     : "border-slate-700/50 hover:border-slate-600 bg-slate-800/30"
@@ -777,22 +769,11 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                                   });
                                 }}
                               >
-                                <div className="bg-slate-900/50 rounded p-1.5 mb-2">
-                                  <UniversalChart
-                                    title=""
-                                    type={previewChart.type}
-                                    data={sampleData}
-                                    dataKeys={previewChart.dataKeys}
-                                    colors={styleColors}
-                                    height={80}
-                                    formatting={formatting}
-                                  />
-                                </div>
                                 <div className="flex items-center justify-between">
-                                  <p className="text-xs text-gray-300 font-medium">{style.name}</p>
-                                  <p className="text-xs text-gray-500">{style.description}</p>
+                                  <span className="text-sm text-gray-300 font-medium">{style.name}</span>
+                                  <span className="text-xs text-gray-500">{style.description}</span>
                                 </div>
-                              </div>
+                              </button>
                             );
                           })}
                         </div>
