@@ -145,7 +145,14 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
       if (sidebarRef.current) {
         const rect = sidebarRef.current.getBoundingClientRect();
         // Only update position if sidebar is visible (not hidden)
-        if (rect.width > 0 && rect.height > 0) {
+        // Check for visibility and valid dimensions
+        const computedStyle = window.getComputedStyle(sidebarRef.current);
+        const isVisible = computedStyle.visibility !== "hidden" && 
+                         computedStyle.width !== "0px" &&
+                         rect.width > 0 && 
+                         rect.height > 0;
+        
+        if (isVisible) {
           setButtonPosition({
             left: rect.right + 8,
             top: rect.top,
@@ -154,17 +161,34 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
       }
     };
 
+    // Initial position update
     updatePosition();
-    window.addEventListener("resize", updatePosition);
-    const observer = new ResizeObserver(updatePosition);
-    if (sidebarRef.current) {
-      observer.observe(sidebarRef.current);
-    }
+    
+    // If sidebar is coming back from hidden state, wait a bit for animation
+    if (!isTimelineNavigating) {
+      // Small delay to ensure sidebar is fully visible before calculating position
+      const timeoutId = setTimeout(updatePosition, 100);
+      // Also update after animation completes (600ms)
+      const animationTimeoutId = setTimeout(updatePosition, 700);
+      
+      window.addEventListener("resize", updatePosition);
+      const observer = new ResizeObserver(updatePosition);
+      if (sidebarRef.current) {
+        observer.observe(sidebarRef.current);
+      }
 
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      observer.disconnect();
-    };
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(animationTimeoutId);
+        window.removeEventListener("resize", updatePosition);
+        observer.disconnect();
+      };
+    } else {
+      // When hiding, just remove listeners
+      return () => {
+        window.removeEventListener("resize", updatePosition);
+      };
+    }
   }, [activeEventId, sidebarWidth, isTimelineNavigating]);
 
   // Handle tab change
