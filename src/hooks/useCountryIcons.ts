@@ -91,15 +91,17 @@ export function useCountryIcons(
         const lng = typeof icon.coordinates[1] === 'number' ? icon.coordinates[1] : null;
         
         if (lat === null || lng === null || isNaN(lat) || isNaN(lng)) {
-          console.warn(`Icon ${icon.id} has invalid coordinates:`, icon.coordinates);
+          console.warn(`❌ Icon ${icon.id} (${icon.country}) has invalid coordinates:`, icon.coordinates);
           return;
         }
 
         // Validate coordinate ranges
         if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-          console.warn(`Icon ${icon.id} has out-of-range coordinates: [${lat}, ${lng}]`);
+          console.warn(`❌ Icon ${icon.id} (${icon.country}) has out-of-range coordinates: [${lat}, ${lng}]`);
           return;
         }
+        
+        console.log(`📍 Creating marker for icon ${icon.id} (${icon.country}) at [${lat}, ${lng}] linked to timeline point: ${icon.timelinePointId}`);
         
         const el = document.createElement("div");
         el.className = "country-icon-marker";
