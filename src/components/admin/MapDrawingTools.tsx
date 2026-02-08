@@ -755,7 +755,7 @@ export function MapDrawingTools({
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
                   style={{ 
-                    backgroundColor: `${color} !important`,
+                    backgroundColor: color,
                     background: color,
                     minWidth: '48px',
                     minHeight: '48px',
@@ -766,6 +766,8 @@ export function MapDrawingTools({
                     // Override any default button styles
                     appearance: 'none',
                     WebkitAppearance: 'none',
+                    // Ensure the background is visible
+                    borderColor: shapeColor === color ? 'white' : 'rgba(148, 163, 184, 0.5)',
                   } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
@@ -862,7 +864,7 @@ export function MapDrawingTools({
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
                   style={{ 
-                    backgroundColor: `${color} !important`,
+                    backgroundColor: color,
                     background: color,
                     minWidth: '48px',
                     minHeight: '48px',
@@ -873,6 +875,8 @@ export function MapDrawingTools({
                     // Override any default button styles
                     appearance: 'none',
                     WebkitAppearance: 'none',
+                    // Ensure the background is visible
+                    borderColor: lineColor === color ? 'white' : 'rgba(148, 163, 184, 0.5)',
                   } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
