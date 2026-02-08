@@ -38,34 +38,60 @@ const THEORIES = [
 // Helper function to generate theory-based styles (from ChartStyleSelector)
 const getTheoryBasedStyles = (theoryColor?: string) => {
   if (!theoryColor) {
-    // Default colors if no theory
     return [
-      { id: "style1", name: "Classic", description: "Traditional look", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"] },
-      { id: "style2", name: "Minimal", description: "Clean simple", colors: ["#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"] },
+      { id: "style1", name: "Classic", description: "Classic with gridlines", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"] },
+      { id: "style2", name: "Minimal", description: "Minimal clean", colors: ["#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"] },
       { id: "style3", name: "Bold", description: "Bold modern", colors: ["#ef4444", "#f97316", "#eab308", "#84cc16"] },
     ];
   }
 
-  // Generate monochromatic palette from theory color
-  const hex = theoryColor.replace("#", "");
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
+  // Generate 3 monochromatic variations from theory color
+  const generateMonochromaticVariations = (baseColor: string) => {
+    const hex = baseColor.replace("#", "");
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
 
-  const generateShade = (factor: number) => {
-    const newR = Math.round(r * (1 - factor * 0.5) + 255 * factor * 0.3);
-    const newG = Math.round(g * (1 - factor * 0.5) + 255 * factor * 0.3);
-    const newB = Math.round(b * (1 - factor * 0.5) + 255 * factor * 0.3);
-    return `#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`;
+    // Style 1: Classic - Darker variations
+    const style1Colors = [];
+    for (let i = 0; i < 4; i++) {
+      const factor = 0.3 + (i * 0.2); // 30% to 90% intensity
+      const newR = Math.round(r * factor);
+      const newG = Math.round(g * factor);
+      const newB = Math.round(b * factor);
+      style1Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
+    }
+
+    // Style 2: Minimal - Lighter, desaturated variations
+    const style2Colors = [];
+    for (let i = 0; i < 4; i++) {
+      const factor = 0.4 + (i * 0.15); // 40% to 85% intensity, more desaturated
+      const saturation = 0.6; // Reduce saturation
+      const newR = Math.round(r * factor * saturation + 255 * factor * (1 - saturation));
+      const newG = Math.round(g * factor * saturation + 255 * factor * (1 - saturation));
+      const newB = Math.round(b * factor * saturation + 255 * factor * (1 - saturation));
+      style2Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
+    }
+
+    // Style 3: Bold - Vibrant, high contrast variations
+    const style3Colors = [];
+    for (let i = 0; i < 4; i++) {
+      const factor = 0.5 + (i * 0.15); // 50% to 95% intensity
+      const boost = 1.2; // Boost saturation
+      const newR = Math.min(255, Math.round(r * factor * boost));
+      const newG = Math.min(255, Math.round(g * factor * boost));
+      const newB = Math.min(255, Math.round(b * factor * boost));
+      style3Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
+    }
+
+    return [style1Colors, style2Colors, style3Colors];
   };
 
-  const style1Colors = [generateShade(0.2), generateShade(0.4), generateShade(0.6), generateShade(0.8)];
-  const style2Colors = [generateShade(0.1), generateShade(0.3), generateShade(0.5), generateShade(0.7)];
-  const style3Colors = [generateShade(0.3), generateShade(0.5), generateShade(0.7), generateShade(0.9)];
+  const [style1Colors, style2Colors, style3Colors] = generateMonochromaticVariations(theoryColor);
 
   return [
-    { id: "style1", name: "Classic", description: "Traditional look", colors: style1Colors },
-    { id: "style2", name: "Minimal", description: "Clean simple", colors: style2Colors },
+    { id: "style1", name: "Classic", description: "Classic with gridlines", colors: style1Colors },
+    { id: "style2", name: "Minimal", description: "Minimal clean", colors: style2Colors },
     { id: "style3", name: "Bold", description: "Bold modern", colors: style3Colors },
   ];
 };
