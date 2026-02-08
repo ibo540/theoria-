@@ -247,18 +247,6 @@ export default function WorldMap() {
     }
   }, [setSelectedMarker, setFocusedMarker, setBearing]);
 
-  // Handle icon popup close - zoom out to default view
-  const handleIconClose = useCallback(() => {
-    setSelectedIcon(null);
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo({
-        center: MAP_CONFIG.initialCenter,
-        zoom: MAP_CONFIG.targetZoom,
-        bearing: 0,
-        duration: 1500,
-      });
-    }
-  }, []);
 
   // Initialize map
   useEffect(() => {
