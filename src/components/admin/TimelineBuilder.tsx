@@ -89,11 +89,31 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       }
     }
 
-    setEvent({
+    const updatedEvent = {
       ...event,
       timelinePoints: [...timelinePoints, point],
       countryIcons: updatedCountryIcons,
-    });
+    };
+    
+    setEvent(updatedEvent);
+    
+    // Also update the event store immediately so icons appear on the map right away
+    // (without waiting for save)
+    if (typeof window !== 'undefined') {
+      import("@/stores/useEventStore").then(({ useEventStore }) => {
+        const store = useEventStore.getState();
+        // Only update if this is the currently active event
+        if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
+          console.log("🔄 Updating active event in store with new icons...", {
+            storeEventId: store.activeEvent.id,
+            editingEventId: event.id,
+            iconsCount: updatedCountryIcons.length
+          });
+          // Update the store's activeEvent directly
+          useEventStore.setState({ activeEvent: updatedEvent as any });
+        }
+      }).catch(console.error);
+    }
 
     // Reset form but keep position incrementing for convenience
     const nextPosition = timelinePoints.length > 0
