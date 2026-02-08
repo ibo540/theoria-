@@ -60,6 +60,7 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
 
   const sidebarRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
   const [showButtons, setShowButtons] = useState(false);
   const activeEventId = useEventStore((state) => state.activeEventId);
   const activeEvent = useEventStore((state) => state.activeEvent);
