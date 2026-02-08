@@ -11,6 +11,19 @@ interface TimelineBuilderProps {
   setEvent: (event: Partial<EventData>) => void;
 }
 
+// Map event types to icon types
+function getIconTypeFromEventType(eventType: string): string {
+  const mapping: Record<string, string> = {
+    military: "shield",        // Military events → Shield icon
+    diplomatic: "flag",         // Diplomatic events → Flag icon
+    economic: "building",      // Economic events → Building icon
+    ideological: "users",      // Ideological events → Users icon (people/community)
+    technological: "zap",      // Technological events → Zap icon (lightning/energy)
+    mixed: "globe",            // Mixed events → Globe icon
+  };
+  return mapping[eventType] || "map-pin"; // Default to map-pin
+}
+
 export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newPoint, setNewPoint] = useState<Partial<TimelinePoint>>({
@@ -72,7 +85,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
             ? updatedCountryIcons[existingIconIndex].id
             : `icon-${Date.now()}`,
           country: countryName,
-          iconType: "map-pin", // Always use map-pin icon type
+          iconType: getIconTypeFromEventType(point.eventType || "diplomatic"), // Map event type to icon type
           coordinates: coords,
           title: point.label, // Use timeline point label as icon title
           description: point.description || "", // Use timeline point description
@@ -138,8 +151,8 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
     (updated[index] as any)[field] = value;
     const point = updated[index];
 
-    // If updating a timeline point label or description, also update linked icon if it exists
-    if (point && (field === "label" || field === "description")) {
+    // If updating a timeline point label, description, or eventType, also update linked icon if it exists
+    if (point && (field === "label" || field === "description" || field === "eventType")) {
       const updatedIcons = [...(event.countryIcons || [])];
       const iconIndex = updatedIcons.findIndex(icon => icon.timelinePointId === point.id);
       if (iconIndex >= 0) {
@@ -147,8 +160,18 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           ...updatedIcons[iconIndex],
           title: field === "label" ? value : updatedIcons[iconIndex].title,
           description: field === "description" ? value : updatedIcons[iconIndex].description,
+          iconType: field === "eventType" ? getIconTypeFromEventType(value) : updatedIcons[iconIndex].iconType,
         };
         setEvent({ ...event, timelinePoints: updated, countryIcons: updatedIcons });
+        // Also update the event store immediately so icons update on the map right away
+        if (typeof window !== 'undefined') {
+          import("@/stores/useEventStore").then(({ useEventStore }) => {
+            const store = useEventStore.getState();
+            if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
+              store.updateActiveEventCountryIcons(updatedIcons);
+            }
+          }).catch(console.error);
+        }
         return;
       }
     }

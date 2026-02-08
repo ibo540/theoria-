@@ -126,15 +126,16 @@ export function useCountryIcons(
         outerDiv.style.justifyContent = "center";
         outerDiv.style.transition = "transform 0.3s ease"; // Only transform, not all
         
-        // Create inner div for icon - always use location pin icon
+        // Create inner div for icon - use iconType from icon data
         const innerDiv = document.createElement("div");
         innerDiv.style.transform = "rotate(-45deg)";
         innerDiv.style.color = "#1e293b";
         innerDiv.style.display = "flex";
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
-        // Always use location pin icon inside the diamond
-        innerDiv.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
+        // Use the icon type from the icon data, fallback to map-pin
+        const iconType = icon.iconType || "map-pin";
+        innerDiv.innerHTML = getIconSVG(iconType);
         
         outerDiv.appendChild(innerDiv);
         el.appendChild(outerDiv);
