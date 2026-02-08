@@ -33,11 +33,49 @@ export default function TheorySidebar({
   isTimelineNavigating = false,
 }: TheorySidebarProps) {
   const activeTheory = useTheoryStore((state) => state.activeTheory);
+  const comparisonMode = useTheoryStore((state) => state.comparisonMode);
+  const primaryTheory = useTheoryStore((state) => state.primaryTheory);
+  const secondaryTheory = useTheoryStore((state) => state.secondaryTheory);
+  const setPrimaryTheory = useTheoryStore((state) => state.setPrimaryTheory);
+  const setSecondaryTheory = useTheoryStore((state) => state.setSecondaryTheory);
+  const disableComparison = useTheoryStore((state) => state.disableComparison);
   const toggleTheory = useTheoryStore((state) => state.toggleTheory);
   const activeEventId = useEventStore((state) => state.activeEventId);
   const isLoaderComplete = useLoaderComplete();
 
-  const hasActiveTheory = activeTheory !== null;
+  const hasActiveTheory = activeTheory !== null || comparisonMode;
+  
+  // Handle theory click with comparison mode support
+  const handleTheoryClick = (theory: TheoryType) => {
+    if (comparisonMode) {
+      // In comparison mode, clicking a theory switches it
+      if (primaryTheory === theory) {
+        // Clicking primary switches to single mode with secondary
+        disableComparison();
+        if (secondaryTheory) {
+          setPrimaryTheory(secondaryTheory);
+        }
+      } else if (secondaryTheory === theory) {
+        // Clicking secondary switches to single mode with primary
+        disableComparison();
+        if (primaryTheory) {
+          setPrimaryTheory(primaryTheory);
+        }
+      } else {
+        // Clicking a different theory replaces secondary
+        setSecondaryTheory(theory);
+      }
+    } else {
+      // Normal mode - if a theory is already selected, enable comparison
+      if (activeTheory && activeTheory !== theory) {
+        setPrimaryTheory(activeTheory);
+        setSecondaryTheory(theory);
+      } else {
+        // Toggle normally
+        toggleTheory(theory);
+      }
+    }
+  };
   const shouldShow = Boolean(isLoaderComplete && activeEventId);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -264,8 +302,10 @@ export default function TheorySidebar({
           <TheoryButton
             key={theory}
             theory={theory}
-            onClick={() => toggleTheory(theory)}
-            isActive={activeTheory === theory}
+            onClick={() => handleTheoryClick(theory)}
+            isActive={activeTheory === theory || primaryTheory === theory}
+            isPrimary={comparisonMode && primaryTheory === theory}
+            isSecondary={comparisonMode && secondaryTheory === theory}
             hasActiveTheory={hasActiveTheory}
             containerRefCallback={(el) => {
               if (theoryButtonRefs?.current && el) {

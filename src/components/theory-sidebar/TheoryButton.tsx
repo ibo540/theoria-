@@ -9,6 +9,8 @@ interface TheoryButtonProps {
   theory: TheoryType;
   onClick?: () => void;
   isActive?: boolean;
+  isPrimary?: boolean; // In comparison mode, this is the primary theory
+  isSecondary?: boolean; // In comparison mode, this is the secondary theory
   hasActiveTheory?: boolean;
   containerRefCallback?: (el: HTMLElement | null) => void;
 }
@@ -30,6 +32,8 @@ export default function TheoryButton({
   theory,
   onClick,
   isActive = false,
+  isPrimary = false,
+  isSecondary = false,
   hasActiveTheory = false,
   containerRefCallback,
 }: TheoryButtonProps) {
@@ -67,8 +71,11 @@ export default function TheoryButton({
   const visualState = useMemo(() => {
     // Determine icon color
     let iconColor: string;
-    if (isActive) {
-      // Active: use theory color
+    if (isPrimary || isActive) {
+      // Primary or active: use theory color
+      iconColor = theoryColor;
+    } else if (isSecondary) {
+      // Secondary in comparison: use theory color
       iconColor = theoryColor;
     } else if (isHovered) {
       // Hovered but not active: use theory color
@@ -81,17 +88,19 @@ export default function TheoryButton({
       iconColor = GOLD_COLOR;
     }
 
-    // Scale: larger when active, smaller when another is active, normal otherwise
+    // Scale: larger when active/primary/secondary, smaller when another is active, normal otherwise
     let scale = SCALE_NONE_SELECTED;
     if (hasActiveTheory) {
-      scale = isActive ? SCALE_ACTIVE : SCALE_INACTIVE;
+      scale = (isActive || isPrimary || isSecondary) ? SCALE_ACTIVE : SCALE_INACTIVE;
     }
 
     return {
       color: iconColor,
       scale: scale,
+      isPrimary,
+      isSecondary,
     };
-  }, [hasActiveTheory, isActive, isHovered, theoryColor]);
+  }, [hasActiveTheory, isActive, isPrimary, isSecondary, isHovered, theoryColor]);
 
   // Animate state changes - synchronized timeline
   useEffect(() => {
@@ -183,12 +192,14 @@ export default function TheoryButton({
         <span
           className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-bold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
           style={{
-            color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
-            opacity: isActive ? 1 : hasActiveTheory ? 0.8 : 0.9,
+            color: (isActive || isPrimary || isSecondary) ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
+            opacity: (isActive || isPrimary || isSecondary) ? 1 : hasActiveTheory ? 0.8 : 0.9,
             textShadow: "0 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5)",
           }}
         >
           {theoryLabel}
+          {isPrimary && " (1)"}
+          {isSecondary && " (2)"}
         </span>
       </button>
     </div>

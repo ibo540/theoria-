@@ -10,6 +10,7 @@ import Loader from "@/components/Loader";
 import Navbar from "@/components/Navbar";
 import { Sidebar } from "@/components/sidebar";
 import { TheorySidebar } from "@/components/theory-sidebar";
+import { TheoryComparison } from "@/components/TheoryComparison";
 import Timeline from "@/components/timeline";
 import { useState, useEffect } from "react";
 
@@ -58,6 +59,7 @@ export function EventDataProvider({ children }: { children: React.ReactNode }) {
           <Sidebar isTimelineNavigating={isTimelineNavigating} />
           <Timeline timelineContainerRef={timelineContainerRef} />
           <TheorySidebar theoryButtonRefs={theoryButtonRefs} isTimelineNavigating={isTimelineNavigating} />
+          <TheoryComparison />
         </>
       )}
       {children}
