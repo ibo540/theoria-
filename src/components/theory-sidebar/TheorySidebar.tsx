@@ -244,9 +244,9 @@ export default function TheorySidebar({
       ref={asideRef}
       className="fixed top-[24px] left-1/2 -translate-x-1/2 z-1"
       style={{
-        overflow: "hidden",
+        overflow: isTimelineNavigating ? "hidden" : "visible",
         height: isTimelineNavigating ? "0" : "auto",
-        transition: "height 0.6s ease-out",
+        transition: isTimelineNavigating ? "height 0.6s ease-out, overflow 0.6s" : "none",
       }}
     >
       <div
