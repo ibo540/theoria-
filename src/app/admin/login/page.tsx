@@ -52,24 +52,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0f1114] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-8 animate-fadeIn">
+        <div className="bg-gradient-to-br from-[#14161a]/90 to-[#0f1114]/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-[#ffe4be]/20 p-8 animate-fadeIn">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/50 mb-4">
-              <Lock className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ffe4be]/20 to-[#ffe4be]/10 rounded-xl shadow-lg shadow-[#ffe4be]/20 mb-4 border border-[#ffe4be]/30">
+              <Lock className="w-8 h-8 text-[#ffe4be]" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Admin Login</h1>
-            <p className="text-gray-300 text-sm">Enter your credentials to access the dashboard</p>
+            <h1 className="text-3xl font-bold text-[#ffe4be] mb-2">Admin Login</h1>
+            <p className="text-[#ffe4be]/70 text-sm">Enter your credentials to access the dashboard</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                <UserCircle className="w-4 h-4 inline mr-2" />
+              <label htmlFor="name" className="block text-sm font-medium text-[#ffe4be]/80 mb-2">
+                <UserCircle className="w-4 h-4 inline mr-2 text-[#ffe4be]/70" />
                 Your Name
               </label>
               <input
@@ -78,15 +78,15 @@ export default function LoginPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
                 required
               />
             </div>
 
             {/* Username Field */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                <User className="w-4 h-4 inline mr-2" />
+              <label htmlFor="username" className="block text-sm font-medium text-[#ffe4be]/80 mb-2">
+                <User className="w-4 h-4 inline mr-2 text-[#ffe4be]/70" />
                 Username
               </label>
               <input
@@ -95,15 +95,15 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
                 required
               />
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                <Lock className="w-4 h-4 inline mr-2" />
+              <label htmlFor="password" className="block text-sm font-medium text-[#ffe4be]/80 mb-2">
+                <Lock className="w-4 h-4 inline mr-2 text-[#ffe4be]/70" />
                 Password
               </label>
               <input
@@ -112,7 +112,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
                 required
               />
             </div>
@@ -128,14 +128,14 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full px-6 py-3 bg-gradient-to-r from-[#ffe4be]/20 to-[#ffe4be]/10 text-[#ffe4be] rounded-lg font-semibold border border-[#ffe4be]/30 hover:from-[#ffe4be]/30 hover:to-[#ffe4be]/20 hover:border-[#ffe4be]/50 transition-all duration-300 shadow-lg shadow-[#ffe4be]/20 hover:shadow-xl hover:shadow-[#ffe4be]/30 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center text-sm text-gray-400">
+          <div className="mt-6 text-center text-sm text-[#ffe4be]/50">
             <p>Protected Admin Area</p>
           </div>
         </div>
