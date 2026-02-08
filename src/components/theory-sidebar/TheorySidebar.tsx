@@ -192,30 +192,37 @@ export default function TheorySidebar({
     }
 
     if (isTimelineNavigating) {
-      // Hide icons - slide up one by one
-      timelineNavigationAnimationRef.current = gsap.timeline();
+      // Hide icons - slide up one by one, completely off-screen
+      timelineNavigationAnimationRef.current = gsap.timeline({
+        onComplete: () => {
+          // Completely hide the container after animation
+          if (asideRef.current) {
+            asideRef.current.style.visibility = "hidden";
+            asideRef.current.style.pointerEvents = "none";
+          }
+          gsap.set(buttonElements, { pointerEvents: "none" });
+        },
+      });
       timelineNavigationAnimationRef.current.to(buttonElements, {
-        y: -150,
+        y: -200, // Move further up to ensure completely hidden
         opacity: 0,
         duration: 0.5,
         ease: "expo.in",
         stagger: { each: 0.08, from: "start" }, // Staggered animation, one by one
         force3D: true,
-        onComplete: () => {
-          // Keep them hidden but allow them to be shown again
-          gsap.set(buttonElements, { pointerEvents: "none" });
-        },
       });
     } else {
       // Show icons - slide down one by one
-      // First ensure they're visible
-      asideRef.current.style.visibility = "visible";
-      gsap.set(buttonElements, { pointerEvents: "auto" });
+      // First ensure they're visible and reset position
+      if (asideRef.current) {
+        asideRef.current.style.visibility = "visible";
+        asideRef.current.style.pointerEvents = "auto";
+      }
+      gsap.set(buttonElements, { pointerEvents: "auto", y: -200, opacity: 0 });
       
       timelineNavigationAnimationRef.current = gsap.timeline();
-      timelineNavigationAnimationRef.current.fromTo(
+      timelineNavigationAnimationRef.current.to(
         buttonElements,
-        { y: -150, opacity: 0 },
         {
           y: 0,
           opacity: 1,
