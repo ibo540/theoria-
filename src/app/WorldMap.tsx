@@ -1075,7 +1075,6 @@ export default function WorldMap() {
                 );
               })()}
             </div>
-          </div>
         </div>
       )}
 
