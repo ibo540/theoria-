@@ -755,14 +755,18 @@ export function MapDrawingTools({
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
                   style={{ 
-                    backgroundColor: color,
+                    backgroundColor: `${color} !important`,
+                    background: color,
                     minWidth: '48px',
                     minHeight: '48px',
                     // Ensure visibility with a subtle border if color is too light
                     boxShadow: shapeColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
-                    // Force color display
+                    // Force color display - remove any text color
                     color: 'transparent',
-                  }}
+                    // Override any default button styles
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                  } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
                   {/* Invisible text to ensure button has content */}
@@ -858,14 +862,18 @@ export function MapDrawingTools({
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
                   style={{ 
-                    backgroundColor: color,
+                    backgroundColor: `${color} !important`,
+                    background: color,
                     minWidth: '48px',
                     minHeight: '48px',
                     // Ensure visibility with a subtle border if color is too light
                     boxShadow: lineColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
-                    // Force color display
+                    // Force color display - remove any text color
                     color: 'transparent',
-                  }}
+                    // Override any default button styles
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                  } as React.CSSProperties}
                   title={`${color} - Variation ${index + 1}`}
                 >
                   {/* Invisible text to ensure button has content */}
