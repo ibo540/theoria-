@@ -8,6 +8,8 @@ import { SpreadsheetEditor } from "./SpreadsheetEditor";
 import { ChartPreview } from "./ChartPreview";
 import { ColorPalettePicker } from "./ColorPalettePicker";
 import { ChartStyleSelector } from "./ChartStyleSelector";
+import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
+import UniversalChart from "@/components/sidebar/UniversalChart";
 import { DataSelector } from "./DataSelector";
 import { suggestChartTypes, convertToChartData } from "@/lib/chart-suggestions";
 
@@ -33,6 +35,41 @@ const THEORIES = [
   { id: "constructivism", name: "Constructivism" },
 ];
 
+// Helper function to generate theory-based styles (from ChartStyleSelector)
+const getTheoryBasedStyles = (theoryColor?: string) => {
+  if (!theoryColor) {
+    // Default colors if no theory
+    return [
+      { id: "style1", name: "Classic", description: "Traditional look", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"] },
+      { id: "style2", name: "Minimal", description: "Clean simple", colors: ["#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"] },
+      { id: "style3", name: "Bold", description: "Bold modern", colors: ["#ef4444", "#f97316", "#eab308", "#84cc16"] },
+    ];
+  }
+
+  // Generate monochromatic palette from theory color
+  const hex = theoryColor.replace("#", "");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+
+  const generateShade = (factor: number) => {
+    const newR = Math.round(r * (1 - factor * 0.5) + 255 * factor * 0.3);
+    const newG = Math.round(g * (1 - factor * 0.5) + 255 * factor * 0.3);
+    const newB = Math.round(b * (1 - factor * 0.5) + 255 * factor * 0.3);
+    return `#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`;
+  };
+
+  const style1Colors = [generateShade(0.2), generateShade(0.4), generateShade(0.6), generateShade(0.8)];
+  const style2Colors = [generateShade(0.1), generateShade(0.3), generateShade(0.5), generateShade(0.7)];
+  const style3Colors = [generateShade(0.3), generateShade(0.5), generateShade(0.7), generateShade(0.9)];
+
+  return [
+    { id: "style1", name: "Classic", description: "Traditional look", colors: style1Colors },
+    { id: "style2", name: "Minimal", description: "Clean simple", colors: style2Colors },
+    { id: "style3", name: "Bold", description: "Bold modern", colors: style3Colors },
+  ];
+};
+
 export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const charts = event.stats?.charts || [];
   const [editingChartId, setEditingChartId] = useState<string | null>(null);
@@ -48,9 +85,10 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
   const [notification, setNotification] = useState<{
     message: string;
     type: "success" | "info" | "error";
@@ -540,41 +578,9 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
 
           {/* Main Content - Fullscreen Layout */}
           <div className="flex-1 overflow-hidden flex relative">
-            {/* Left Sidebar Toggle Button */}
-            {!leftSidebarOpen && (
-              <button
-                onClick={() => setLeftSidebarOpen(true)}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-r-lg p-2.5 text-white transition-all flex items-center gap-1.5 shadow-lg"
-                title="Show Style Options"
-              >
-                <Palette size={18} />
-                <ChevronRight size={16} />
-              </button>
-            )}
-
-            {/* Left Sidebar - Style & Color Selector */}
-            {leftSidebarOpen && (
-              <div className="w-80 border-r border-slate-700 bg-slate-800/30 overflow-y-auto p-4 relative">
-                <button
-                  onClick={() => setLeftSidebarOpen(false)}
-                  className="absolute top-2 right-2 z-10 p-1.5 bg-slate-700/80 hover:bg-slate-700 rounded text-white transition-all"
-                  title="Hide Style Options"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <ChartStyleSelector
-                  chart={previewChart}
-                  onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
-                  onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
-                  onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
-                  selectedColors={previewChart.customColors}
-                />
-              </div>
-            )}
-
-            {/* Center - Chart Preview (expands when sidebars are hidden) */}
+            {/* Center - Chart Preview (expands when sidebar is hidden) */}
             <div className={`flex-1 overflow-y-auto p-6 bg-slate-900/50 transition-all ${
-              !leftSidebarOpen && !rightSidebarOpen ? 'px-12' : ''
+              !rightSidebarOpen ? 'px-12' : ''
             }`}>
               <ChartPreview
                 chart={previewChart}
@@ -691,6 +697,82 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                       </select>
                     </div>
                   )}
+
+                  {/* Chart Styles - Show 3 recommended styles based on theory */}
+                  {previewChart && (() => {
+                    const theoryColor = previewChart.theory
+                      ? getTheoryColor(previewChart.theory as TheoryType)
+                      : undefined;
+                    const recommendedStyles = getTheoryBasedStyles(theoryColor);
+                    const seriesCount = previewChart.dataKeys?.length || 1;
+                    const sampleData = previewChart.data.length > 0
+                      ? previewChart.data.slice(0, 5)
+                      : [
+                          { label: "A", value: 5000 },
+                          { label: "B", value: 12000 },
+                          { label: "C", value: 8000 },
+                          { label: "D", value: 15000 },
+                          { label: "E", value: 10000 },
+                        ];
+
+                    return (
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-2">
+                          Chart Style
+                        </label>
+                        <div className="space-y-2">
+                          {recommendedStyles.map((style) => {
+                            const isSelected = selectedStyleId === style.id;
+                            const styleColors = style.colors.slice(0, seriesCount);
+                            const formatting = {
+                              showGridlines: style.id === "style1" || style.id === "style3",
+                              legendPosition: "bottom" as const,
+                              showDataLabels: style.id === "style3",
+                              backgroundColor: style.id === "style3" ? "#1e293b" : undefined,
+                            };
+
+                            return (
+                              <div
+                                key={style.id}
+                                className={`cursor-pointer rounded-lg p-2 border transition-all ${
+                                  isSelected
+                                    ? "border-green-500 ring-2 ring-green-500/50 bg-green-500/10"
+                                    : "border-slate-700/50 hover:border-slate-600 bg-slate-800/30"
+                                }`}
+                                onClick={() => {
+                                  setSelectedStyleId(style.id);
+                                  // Apply style colors
+                                  handleUpdatePreviewChart("customColors", styleColors);
+                                  
+                                  // Apply style formatting
+                                  handleUpdatePreviewChart("formatting", {
+                                    ...previewChart.formatting,
+                                    ...formatting,
+                                  });
+                                }}
+                              >
+                                <div className="bg-slate-900/50 rounded p-1.5 mb-2">
+                                  <UniversalChart
+                                    title=""
+                                    type={previewChart.type}
+                                    data={sampleData}
+                                    dataKeys={previewChart.dataKeys}
+                                    colors={styleColors}
+                                    height={80}
+                                    formatting={formatting}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <p className="text-xs text-gray-300 font-medium">{style.name}</p>
+                                  <p className="text-xs text-gray-500">{style.description}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">
