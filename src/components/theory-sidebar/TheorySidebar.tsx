@@ -66,8 +66,13 @@ export default function TheorySidebar({
       isFirstRenderRef.current = false;
       previousShouldShowRef.current = shouldShow;
 
-      // Always set initial visibility based on shouldShow
-      asideRef.current.style.visibility = shouldShow ? "visible" : "hidden";
+      // Always set initial visibility and ensure proper dimensions
+      if (asideRef.current) {
+        asideRef.current.style.visibility = shouldShow ? "visible" : "hidden";
+        asideRef.current.style.overflow = "visible";
+        asideRef.current.style.height = "auto";
+        asideRef.current.style.pointerEvents = "auto";
+      }
 
       if (shouldShow) {
         showHideTimelineRef.current = gsap.timeline();
