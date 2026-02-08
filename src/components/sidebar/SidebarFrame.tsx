@@ -14,21 +14,18 @@ interface SidebarFrameProps {
   children: React.ReactNode;
   width: number;
   onResizeStart: () => void;
-  isHidden?: boolean;
 }
 
 export const SidebarFrame = forwardRef<HTMLElement, SidebarFrameProps>(
-  ({ children, width, onResizeStart, isHidden = false }, ref) => {
+  ({ children, width, onResizeStart }, ref) => {
     return (
       <aside
         ref={ref}
-        className="fixed transition-all duration-500 ease-in-out"
+        className="fixed"
         style={{
           left: "16px",
           top: "50%",
-          transform: isHidden ? "translateY(-50%) translateX(-100%)" : "translateY(-50%)",
-          opacity: isHidden ? 0 : 1,
-          pointerEvents: isHidden ? "none" : "auto",
+          transform: "translateY(-50%)",
           width: `${width}px`,
           height: "calc(70vh)",
           zIndex: -1,

@@ -39,11 +39,7 @@ const TABS: SidebarTab[] = [
   { id: "statistics", label: "Statistics" },
 ];
 
-interface SidebarProps {
-  isHidden?: boolean;
-}
-
-export default function Sidebar({ isHidden = false }: SidebarProps) {
+export default function Sidebar() {
   const [allEvents, setAllEvents] = useState<EventData[]>(EVENTS_DATA);
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarWidth, setSidebarWidth] = useState(480);
@@ -316,7 +312,6 @@ export default function Sidebar({ isHidden = false }: SidebarProps) {
         ref={sidebarRef}
         width={sidebarWidth}
         onResizeStart={() => setIsResizing(true)}
-        isHidden={isHidden}
       >
         {/* Simplified Layout: Fixed Header + Scrollable Content */}
         <div ref={contentRef} className="flex flex-col w-full h-full">

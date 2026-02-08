@@ -11,7 +11,6 @@ import Navbar from "@/components/Navbar";
 import { Sidebar } from "@/components/sidebar";
 import { TheorySidebar } from "@/components/theory-sidebar";
 import Timeline from "@/components/timeline";
-import { useState, useEffect } from "react";
 
 export function EventDataProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -22,22 +21,6 @@ export function EventDataProvider({ children }: { children: React.ReactNode }) {
   const eventData = useEventData();
   const activeEventId = useEventStore((state) => state.activeEventId);
   const isEventOpen = Boolean(activeEventId);
-  
-  // Track if timeline navigation is active (when icon popup is open)
-  // This will be set by WorldMap component
-  const [isTimelineNavigating, setIsTimelineNavigating] = useState(false);
-  
-  // Expose setter via window for WorldMap to use
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).setIsTimelineNavigating = setIsTimelineNavigating;
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        delete (window as any).setIsTimelineNavigating;
-      }
-    };
-  }, []);
 
   // Animation refs
   const timelineContainerRef = useRef<HTMLDivElement>(null);
@@ -56,9 +39,9 @@ export function EventDataProvider({ children }: { children: React.ReactNode }) {
           <Loader />
           <CustomCursor />
           <Navbar />
-          <Sidebar isHidden={isTimelineNavigating} />
+          <Sidebar />
           <Timeline timelineContainerRef={timelineContainerRef} />
-          <TheorySidebar theoryButtonRefs={theoryButtonRefs} isHidden={isTimelineNavigating} />
+          <TheorySidebar theoryButtonRefs={theoryButtonRefs} />
         </>
       )}
       {children}

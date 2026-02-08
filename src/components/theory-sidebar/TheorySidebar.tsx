@@ -18,7 +18,6 @@ const theories: TheoryType[] = [
 
 interface TheorySidebarProps {
   theoryButtonRefs?: React.MutableRefObject<HTMLElement[]>;
-  isHidden?: boolean;
 }
 
 // Animation constants - synchronized with TheoryButton
@@ -30,7 +29,6 @@ const GAP_ANIMATION_EASE = "expo.out";
 
 export default function TheorySidebar({
   theoryButtonRefs,
-  isHidden = false,
 }: TheorySidebarProps) {
   const activeTheory = useTheoryStore((state) => state.activeTheory);
   const toggleTheory = useTheoryStore((state) => state.toggleTheory);
@@ -170,12 +168,7 @@ export default function TheorySidebar({
   return (
     <aside
       ref={asideRef}
-      className="fixed top-[24px] left-1/2 -translate-x-1/2 z-1 transition-all duration-500 ease-in-out"
-      style={{
-        opacity: isHidden ? 0 : 1,
-        transform: isHidden ? "translateX(-50%) translateY(-100%)" : "translateX(-50%)",
-        pointerEvents: isHidden ? "none" : "auto",
-      }}
+      className="fixed top-[24px] left-1/2 -translate-x-1/2 z-1"
     >
       <div
         ref={containerRef}
