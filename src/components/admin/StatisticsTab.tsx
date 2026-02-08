@@ -518,23 +518,296 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
         </div>
       )}
 
-      {/* Chart Preview Modal */}
+      {/* Chart Preview Modal - Fullscreen */}
       {showPreview && previewChart && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">
-                {charts.find((c) => c.id === previewChart.id) ? "Edit Chart" : "Chart Preview"}
-              </h3>
-              <button
-                onClick={() => setShowPreview(false)}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-              >
-                <X size={20} />
-              </button>
+        <div className="fixed inset-0 bg-black/95 z-[9999] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-700 bg-slate-900/50">
+            <h3 className="text-2xl font-bold text-white">
+              {charts.find((c) => c.id === previewChart.id) ? "Edit Chart" : "Chart Preview & Editor"}
+            </h3>
+            <button
+              onClick={() => setShowPreview(false)}
+              className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* Main Content - Fullscreen Layout */}
+          <div className="flex-1 overflow-hidden flex">
+            {/* Left Sidebar - Style & Color Selector */}
+            <div className="w-80 border-r border-slate-700 bg-slate-800/30 overflow-y-auto p-4">
+              <ChartStyleSelector
+                chart={previewChart}
+                onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
+                onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
+                onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
+                selectedColors={previewChart.customColors}
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Center - Chart Preview */}
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-900/50">
+              <ChartPreview
+                chart={previewChart}
+                onChartUpdate={(updatedChart) => {
+                  setPreviewChart(updatedChart);
+                }}
+                isEditable={true}
+              />
+            </div>
+
+            {/* Right Sidebar - Data Selector & Settings */}
+            <div className="w-80 border-l border-slate-700 bg-slate-800/30 overflow-y-auto p-4 space-y-4">
+              {/* Data Selector */}
+              {uploadedData && (
+                <DataSelector
+                  headers={uploadedData.headers}
+                  data={uploadedData.data}
+                  selectedSeries={selectedSeries}
+                  selectedCategories={selectedCategories}
+                  onSeriesChange={setSelectedSeries}
+                  onCategoriesChange={setSelectedCategories}
+                  onApply={() => {
+                    if (selectedValueColumns.length > 0) {
+                      handleCreateChartFromData();
+                    }
+                  }}
+                  onSelectData={() => {
+                    setShowPreview(false);
+                    setShowSpreadsheet(true);
+                  }}
+                />
+              )}
+
+              {/* Chart Settings */}
+              <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-4 space-y-4">
+                <h4 className="text-sm font-semibold text-white mb-4">Chart Settings</h4>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Chart Title
+                    </label>
+                    <input
+                      type="text"
+                      value={previewChart.title}
+                      onChange={(e) => handleUpdatePreviewChart("title", e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Chart Type
+                    </label>
+                    <select
+                      value={previewChart.type}
+                      onChange={(e) => handleUpdatePreviewChart("type", e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    >
+                      {CHART_TYPES.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Theory (for color theming)
+                    </label>
+                    <select
+                      value={previewChart.theory || ""}
+                      onChange={(e) => handleUpdatePreviewChart("theory", e.target.value || undefined)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                    >
+                      <option value="">None (default colors)</option>
+                      {THEORIES.map((theory) => (
+                        <option key={theory.id} value={theory.id}>
+                          {theory.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      X-Axis Label
+                    </label>
+                    <input
+                      type="text"
+                      value={previewChart.xAxisLabel || ""}
+                      onChange={(e) => handleUpdatePreviewChart("xAxisLabel", e.target.value || undefined)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="e.g., Countries, Years"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Y-Axis Label
+                    </label>
+                    <input
+                      type="text"
+                      value={previewChart.yAxisLabel || ""}
+                      onChange={(e) => handleUpdatePreviewChart("yAxisLabel", e.target.value || undefined)}
+                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      placeholder="e.g., Values, Percentage"
+                    />
+                  </div>
+
+                  {/* Formatting Options */}
+                  <div className="border-t border-slate-700 pt-4">
+                    <h5 className="text-xs font-semibold text-gray-300 mb-3">Formatting</h5>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          Legend Position
+                        </label>
+                        <select
+                          value={previewChart.formatting?.legendPosition || "top"}
+                          onChange={(e) => handleUpdatePreviewChart("formatting", {
+                            ...previewChart.formatting,
+                            legendPosition: e.target.value as "top" | "bottom" | "left" | "right" | "none",
+                          })}
+                          className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                        >
+                          <option value="top">Top</option>
+                          <option value="bottom">Bottom</option>
+                          <option value="left">Left</option>
+                          <option value="right">Right</option>
+                          <option value="none">None</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                          <input
+                            type="checkbox"
+                            checked={previewChart.formatting?.showGridlines !== false}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              showGridlines: e.target.checked,
+                            })}
+                            className="w-4 h-4 text-blue-600 rounded"
+                          />
+                          Show Gridlines
+                          </label>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                          <input
+                            type="checkbox"
+                            checked={previewChart.formatting?.showDataLabels === true}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              showDataLabels: e.target.checked,
+                            })}
+                            className="w-4 h-4 text-blue-600 rounded"
+                          />
+                          Show Data Labels
+                          </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          Background Color
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={previewChart.formatting?.backgroundColor || "#000000"}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              backgroundColor: e.target.value,
+                            })}
+                            className="w-12 h-10 cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={previewChart.formatting?.backgroundColor || "#000000"}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              backgroundColor: e.target.value,
+                            })}
+                            className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          Border Color
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={previewChart.formatting?.borderColor || "#333333"}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              borderColor: e.target.value,
+                            })}
+                            className="w-12 h-10 cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={previewChart.formatting?.borderColor || "#333333"}
+                            onChange={(e) => handleUpdatePreviewChart("formatting", {
+                              ...previewChart.formatting,
+                              borderColor: e.target.value,
+                            })}
+                            className="flex-1 px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          Border Width: {previewChart.formatting?.borderWidth || 0}px
+                        </label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="5"
+                          value={previewChart.formatting?.borderWidth || 0}
+                          onChange={(e) => handleUpdatePreviewChart("formatting", {
+                            ...previewChart.formatting,
+                            borderWidth: parseInt(e.target.value),
+                          })}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="border-t border-slate-700 p-4 bg-slate-900/50 flex items-center justify-end gap-3">
+            <button
+              onClick={() => setShowPreview(false)}
+              className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSavePreviewChart}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+            >
+              <CheckCircle size={16} />
+              {charts.find((c) => c.id === previewChart.id) ? "Update Chart" : "Add to Event"}
+            </button>
+          </div>
+        </div>
+      )}
+
               <div>
                 <label className="block text-xs font-medium text-gray-300 mb-1">
                   Chart Title
@@ -768,73 +1041,6 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
               </div>
             </div>
 
-            {/* Excel-like Chart Editor Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
-              {/* Chart Style & Color Selector - Left Sidebar */}
-              <div className="lg:col-span-3">
-                <ChartStyleSelector
-                  chart={previewChart}
-                  onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
-                  onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
-                  onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
-                  selectedColors={previewChart.customColors}
-                />
-              </div>
-
-              {/* Interactive Chart Preview - Center */}
-              <div className="lg:col-span-6">
-                <ChartPreview
-                  chart={previewChart}
-                  onChartUpdate={(updatedChart) => {
-                    setPreviewChart(updatedChart);
-                  }}
-                  isEditable={true}
-                />
-              </div>
-
-              {/* Data Selector - Right Sidebar */}
-              {uploadedData && (
-                <div className="lg:col-span-3">
-                  <DataSelector
-                    headers={uploadedData.headers}
-                    data={uploadedData.data}
-                    selectedSeries={selectedSeries}
-                    selectedCategories={selectedCategories}
-                    onSeriesChange={setSelectedSeries}
-                    onCategoriesChange={setSelectedCategories}
-                    onApply={() => {
-                      // Recreate chart with selected data
-                      if (selectedValueColumns.length > 0) {
-                        handleCreateChartFromData();
-                      }
-                    }}
-                    onSelectData={() => {
-                      setShowPreview(false);
-                      setShowSpreadsheet(true);
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowPreview(false)}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSavePreviewChart}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <CheckCircle size={16} />
-                {charts.find((c) => c.id === previewChart.id) ? "Update Chart" : "Add to Event"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {charts.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-slate-600 rounded-lg">
