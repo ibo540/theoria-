@@ -1017,12 +1017,15 @@ export default function WorldMap() {
               >
                 Description
               </p>
-              <p
-                className="text-sm leading-relaxed"
+              <div
+                className="text-sm leading-relaxed prose prose-invert max-w-none"
                 style={{ color: "rgba(255, 228, 190, 0.8)" }}
-              >
-                {selectedIcon.description || "No description provided."}
-              </p>
+                dangerouslySetInnerHTML={{
+                  __html: selectedIcon.description
+                    ? selectedIcon.description.replace(/^<p>|<\/p>$/g, '').trim()
+                    : "No description provided."
+                }}
+              />
             </div>
 
             <div className="flex gap-3">
