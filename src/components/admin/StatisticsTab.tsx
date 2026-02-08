@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings, ChevronLeft, ChevronRight, Palette, Menu } from "lucide-react";
 import { EventData, ChartData } from "@/data/events";
 import { DataUploader } from "./DataUploader";
 import { SpreadsheetEditor } from "./SpreadsheetEditor";
@@ -68,6 +68,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
       title: "New Chart",
       type: "bar",
       data: [{ label: "Sample", value: 0 }],
+      theory: event.theory, // Auto-detect theory from event
     };
 
     setEvent({
@@ -263,6 +264,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
         type: suggestedType,
         data: chartData,
         dataKeys: selectedValueColumns.length > 1 ? seriesNames : undefined,
+        theory: event.theory, // Auto-detect theory from event
       };
 
       // Update selected series for DataSelector
@@ -542,10 +544,11 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
             {!leftSidebarOpen && (
               <button
                 onClick={() => setLeftSidebarOpen(true)}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-r-lg p-2 text-white transition-all"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-r-lg p-2.5 text-white transition-all flex items-center gap-1.5 shadow-lg"
                 title="Show Style Options"
               >
-                <ChevronRight size={20} />
+                <Palette size={18} />
+                <ChevronRight size={16} />
               </button>
             )}
 
@@ -586,10 +589,11 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
             {!rightSidebarOpen && (
               <button
                 onClick={() => setRightSidebarOpen(true)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-l-lg p-2 text-white transition-all"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-l-lg p-2.5 text-white transition-all flex items-center gap-1.5 shadow-lg"
                 title="Show Settings"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={16} />
+                <Settings size={18} />
               </button>
             )}
 
@@ -658,23 +662,35 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Theory (for color theming)
-                    </label>
-                    <select
-                      value={previewChart.theory || ""}
-                      onChange={(e) => handleUpdatePreviewChart("theory", e.target.value || undefined)}
-                      className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
-                    >
-                      <option value="">None (default colors)</option>
-                      {THEORIES.map((theory) => (
-                        <option key={theory.id} value={theory.id}>
-                          {theory.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {event.theory ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Theory (for color theming)
+                      </label>
+                      <div className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-700/50 rounded-lg text-gray-400 flex items-center gap-2">
+                        <span>{THEORIES.find(t => t.id === event.theory)?.name || event.theory}</span>
+                        <span className="text-xs">(Auto-detected from event)</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Theory (for color theming)
+                      </label>
+                      <select
+                        value={previewChart.theory || ""}
+                        onChange={(e) => handleUpdatePreviewChart("theory", e.target.value || undefined)}
+                        className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
+                      >
+                        <option value="">None (default colors)</option>
+                        {THEORIES.map((theory) => (
+                          <option key={theory.id} value={theory.id}>
+                            {theory.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">
