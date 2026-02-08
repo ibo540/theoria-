@@ -199,12 +199,14 @@ export default function TheorySidebar({
           if (asideRef.current) {
             asideRef.current.style.visibility = "hidden";
             asideRef.current.style.pointerEvents = "none";
+            asideRef.current.style.height = "0";
+            asideRef.current.style.overflow = "hidden";
           }
           gsap.set(buttonElements, { pointerEvents: "none" });
         },
       });
       timelineNavigationAnimationRef.current.to(buttonElements, {
-        y: -200, // Move further up to ensure completely hidden
+        y: -250, // Move even further up to ensure completely hidden
         opacity: 0,
         duration: 0.5,
         ease: "expo.in",
@@ -217,8 +219,10 @@ export default function TheorySidebar({
       if (asideRef.current) {
         asideRef.current.style.visibility = "visible";
         asideRef.current.style.pointerEvents = "auto";
+        asideRef.current.style.height = "auto";
+        asideRef.current.style.overflow = "visible";
       }
-      gsap.set(buttonElements, { pointerEvents: "auto", y: -200, opacity: 0 });
+      gsap.set(buttonElements, { pointerEvents: "auto", y: -250, opacity: 0 });
       
       timelineNavigationAnimationRef.current = gsap.timeline();
       timelineNavigationAnimationRef.current.to(
