@@ -38,12 +38,10 @@ export function InteractiveChartEditor({
     ? getChartColors(theoryColor, seriesCount)
     : undefined;
   // Use customColors if provided, otherwise use theory colors or default
+  // This is just for fallback - UniversalChart will use customColors prop directly
   const colors = useMemo(() => {
-    if (chart.customColors && chart.customColors.length > 0) {
-      return chart.customColors;
-    }
     return theoryColors || ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
-  }, [chart.customColors, theoryColors]);
+  }, [theoryColors]);
 
   const handleElementClick = (element: EditableElement, event: React.MouseEvent) => {
     if (!isEditable) return;
