@@ -735,25 +735,31 @@ export function MapDrawingTools({
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-white mb-2">Color:</label>
-            <div className="grid grid-cols-5 gap-2">
-              {unifiedColors.map((color) => (
+            <label className="block text-sm font-semibold text-white mb-2">
+              Color: {eventTheory ? `(${eventTheory})` : '(No theory selected)'}
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {availableColors.map((color, index) => (
                 <button
-                  key={color}
+                  key={`${color}-${index}`}
                   type="button"
                   onClick={() => setShapeColor(color)}
-                  className={`h-10 w-full rounded border-2 transition-all hover:scale-110 ${
+                  className={`h-12 w-full rounded border-2 transition-all hover:scale-110 ${
                     shapeColor === color
-                      ? "border-white ring-2 ring-white/50"
+                      ? "border-white ring-2 ring-white/50 shadow-lg"
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
-                  style={{ backgroundColor: color }}
-                  title={color}
+                  style={{ 
+                    backgroundColor: color,
+                    // Ensure visibility with a subtle border if color is too light
+                    boxShadow: shapeColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none'
+                  }}
+                  title={`${color} - Variation ${index + 1}`}
                 />
               ))}
             </div>
             <div className="mt-2 text-xs text-gray-400 text-center">
-              Selected: <span className="font-mono">{shapeColor}</span>
+              Selected: <span className="font-mono text-white">{shapeColor}</span>
             </div>
           </div>
           <div className="mb-4">
