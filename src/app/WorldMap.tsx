@@ -185,11 +185,35 @@ export default function WorldMap() {
     []
   );
 
+  // Handle icon close - restore UI elements
+  const handleIconClose = useCallback(() => {
+    setSelectedIcon(null);
+    
+    // Restore sidebar and theory icons
+    if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+      (window as any).setIsTimelineNavigating(false);
+    }
+    
+    // Zoom out to default view
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo({
+        center: MAP_CONFIG.initialCenter,
+        zoom: MAP_CONFIG.targetZoom,
+        duration: 1500,
+      });
+    }
+  }, []);
+
   // Handle marker close - zoom out to default view
   const handleMarkerClose = useCallback(() => {
     setSelectedMarker(null);
     setFocusedMarker(null);
     setSelectedIcon(null);
+    
+    // Restore sidebar and theory icons if they were hidden
+    if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
+      (window as any).setIsTimelineNavigating(false);
+    }
 
     // Zoom out to default view
     if (mapInstanceRef.current) {
@@ -869,14 +893,21 @@ export default function WorldMap() {
         </div>
       )}
 
-      {/* Icon Detail Popup - Styled to match timeline tooltip */}
+      {/* Icon Detail Popup - Repositioned to not block the country */}
       {selectedIcon && (
         <div 
-          className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none"
-          style={{ zIndex: 9999, backgroundColor: 'transparent' }}
+          className="fixed pointer-events-none"
+          style={{ 
+            zIndex: 9999, 
+            backgroundColor: 'transparent',
+            bottom: '120px', // Position above timeline
+            right: '24px', // Position on right side to avoid blocking country
+            maxWidth: '420px',
+            width: '100%',
+          }}
         >
           <div
-            className="px-6 py-5 rounded-md shadow-2xl max-w-lg w-full animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
+            className="px-6 py-5 rounded-md shadow-2xl w-full animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.96)",
               border: "1.5px solid rgba(255, 228, 190, 0.4)",

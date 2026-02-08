@@ -86,7 +86,7 @@ export function useTimelineFocus(map: maplibregl.Map | null) {
 
     // Check if point has focus location, or try to use linked icon coordinates
     let focusLocation = activePoint.focusLocation;
-    let focusZoom = activePoint.focusZoom || 5;
+    let focusZoom = activePoint.focusZoom || 4; // Default to 4 to show entire country/region
 
     // If no focusLocation, try to find linked country icon
     if (!focusLocation || !isValidCoordinate(focusLocation)) {
@@ -97,7 +97,7 @@ export function useTimelineFocus(map: maplibregl.Map | null) {
       if (linkedIcon && linkedIcon.coordinates) {
         // Use icon coordinates as focus location
         focusLocation = linkedIcon.coordinates;
-        focusZoom = 6; // Higher zoom to better see the country
+        focusZoom = 4; // Moderate zoom to show entire country/region, not too close
       } else {
         console.warn(
           `Timeline point "${activePoint.label}" has no valid focusLocation or linked icon`
