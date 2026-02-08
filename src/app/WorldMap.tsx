@@ -933,30 +933,52 @@ export default function WorldMap() {
       )}
 
       {/* Icon Detail Popup - Styled to match timeline tooltip */}
-      {selectedIcon && (
-        <div
-          className="px-6 py-5 rounded-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
-          style={{
-            position: 'fixed',
-            zIndex: 9999,
-            ...(popupPosition ? {
-              left: `${popupPosition.x}px`,
-              top: `${popupPosition.y}px`,
-              transform: 'translateY(-50%)',
-            } : {
-              bottom: '120px',
-              right: '24px',
-            }),
-            maxWidth: '400px',
-            width: 'auto',
-            backgroundColor: "rgba(0, 0, 0, 0.96)",
-            border: "1.5px solid rgba(255, 228, 190, 0.4)",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
+      {selectedIcon && (() => {
+        // Get theory color for border - red for Realism, theory color for others
+        const theoryBorderColor = activeTheory 
+          ? getTheoryColor(activeTheory) 
+          : "rgba(255, 228, 190, 0.4)"; // Default beige if no theory selected
+        
+        // Convert hex to rgba for border with opacity
+        const hexToRgba = (hex: string, opacity: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        };
+        
+        const borderColor = activeTheory 
+          ? hexToRgba(theoryBorderColor, 0.6) 
+          : "rgba(255, 228, 190, 0.4)";
+        
+        const shadowColor = activeTheory 
+          ? hexToRgba(theoryBorderColor, 0.3) 
+          : "rgba(0, 0, 0, 0.5)";
+        
+        return (
+          <div
+            className="px-6 py-5 rounded-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
+            style={{
+              position: 'fixed',
+              zIndex: 9999,
+              ...(popupPosition ? {
+                left: `${popupPosition.x}px`,
+                top: `${popupPosition.y}px`,
+                transform: 'translateY(-50%)',
+              } : {
+                bottom: '120px',
+                right: '24px',
+              }),
+              maxWidth: '400px',
+              width: 'auto',
+              backgroundColor: "rgba(0, 0, 0, 0.96)",
+              border: `1.5px solid ${borderColor}`,
+              boxShadow: `0 8px 32px ${shadowColor}, 0 0 20px ${shadowColor}`,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h3
                 className="text-lg font-semibold"
@@ -1082,8 +1104,9 @@ export default function WorldMap() {
                 );
               })()}
             </div>
-        </div>
-      )}
+          </div>
+        );
+      })()}
 
       {/* Country Name Tooltip - Fixed Position (Top-Left, under THEORIA) */}
       {hoveredCountry && (
