@@ -39,7 +39,11 @@ const TABS: SidebarTab[] = [
   { id: "statistics", label: "Statistics" },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isTimelineNavigating?: boolean;
+}
+
+export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) {
   const [allEvents, setAllEvents] = useState<EventData[]>(EVENTS_DATA);
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarWidth, setSidebarWidth] = useState(480);
@@ -312,6 +316,7 @@ export default function Sidebar() {
         ref={sidebarRef}
         width={sidebarWidth}
         onResizeStart={() => setIsResizing(true)}
+        isTimelineNavigating={isTimelineNavigating}
       >
         {/* Simplified Layout: Fixed Header + Scrollable Content */}
         <div ref={contentRef} className="flex flex-col w-full h-full">

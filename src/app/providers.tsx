@@ -55,7 +55,7 @@ export function EventDataProvider({ children }: { children: React.ReactNode }) {
           <Loader />
           <CustomCursor />
           <Navbar />
-          <Sidebar />
+          <Sidebar isTimelineNavigating={isTimelineNavigating} />
           <Timeline timelineContainerRef={timelineContainerRef} />
           <TheorySidebar theoryButtonRefs={theoryButtonRefs} isTimelineNavigating={isTimelineNavigating} />
         </>

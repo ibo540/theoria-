@@ -1,6 +1,7 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useRef } from "react";
+import gsap from "gsap";
 
 const sidebarBorderStyle: React.CSSProperties = {
   borderImageSource: "url('/assets/windows/Window_08.png')",
@@ -14,13 +15,97 @@ interface SidebarFrameProps {
   children: React.ReactNode;
   width: number;
   onResizeStart: () => void;
+  isTimelineNavigating?: boolean;
 }
 
 export const SidebarFrame = forwardRef<HTMLElement, SidebarFrameProps>(
-  ({ children, width, onResizeStart }, ref) => {
+  ({ children, width, onResizeStart, isTimelineNavigating = false }, ref) => {
+    const asideRef = useRef<HTMLElement>(null);
+    const timelineNavigationAnimationRef = useRef<gsap.core.Timeline | null>(null);
+    const previousIsTimelineNavigatingRef = useRef<boolean>(false);
+
+    // Combine refs
+    React.useImperativeHandle(ref, () => asideRef.current as HTMLElement, []);
+
+    // Handle timeline navigation animations - slide left/right
+    useEffect(() => {
+      if (!asideRef.current) return;
+
+      // Skip if state hasn't changed
+      if (previousIsTimelineNavigatingRef.current === isTimelineNavigating) {
+        return;
+      }
+
+      previousIsTimelineNavigatingRef.current = isTimelineNavigating;
+
+      // Kill any existing timeline navigation animation
+      if (timelineNavigationAnimationRef.current) {
+        timelineNavigationAnimationRef.current.kill();
+      }
+
+      if (isTimelineNavigating) {
+        // Hide sidebar - slide left, completely off-screen
+        // Set overflow hidden before animation starts
+        if (asideRef.current) {
+          asideRef.current.style.overflow = "hidden";
+        }
+
+        timelineNavigationAnimationRef.current = gsap.timeline({
+          onComplete: () => {
+            // Completely hide the container after animation
+            if (asideRef.current) {
+              asideRef.current.style.visibility = "hidden";
+              asideRef.current.style.pointerEvents = "none";
+              asideRef.current.style.width = "0";
+            }
+          },
+        });
+        
+        // Calculate the distance to move (width + left margin)
+        const moveDistance = width + 16; // width + left margin (16px)
+        
+        // Animate x while preserving y transform (translateY(-50%))
+        timelineNavigationAnimationRef.current.to(asideRef.current, {
+          x: -moveDistance, // Move left by width + margin
+          opacity: 0,
+          duration: 0.5,
+          ease: "expo.in",
+          force3D: true,
+        });
+      } else {
+        // Show sidebar - slide in from left
+        // First ensure they're visible and reset position
+        if (asideRef.current) {
+          asideRef.current.style.visibility = "visible";
+          asideRef.current.style.pointerEvents = "auto";
+          asideRef.current.style.width = `${width}px`;
+          // Reset overflow after animation completes
+          setTimeout(() => {
+            if (asideRef.current && !isTimelineNavigating) {
+              asideRef.current.style.overflow = "visible";
+            }
+          }, 650); // Slightly longer than animation duration
+        }
+
+        // Calculate the distance to move from
+        const moveDistance = width + 16; // width + left margin (16px)
+        
+        // Set initial position (off-screen to the left)
+        gsap.set(asideRef.current, { x: -moveDistance, opacity: 0 });
+
+        timelineNavigationAnimationRef.current = gsap.timeline();
+        timelineNavigationAnimationRef.current.to(asideRef.current, {
+          x: 0, // Return to original position
+          opacity: 1,
+          duration: 0.6,
+          ease: "expo.out",
+          force3D: true,
+        });
+      }
+    }, [isTimelineNavigating, width]);
     return (
       <aside
-        ref={ref}
+        ref={asideRef}
         className="fixed"
         style={{
           left: "16px",
@@ -29,6 +114,7 @@ export const SidebarFrame = forwardRef<HTMLElement, SidebarFrameProps>(
           width: `${width}px`,
           height: "calc(70vh)",
           zIndex: -1,
+          overflow: "visible", // Always visible by default, only hidden during animation
           ...sidebarBorderStyle,
         }}
       >
