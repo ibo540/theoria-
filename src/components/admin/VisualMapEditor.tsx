@@ -1012,8 +1012,8 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
                                 ? "border-indigo-400 ring-2 ring-indigo-300 bg-indigo-500/20"
                                 : "border-slate-600 hover:border-slate-500 bg-slate-700"
                               }`}
-                            title={`${theoryName}: ${c}`}
-                          >
+                              title={`${theoryName}: ${c}`}
+                            >
                             <div
                               className="w-8 h-8 rounded border border-gray-300"
                               style={{ backgroundColor: c }}
