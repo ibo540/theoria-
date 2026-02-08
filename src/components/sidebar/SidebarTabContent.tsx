@@ -95,8 +95,6 @@ function getSectionsForTab(
       return getTimelineSections(event);
     case "actors":
       return getActorsSections(event);
-    case "theories":
-      return getTheoriesSections(event);
     case "statistics":
       return getStatisticsSections(event);
     default:
