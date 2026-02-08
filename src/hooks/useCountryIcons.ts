@@ -135,11 +135,24 @@ export function useCountryIcons(
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
         // Use the icon type from the icon data, fallback to map-pin
-        const iconType = icon.iconType || "map-pin";
+        // If iconType is missing, try to infer from event type if available
+        let iconType = icon.iconType || "map-pin";
+        
+        // If iconType is still missing and we have the icon data, default to map-pin
+        if (!iconType || iconType === "") {
+          iconType = "map-pin";
+          console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType, defaulting to map-pin`);
+        }
+        
         console.log(`🎨 Rendering icon ${icon.id} (${icon.country}) with type: ${iconType}`);
         const iconSVG = getIconSVG(iconType);
-        console.log(`🎨 Icon SVG for ${iconType}:`, iconSVG.substring(0, 100) + "...");
-        innerDiv.innerHTML = iconSVG;
+        if (!iconSVG) {
+          console.error(`❌ No SVG found for icon type: ${iconType}, using map-pin`);
+          innerDiv.innerHTML = getIconSVG("map-pin");
+        } else {
+          console.log(`✅ Icon SVG for ${iconType} loaded successfully`);
+          innerDiv.innerHTML = iconSVG;
+        }
         
         outerDiv.appendChild(innerDiv);
         el.appendChild(outerDiv);
