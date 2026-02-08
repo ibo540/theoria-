@@ -52,8 +52,23 @@ export function MapDrawingTools({
   const [lineType, setLineType] = useState<"straight" | "curved">("straight");
   // Fixed values for connection lines - not user-configurable
   const lineThickness = 4; // Fixed professional thickness
-  const lineColor = "#ffe4be"; // Fixed beige color (will use theory color on user page)
-  const [shapeColor, setShapeColor] = useState("#10b981");
+  
+  // Unified color palette for shapes and lines
+  const unifiedColors = [
+    "#ffe4be", // Beige (primary)
+    "#f9464c", // Red (Realism)
+    "#91beef", // Blue (Neorealism)
+    "#7edef9", // Cyan (Liberalism)
+    "#bbe581", // Green (Neoliberalism)
+    "#f5d6f9", // Purple (English School)
+    "#f3db66", // Yellow (Constructivism)
+    "#8b5cf6", // Purple accent
+    "#10b981", // Emerald
+    "#f59e0b", // Amber
+  ];
+  
+  const [lineColor, setLineColor] = useState("#ffe4be"); // Now configurable
+  const [shapeColor, setShapeColor] = useState("#ffe4be");
   const [opacity, setOpacity] = useState(0.4);
   const [snapToLines, setSnapToLines] = useState(true); // Enable snap-to-line by default
   const [snappedPoint, setSnappedPoint] = useState<[number, number] | null>(null);
@@ -662,20 +677,24 @@ export function MapDrawingTools({
           </div>
           <div className="mb-4">
             <label className="block text-sm font-semibold text-white mb-2">Color:</label>
-            <div className="flex gap-2">
-              <input
-                type="color"
-                value={shapeColor}
-                onChange={(e) => setShapeColor(e.target.value)}
-                className="h-10 w-20 rounded border border-slate-600/50 cursor-pointer"
-              />
-              <input
-                type="text"
-                value={shapeColor}
-                onChange={(e) => setShapeColor(e.target.value)}
-                className="flex-1 px-3 py-2 rounded border border-slate-600/50 bg-slate-800 text-white"
-                placeholder="#10b981"
-              />
+            <div className="grid grid-cols-5 gap-2">
+              {unifiedColors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setShapeColor(color)}
+                  className={`h-10 w-full rounded border-2 transition-all hover:scale-110 ${
+                    shapeColor === color
+                      ? "border-white ring-2 ring-white/50"
+                      : "border-slate-600/50 hover:border-slate-400"
+                  }`}
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+            <div className="mt-2 text-xs text-gray-400 text-center">
+              Selected: <span className="font-mono">{shapeColor}</span>
             </div>
           </div>
           <div className="mb-4">
@@ -746,7 +765,29 @@ export function MapDrawingTools({
               </button>
             </div>
           </div>
-          {/* Color and thickness are fixed - not user-configurable */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-white mb-2">Line Color:</label>
+            <div className="grid grid-cols-5 gap-2">
+              {unifiedColors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setLineColor(color)}
+                  className={`h-10 w-full rounded border-2 transition-all hover:scale-110 ${
+                    lineColor === color
+                      ? "border-white ring-2 ring-white/50"
+                      : "border-slate-600/50 hover:border-slate-400"
+                  }`}
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+            <div className="mt-2 text-xs text-gray-400 text-center">
+              Selected: <span className="font-mono">{lineColor}</span>
+            </div>
+          </div>
+          {/* Thickness is fixed - not user-configurable */}
           <div className="mb-4 p-3 bg-slate-700/50 rounded-lg border border-slate-600/30">
             <p className="text-xs text-gray-400 mb-1">Connection Line Style</p>
             <p className="text-sm text-white">
