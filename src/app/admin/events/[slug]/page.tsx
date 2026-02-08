@@ -133,6 +133,15 @@ export default function EventEditor() {
         await saveEventToStorage(finalEvent);
         setIsSaving(false);
         setSaveMessage({ type: "success", text: "✅ Event saved successfully to Supabase database!" });
+        
+        // Reload the event in the store so the map shows updated icons immediately
+        const { useEventStore } = await import("@/stores/useEventStore");
+        const store = useEventStore.getState();
+        if (store.activeEventId === finalEvent.id || getBaseEventId(store.activeEventId || '') === getBaseEventId(finalEvent.id)) {
+          console.log("🔄 Reloading event in store to show updated icons...");
+          await store.selectEvent(finalEvent.id, finalEvent.theory);
+        }
+        
         // Redirect to dashboard to see the new event
         setTimeout(() => {
           router.push("/admin");
