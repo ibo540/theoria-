@@ -993,27 +993,24 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
                   <div className="absolute top-full left-0 mt-2 p-4 bg-slate-800 border-2 border-slate-600/50 rounded-lg shadow-xl z-50 min-w-[280px]">
                     <p className="text-xs font-semibold text-white mb-3">Choose Color for {country}</p>
                     <div className="grid grid-cols-3 gap-2">
-                      {(() => {
-                        // Filter to show only selected theory's color if event has a theory
-                        const theoryEntries = event.theory 
-                          ? Object.entries(THEORY_COLORS_DARK).filter(([theory]) => theory === event.theory)
-                          : Object.entries(THEORY_COLORS_DARK);
-                        
-                        return theoryEntries.map(([theory, c]) => {
-                          const theoryName = THEORY_LABELS[theory as keyof typeof THEORY_LABELS];
-                          return (
-                            <button
-                              key={theory}
-                              onClick={() => {
-                                handleColorChange(country, c);
-                                setEditingColorFor(null);
-                              }}
-                              className={`flex flex-col items-center gap-1 px-2 py-2 rounded border-2 transition-all hover:scale-110 ${highlight.color === c
-                                ? "border-indigo-400 ring-2 ring-indigo-300 bg-indigo-500/20"
-                                : "border-slate-600 hover:border-slate-500 bg-slate-700"
-                              }`}
-                              title={`${theoryName}: ${c}`}
-                            >
+                      {(event.theory 
+                        ? Object.entries(THEORY_COLORS_DARK).filter(([theory]) => theory === event.theory)
+                        : Object.entries(THEORY_COLORS_DARK)
+                      ).map(([theory, c]) => {
+                        const theoryName = THEORY_LABELS[theory as keyof typeof THEORY_LABELS];
+                        return (
+                          <button
+                            key={theory}
+                            onClick={() => {
+                              handleColorChange(country, c);
+                              setEditingColorFor(null);
+                            }}
+                            className={`flex flex-col items-center gap-1 px-2 py-2 rounded border-2 transition-all hover:scale-110 ${highlight.color === c
+                              ? "border-indigo-400 ring-2 ring-indigo-300 bg-indigo-500/20"
+                              : "border-slate-600 hover:border-slate-500 bg-slate-700"
+                            }`}
+                            title={`${theoryName}: ${c}`}
+                          >
                             <div
                               className="w-8 h-8 rounded border border-gray-300"
                               style={{ backgroundColor: c }}
@@ -1021,7 +1018,7 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
                             <span className="text-xs text-white font-medium">{theoryName}</span>
                           </button>
                         );
-                      })()}
+                      })}
                     </div>
                     <button
                       onClick={() => setEditingColorFor(null)}
