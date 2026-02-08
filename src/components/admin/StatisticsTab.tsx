@@ -808,7 +808,6 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
         </div>
       )}
 
-    <div className="p-6 space-y-6">
       {charts.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-slate-600 rounded-lg">
           <p className="text-gray-400 mb-4">No charts added yet.</p>
