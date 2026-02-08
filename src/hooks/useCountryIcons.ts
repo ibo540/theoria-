@@ -58,6 +58,9 @@ export function useCountryIcons(
       markersRef.current.clear();
 
       const icons = activeEvent.countryIcons || [];
+      
+      console.log("🔍 useCountryIcons - Total icons:", icons.length);
+      console.log("🔍 useCountryIcons - Icons with timelinePointId:", icons.filter(i => i.timelinePointId).length);
 
       // Filter icons - show all icons that are linked to timeline points
       // Icons remain visible on the map even after closing the popup
@@ -65,8 +68,14 @@ export function useCountryIcons(
       const visibleIcons = icons.filter((icon) => {
         // Show all icons that have a timelinePointId (were added from timeline)
         // Icons remain visible regardless of which timeline point is currently active
-        return !!icon.timelinePointId;
+        const hasTimelinePoint = !!icon.timelinePointId;
+        if (!hasTimelinePoint) {
+          console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no timelinePointId - will not be displayed`);
+        }
+        return hasTimelinePoint;
       });
+      
+      console.log("✅ useCountryIcons - Visible icons to render:", visibleIcons.length);
 
       // Add new markers
       visibleIcons.forEach((icon) => {
