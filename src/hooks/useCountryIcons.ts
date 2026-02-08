@@ -207,7 +207,22 @@ export function useCountryIcons(
       });
       markersRef.current.clear();
     };
-  }, [map, activeEvent?.id, activeTimelinePointId, countryIconsKey]);
+  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey]);
+  
+  // Debug: Log when activeEvent or countryIcons change
+  useEffect(() => {
+    console.log("🔄 useCountryIcons - activeEvent changed:", {
+      eventId: activeEvent?.id,
+      iconCount: activeEvent?.countryIcons?.length || 0,
+      icons: activeEvent?.countryIcons?.map(i => ({ 
+        id: i.id, 
+        country: i.country, 
+        iconType: i.iconType, 
+        timelinePointId: i.timelinePointId,
+        coordinates: i.coordinates
+      }))
+    });
+  }, [activeEvent?.id, activeEvent?.countryIcons]);
 }
 
 // Helper function to get icon SVG
