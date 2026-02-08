@@ -186,9 +186,47 @@ export default function WorldMap() {
     []
   );
 
+  // Update popup position when map moves or icon changes
+  useEffect(() => {
+    if (!selectedIcon || !mapInstanceRef.current || !selectedIcon.coordinates) {
+      setPopupPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      if (!mapInstanceRef.current || !selectedIcon?.coordinates) return;
+      
+      const lng = typeof selectedIcon.coordinates[1] === 'number' ? selectedIcon.coordinates[1] : 0;
+      const lat = typeof selectedIcon.coordinates[0] === 'number' ? selectedIcon.coordinates[0] : 0;
+      
+      if (lat !== 0 && lng !== 0) {
+        const point = mapInstanceRef.current.project([lng, lat]);
+        setPopupPosition({
+          x: point.x + 120, // Offset to the right
+          y: point.y - 100, // Slight vertical offset
+        });
+      }
+    };
+
+    updatePosition();
+
+    // Update position on map move/zoom
+    const map = mapInstanceRef.current;
+    if (map) {
+      map.on('move', updatePosition);
+      map.on('zoom', updatePosition);
+      
+      return () => {
+        map.off('move', updatePosition);
+        map.off('zoom', updatePosition);
+      };
+    }
+  }, [selectedIcon]);
+
   // Handle icon popup close - zoom out to default view and show theory icons
   const handleIconClose = useCallback(() => {
     setSelectedIcon(null);
+    setPopupPosition(null);
     
     // Show theory icons again with animation
     if (typeof window !== 'undefined' && (window as any).setIsTimelineNavigating) {
