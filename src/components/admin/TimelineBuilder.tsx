@@ -168,7 +168,13 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           import("@/stores/useEventStore").then(({ useEventStore }) => {
             const store = useEventStore.getState();
             if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
-              store.updateActiveEventCountryIcons(updatedIcons);
+              // Update activeEvent directly with new countryIcons
+              useEventStore.setState({
+                activeEvent: {
+                  ...store.activeEvent,
+                  countryIcons: updatedIcons,
+                },
+              });
             }
           }).catch(console.error);
         }
