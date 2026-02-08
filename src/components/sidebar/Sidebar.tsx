@@ -55,7 +55,6 @@ export default function Sidebar({ isTimelineNavigating = false }: SidebarProps) 
     overview: "summary",
     timeline: null,
     actors: null,
-    theories: null,
     statistics: null,
   });
 
