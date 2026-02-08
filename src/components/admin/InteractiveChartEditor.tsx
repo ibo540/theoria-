@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { ChartData } from "@/data/events";
 import UniversalChart from "@/components/sidebar/UniversalChart";
 import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
@@ -37,9 +37,13 @@ export function InteractiveChartEditor({
   const theoryColors = theoryColor
     ? getChartColors(theoryColor, seriesCount)
     : undefined;
-  const colors = chart.customColors && chart.customColors.length > 0
-    ? chart.customColors
-    : theoryColors || ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+  // Use customColors if provided, otherwise use theory colors or default
+  const colors = useMemo(() => {
+    if (chart.customColors && chart.customColors.length > 0) {
+      return chart.customColors;
+    }
+    return theoryColors || ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+  }, [chart.customColors, theoryColors]);
 
   const handleElementClick = (element: EditableElement, event: React.MouseEvent) => {
     if (!isEditable) return;
