@@ -5,12 +5,15 @@ import { ChartData } from "@/data/events";
 import UniversalChart from "@/components/sidebar/UniversalChart";
 import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
 import { getChartColors } from "@/lib/chart-color-utils";
+import { InteractiveChartEditor } from "./InteractiveChartEditor";
 
 interface ChartPreviewProps {
   chart: ChartData;
+  onChartUpdate?: (chart: ChartData) => void;
+  isEditable?: boolean;
 }
 
-export function ChartPreview({ chart }: ChartPreviewProps) {
+export function ChartPreview({ chart, onChartUpdate, isEditable = false }: ChartPreviewProps) {
   // Get theory color using the same function as country highlighting
   const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
   
@@ -43,6 +46,24 @@ export function ChartPreview({ chart }: ChartPreviewProps) {
     return chart.data.filter((_, index) => index % step === 0);
   }, [chart.data]);
 
+  // If editable, use InteractiveChartEditor
+  if (isEditable && onChartUpdate) {
+    return (
+      <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-white mb-2">{chart.title}</h4>
+        {chart.description && (
+          <p className="text-xs text-gray-400 mb-4">{chart.description}</p>
+        )}
+        <InteractiveChartEditor
+          chart={chart}
+          onChartUpdate={onChartUpdate}
+          isEditable={true}
+        />
+      </div>
+    );
+  }
+
+  // Otherwise, use regular preview
   return (
     <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-4">
       <h4 className="text-sm font-semibold text-white mb-2">{chart.title}</h4>

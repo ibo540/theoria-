@@ -7,6 +7,8 @@ import { DataUploader } from "./DataUploader";
 import { SpreadsheetEditor } from "./SpreadsheetEditor";
 import { ChartPreview } from "./ChartPreview";
 import { ColorPalettePicker } from "./ColorPalettePicker";
+import { ChartStyleSelector } from "./ChartStyleSelector";
+import { DataSelector } from "./DataSelector";
 import { suggestChartTypes, convertToChartData } from "@/lib/chart-suggestions";
 
 interface StatisticsTabProps {
@@ -44,6 +46,8 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const [selectedValueColumns, setSelectedValueColumns] = useState<number[]>([]);
   const [previewChart, setPreviewChart] = useState<ChartData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [notification, setNotification] = useState<{
     message: string;
@@ -166,13 +170,21 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
       setChartSuggestions(suggestions);
     }, 0);
     
-    // Auto-select first column as label, first numeric column as value
-    setSelectedLabelColumn(0);
-    const firstNumericCol = headers.findIndex((_, i) => {
-      const sample = limitedData.slice(0, Math.min(5, limitedData.length)).map(row => row[i]);
-      return sample.some(val => !isNaN(Number(val)) && val !== "");
-    });
-    setSelectedValueColumns(firstNumericCol >= 0 ? [firstNumericCol] : []);
+      // Auto-select first column as label, first numeric column as value
+      setSelectedLabelColumn(0);
+      const firstNumericCol = headers.findIndex((_, i) => {
+        const sample = limitedData.slice(0, Math.min(5, limitedData.length)).map(row => row[i]);
+        return sample.some(val => !isNaN(Number(val)) && val !== "");
+      });
+      setSelectedValueColumns(firstNumericCol >= 0 ? [firstNumericCol] : []);
+      
+      // Initialize selected series and categories
+      if (firstNumericCol >= 0) {
+        setSelectedSeries([headers[firstNumericCol]]);
+      }
+      // Get unique categories from first column
+      const uniqueCategories = Array.from(new Set(limitedData.map(row => String(row[0] || "")))).filter(v => v !== "");
+      setSelectedCategories(uniqueCategories);
   };
 
   const handleDataError = (error: string) => {
@@ -203,7 +215,15 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
       // Limit data processing to prevent browser freeze
       // Process in chunks using setTimeout to allow browser to breathe
       const MAX_DATA_POINTS = 500; // Limit to 500 data points for performance
-      const dataToProcess = uploadedData.data.slice(0, MAX_DATA_POINTS);
+      
+      // Filter data by selected categories if any
+      let dataToProcess = uploadedData.data;
+      if (selectedCategories.length > 0) {
+        dataToProcess = uploadedData.data.filter((row) => 
+          selectedCategories.includes(String(row[selectedLabelColumn] || ""))
+        );
+      }
+      dataToProcess = dataToProcess.slice(0, MAX_DATA_POINTS);
       
       if (uploadedData.data.length > MAX_DATA_POINTS) {
         console.warn(`⚠️ Large dataset detected (${uploadedData.data.length} rows). Limiting to first ${MAX_DATA_POINTS} rows for performance.`);
@@ -232,15 +252,19 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
       // Use first suggestion or default to bar
       const suggestedType = chartSuggestions[0]?.type || "bar";
 
+      // Get selected series names
+      const seriesNames = selectedValueColumns.map(i => uploadedData.headers[i]);
+
       const newChart: ChartData = {
         id: `chart-${Date.now()}`,
         title: `Chart from ${uploadedData.headers[selectedLabelColumn]}`,
         type: suggestedType,
         data: chartData,
-        dataKeys: selectedValueColumns.length > 1 
-          ? selectedValueColumns.map(i => uploadedData.headers[i])
-          : undefined,
+        dataKeys: selectedValueColumns.length > 1 ? seriesNames : undefined,
       };
+
+      // Update selected series for DataSelector
+      setSelectedSeries(seriesNames);
 
       // Use setTimeout to ensure state updates don't block
       setTimeout(() => {
@@ -258,13 +282,30 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
   const handleSavePreviewChart = () => {
     if (!previewChart) return;
 
-    setEvent({
-      ...event,
-      stats: {
-        ...event.stats,
-        charts: [...charts, previewChart],
-      },
-    });
+    // Check if this is an update to existing chart or new chart
+    const existingChartIndex = charts.findIndex((c) => c.id === previewChart.id);
+    
+    if (existingChartIndex >= 0) {
+      // Update existing chart
+      const updatedCharts = [...charts];
+      updatedCharts[existingChartIndex] = previewChart;
+      setEvent({
+        ...event,
+        stats: {
+          ...event.stats,
+          charts: updatedCharts,
+        },
+      });
+    } else {
+      // Add new chart
+      setEvent({
+        ...event,
+        stats: {
+          ...event.stats,
+          charts: [...charts, previewChart],
+        },
+      });
+    }
 
     // Reset state
     setPreviewChart(null);
@@ -274,6 +315,8 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
     setSelectedLabelColumn(0);
     setSelectedValueColumns([]);
     setChartSuggestions([]);
+    setSelectedSeries([]);
+    setSelectedCategories([]);
   };
 
   const handleUpdatePreviewChart = (field: keyof ChartData, value: any) => {
@@ -480,7 +523,9 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
           <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Chart Preview</h3>
+              <h3 className="text-xl font-bold text-white">
+                {charts.find((c) => c.id === previewChart.id) ? "Edit Chart" : "Chart Preview"}
+              </h3>
               <button
                 onClick={() => setShowPreview(false)}
                 className="p-2 text-gray-400 hover:text-white transition-colors"
@@ -723,7 +768,54 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
               </div>
             </div>
 
-            <ChartPreview chart={previewChart} />
+            {/* Excel-like Chart Editor Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+              {/* Chart Style & Color Selector - Left Sidebar */}
+              <div className="lg:col-span-3">
+                <ChartStyleSelector
+                  chart={previewChart}
+                  onStyleChange={(style) => handleUpdatePreviewChart("type", style)}
+                  onColorChange={(colors) => handleUpdatePreviewChart("customColors", colors)}
+                  onFormattingChange={(formatting) => handleUpdatePreviewChart("formatting", formatting)}
+                  selectedColors={previewChart.customColors}
+                />
+              </div>
+
+              {/* Interactive Chart Preview - Center */}
+              <div className="lg:col-span-6">
+                <ChartPreview
+                  chart={previewChart}
+                  onChartUpdate={(updatedChart) => {
+                    setPreviewChart(updatedChart);
+                  }}
+                  isEditable={true}
+                />
+              </div>
+
+              {/* Data Selector - Right Sidebar */}
+              {uploadedData && (
+                <div className="lg:col-span-3">
+                  <DataSelector
+                    headers={uploadedData.headers}
+                    data={uploadedData.data}
+                    selectedSeries={selectedSeries}
+                    selectedCategories={selectedCategories}
+                    onSeriesChange={setSelectedSeries}
+                    onCategoriesChange={setSelectedCategories}
+                    onApply={() => {
+                      // Recreate chart with selected data
+                      if (selectedValueColumns.length > 0) {
+                        handleCreateChartFromData();
+                      }
+                    }}
+                    onSelectData={() => {
+                      setShowPreview(false);
+                      setShowSpreadsheet(true);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
 
             <div className="flex gap-2 justify-end">
               <button
@@ -737,7 +829,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
               >
                 <CheckCircle size={16} />
-                Add to Event
+                {charts.find((c) => c.id === previewChart.id) ? "Update Chart" : "Add to Event"}
               </button>
             </div>
           </div>
@@ -1063,29 +1155,45 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{chart.title}</h3>
-                  <p className="text-sm text-gray-400">
-                    {CHART_TYPES.find((t) => t.value === chart.type)?.label} • {chart.data.length} data points
-                    {chart.theory && ` • ${THEORIES.find((t) => t.id === chart.theory)?.name}`}
-                  </p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{chart.title}</h3>
+                    <p className="text-sm text-gray-400">
+                      {CHART_TYPES.find((t) => t.value === chart.type)?.label} • {chart.data.length} data points
+                      {chart.theory && ` • ${THEORIES.find((t) => t.id === chart.theory)?.name}`}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setPreviewChart(chart);
+                        setShowPreview(true);
+                      }}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded transition-colors"
+                    >
+                      <Eye size={14} />
+                      Preview & Edit
+                    </button>
+                    <button
+                      onClick={() => handleEditChart(chart)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                    >
+                      <Edit2 size={14} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteChart(chart.id)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                    >
+                      <Trash2 size={14} />
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEditChart(chart)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-                  >
-                    <Edit2 size={14} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteChart(chart.id)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
-                  >
-                    <Trash2 size={14} />
-                    Delete
-                  </button>
+                {/* Quick Preview */}
+                <div className="bg-slate-900/50 rounded p-4">
+                  <ChartPreview chart={chart} isEditable={false} />
                 </div>
               </div>
             )}
