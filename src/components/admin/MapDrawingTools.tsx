@@ -32,6 +32,7 @@ interface MapDrawingToolsProps {
   onLineComplete?: (line: DrawingLine) => void;
   onCancel?: () => void;
   existingConnections?: Array<{ line?: { points: [number, number][] } }>; // For snap-to-line functionality
+  eventTheory?: string | null; // Theory of the event to filter colors
 }
 
 // Export types for use in other components
@@ -44,6 +45,7 @@ export function MapDrawingTools({
   onLineComplete,
   onCancel,
   existingConnections = [],
+  eventTheory = null,
 }: MapDrawingToolsProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentShape, setCurrentShape] = useState<DrawingShape | null>(null);
@@ -53,22 +55,71 @@ export function MapDrawingTools({
   // Fixed values for connection lines - not user-configurable
   const lineThickness = 4; // Fixed professional thickness
   
-  // Unified color palette for shapes and lines
-  const unifiedColors = [
-    "#ffe4be", // Beige (primary)
-    "#f9464c", // Red (Realism)
-    "#91beef", // Blue (Neorealism)
-    "#7edef9", // Cyan (Liberalism)
-    "#bbe581", // Green (Neoliberalism)
-    "#f5d6f9", // Purple (English School)
-    "#f3db66", // Yellow (Constructivism)
-    "#8b5cf6", // Purple accent
-    "#10b981", // Emerald
-    "#f59e0b", // Amber
-  ];
+  // Theory color mappings
+  const theoryMainColors: Record<string, string> = {
+    realism: "#f9464c",
+    neorealism: "#91beef",
+    liberalism: "#7edef9",
+    neoliberal: "#bbe581",
+    englishschool: "#f5d6f9",
+    constructivism: "#f3db66",
+  };
+
+  // Generate 4 color variations for a theory (lighter to darker)
+  function generateTheoryColors(mainColor: string): string[] {
+    // Convert hex to RGB
+    const hex = mainColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Generate 4 variations: lightest, light, medium, dark (main)
+    // Lightest: blend with white (70% white)
+    const r1 = Math.min(255, Math.floor(r + (255 - r) * 0.7));
+    const g1 = Math.min(255, Math.floor(g + (255 - g) * 0.7));
+    const b1 = Math.min(255, Math.floor(b + (255 - b) * 0.7));
+    
+    // Light: blend with white (40% white)
+    const r2 = Math.min(255, Math.floor(r + (255 - r) * 0.4));
+    const g2 = Math.min(255, Math.floor(g + (255 - g) * 0.4));
+    const b2 = Math.min(255, Math.floor(b + (255 - b) * 0.4));
+    
+    // Medium: blend with white (15% white)
+    const r3 = Math.min(255, Math.floor(r + (255 - r) * 0.15));
+    const g3 = Math.min(255, Math.floor(g + (255 - g) * 0.15));
+    const b3 = Math.min(255, Math.floor(b + (255 - b) * 0.15));
+
+    // Convert back to hex
+    const toHex = (n: number) => n.toString(16).padStart(2, '0');
+    
+    return [
+      `#${toHex(r1)}${toHex(g1)}${toHex(b1)}`, // Lightest
+      `#${toHex(r2)}${toHex(g2)}${toHex(b2)}`, // Light
+      `#${toHex(r3)}${toHex(g3)}${toHex(b3)}`, // Medium
+      mainColor, // Dark (main color)
+    ];
+  }
+
+  // Get colors based on selected theory
+  const getAvailableColors = (): string[] => {
+    if (eventTheory && theoryMainColors[eventTheory]) {
+      // Return 4 variations of the selected theory's color
+      return generateTheoryColors(theoryMainColors[eventTheory]);
+    }
+    // Default: return beige variations if no theory selected
+    return [
+      "#ffe4be", // Light beige
+      "#ffd4a3", // Medium beige
+      "#ffc47e", // Darker beige
+      "#ffb359", // Darkest beige
+    ];
+  };
+
+  const availableColors = getAvailableColors();
+  const defaultColor = availableColors[availableColors.length - 1]; // Use the darkest/main color as default
   
-  const [lineColor, setLineColor] = useState("#ffe4be"); // Now configurable
-  const [shapeColor, setShapeColor] = useState("#ffe4be");
+  const [lineColor, setLineColor] = useState(defaultColor);
+  const [shapeColor, setShapeColor] = useState(defaultColor);
   const [opacity, setOpacity] = useState(0.4);
   const [snapToLines, setSnapToLines] = useState(true); // Enable snap-to-line by default
   const [snappedPoint, setSnappedPoint] = useState<[number, number] | null>(null);
@@ -766,25 +817,31 @@ export function MapDrawingTools({
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-white mb-2">Line Color:</label>
-            <div className="grid grid-cols-5 gap-2">
-              {unifiedColors.map((color) => (
+            <label className="block text-sm font-semibold text-white mb-2">
+              Line Color: {eventTheory ? `(${eventTheory})` : '(No theory selected)'}
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {availableColors.map((color, index) => (
                 <button
-                  key={color}
+                  key={`${color}-${index}`}
                   type="button"
                   onClick={() => setLineColor(color)}
-                  className={`h-10 w-full rounded border-2 transition-all hover:scale-110 ${
+                  className={`h-12 w-full rounded border-2 transition-all hover:scale-110 ${
                     lineColor === color
-                      ? "border-white ring-2 ring-white/50"
+                      ? "border-white ring-2 ring-white/50 shadow-lg"
                       : "border-slate-600/50 hover:border-slate-400"
                   }`}
-                  style={{ backgroundColor: color }}
-                  title={color}
+                  style={{ 
+                    backgroundColor: color,
+                    // Ensure visibility with a subtle border if color is too light
+                    boxShadow: lineColor === color ? '0 0 8px rgba(255, 255, 255, 0.3)' : 'none'
+                  }}
+                  title={`${color} - Variation ${index + 1}`}
                 />
               ))}
             </div>
             <div className="mt-2 text-xs text-gray-400 text-center">
-              Selected: <span className="font-mono">{lineColor}</span>
+              Selected: <span className="font-mono text-white">{lineColor}</span>
             </div>
           </div>
           {/* Thickness is fixed - not user-configurable */}

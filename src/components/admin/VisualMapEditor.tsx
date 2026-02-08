@@ -472,6 +472,7 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
             map={mapInstanceRef.current}
             mode={mapMode}
             existingConnections={(event.connections || []) as any}
+            eventTheory={event.theory || null}
             onShapeComplete={async (shape) => {
               // Detect which countries are in this shape
               const detectedCountries = await detectCountriesInShape(shape);
