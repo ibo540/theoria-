@@ -374,9 +374,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="pb-20 animate-fadeIn">
-      {/* Animated decorative top border */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x"></div>
-
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 animate-slideDown">
