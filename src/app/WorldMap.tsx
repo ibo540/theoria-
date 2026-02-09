@@ -642,7 +642,8 @@ export default function WorldMap() {
   // Render country icons on the map
   useCountryIcons(
     mapInstanceRef.current,
-    handleIconClick
+    handleIconClick,
+    selectedIcon?.id || null
   );
 
   // Add hover handler for country names

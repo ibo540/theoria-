@@ -3,6 +3,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { useEventStore } from "@/stores/useEventStore";
+import { useTheoryStore } from "@/stores/useTheoryStore";
 import { CountryIcon } from "@/data/events";
 
 // Extended icon type to include disappear settings
@@ -17,12 +18,15 @@ interface ExtendedCountryIcon extends CountryIcon {
  */
 export function useCountryIcons(
   map: maplibregl.Map | null,
-  onIconClick?: (icon: CountryIcon) => void
+  onIconClick?: (icon: CountryIcon) => void,
+  selectedIconId?: string | null
 ) {
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const onIconClickRef = useRef(onIconClick);
   const activeEvent = useEventStore((state) => state.activeEvent);
   const activeTimelinePointId = useEventStore((state) => state.activeTimelinePointId);
+  const activeTheory = useTheoryStore((state) => state.activeTheory);
+  const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
   
   // Keep callback ref up to date
   useEffect(() => {
