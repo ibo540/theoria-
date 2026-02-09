@@ -160,6 +160,18 @@ export async function saveEventToStorage(event: EventData): Promise<void> {
       .select('created_at')
       .eq('id', event.id)
       .maybeSingle(); // Use maybeSingle() instead of single() to avoid errors when no row exists
+
+    // Track contributor event creation (only for new events, not updates)
+    if (currentUser && currentUser.role === "contributor" && !existingEvent) {
+      try {
+        const { incrementContributorEventCount } = await import("@/lib/contributor-utils");
+        await incrementContributorEventCount(currentUser.username);
+        console.log(`✅ Incremented event count for contributor: ${currentUser.username}`);
+      } catch (contributorError) {
+        console.warn("Failed to increment contributor event count:", contributorError);
+        // Don't block event saving if contributor tracking fails
+      }
+    }
     
     // If this is a new event, set createdAt
     if (!existingEvent) {

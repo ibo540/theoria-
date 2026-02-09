@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { X } from "lucide-react";
 import Button from "@/components/ui/Buttons/p-button/Button";
+import ContributorsTable from "./ContributorsTable";
 
 const COLORS = {
   background: "var(--dark)",
@@ -224,6 +225,11 @@ export default function Credits({ isOpen, onOpenChange }: CreditsProps) {
                     Co-Founder
                   </p>
                 </div>
+              </div>
+
+              {/* Contributors Table */}
+              <div className="mb-12">
+                <ContributorsTable />
               </div>
 
               {/* Copyright Notice */}

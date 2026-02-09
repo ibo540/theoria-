@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { saveUserToSupabase } from "@/lib/user-utils";
-import { Lock, User, UserCircle } from "lucide-react";
+import { saveContributorToSupabase } from "@/lib/contributor-utils";
+import { Lock, User, UserCircle, Shield } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMode, setLoginMode] = useState<"admin" | "contributor">("contributor");
 
   useEffect(() => {
     // Redirect if already authenticated
@@ -33,12 +35,19 @@ export default function LoginPage() {
       return;
     }
 
-    const success = login(username, password, name);
+    const success = login(username, password, name, loginMode);
     
     if (success) {
-      // Save user to Supabase (don't block login if this fails)
+      // Save user/contributor to Supabase (don't block login if this fails)
       try {
-        await saveUserToSupabase(username, name);
+        if (loginMode === "contributor") {
+          // Save as contributor
+          await saveContributorToSupabase(username, name, "contributor");
+        } else {
+          // Save as admin (existing logic)
+          await saveUserToSupabase(username, name);
+          await saveContributorToSupabase(username, name, "admin");
+        }
       } catch (error) {
         console.warn("Failed to save user to Supabase, but login continues:", error);
         // Login still succeeds even if Supabase save fails
@@ -60,8 +69,42 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ffe4be]/20 to-[#ffe4be]/10 rounded-xl shadow-lg shadow-[#ffe4be]/20 mb-4 border border-[#ffe4be]/30">
               <Lock className="w-8 h-8 text-[#ffe4be]" />
             </div>
-            <h1 className="text-3xl font-bold text-[#ffe4be] mb-2">Admin Login</h1>
-            <p className="text-[#ffe4be]/70 text-sm">Enter your credentials to access the dashboard</p>
+            <h1 className="text-3xl font-bold text-[#ffe4be] mb-2">
+              {loginMode === "admin" ? "Admin Login" : "Contributor Login"}
+            </h1>
+            <p className="text-[#ffe4be]/70 text-sm">
+              {loginMode === "admin" 
+                ? "Enter your credentials to access the dashboard" 
+                : "Sign in as a contributor to add events"}
+            </p>
+          </div>
+
+          {/* Login Mode Toggle */}
+          <div className="mb-6 flex gap-2 justify-center">
+            <button
+              type="button"
+              onClick={() => setLoginMode("contributor")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                loginMode === "contributor"
+                  ? "bg-[#ffe4be]/20 text-[#ffe4be] border border-[#ffe4be]/40"
+                  : "bg-[#14161a]/50 text-[#ffe4be]/60 border border-[#ffe4be]/20 hover:border-[#ffe4be]/30"
+              }`}
+            >
+              <User className="w-4 h-4 inline mr-2" />
+              Contributor
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMode("admin")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                loginMode === "admin"
+                  ? "bg-[#ffe4be]/20 text-[#ffe4be] border border-[#ffe4be]/40"
+                  : "bg-[#14161a]/50 text-[#ffe4be]/60 border border-[#ffe4be]/20 hover:border-[#ffe4be]/30"
+              }`}
+            >
+              <Shield className="w-4 h-4 inline mr-2" />
+              Admin
+            </button>
           </div>
 
           {/* Form */}
@@ -147,8 +190,13 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center text-sm text-[#ffe4be]/50">
+          <div className="mt-6 text-center text-sm text-[#ffe4be]/50 space-y-1">
             <p>Protected Admin Area</p>
+            {loginMode === "contributor" && (
+              <p className="text-xs text-[#ffe4be]/40">
+                Use password: <code className="px-1 py-0.5 bg-[#ffe4be]/10 rounded">contributor2024</code>
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { useEventStore } from "@/stores/useEventStore";
 import { useTheoryStore } from "@/stores/useTheoryStore";
@@ -23,15 +23,20 @@ export function useCountryIcons(
 ) {
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const onIconClickRef = useRef(onIconClick);
+  const mapRef = useRef<maplibregl.Map | null>(map);
   const activeEvent = useEventStore((state) => state.activeEvent);
   const activeTimelinePointId = useEventStore((state) => state.activeTimelinePointId);
   const activeTheory = useTheoryStore((state) => state.activeTheory);
   const getTheoryColor = useTheoryStore((state) => state.getTheoryColor);
   
-  // Keep callback ref up to date
+  // Keep refs up to date
   useEffect(() => {
     onIconClickRef.current = onIconClick;
   }, [onIconClick]);
+  
+  useEffect(() => {
+    mapRef.current = map;
+  }, [map]);
 
   // Create a stable reference for countryIcons to prevent unnecessary re-renders
   // Include iconType in the key to ensure re-render when icon types change
@@ -44,17 +49,48 @@ export function useCountryIcons(
       iconType: icon.iconType
     })));
   }, [activeEvent?.countryIcons]);
+  
+  // Memoize the countryIcons array reference to prevent unnecessary re-renders
+  const countryIcons = useMemo(() => activeEvent?.countryIcons || [], [activeEvent?.countryIcons]);
 
   useEffect(() => {
-    if (!map || !activeEvent) {
-      // Remove all markers when map or event is not available
+    const currentMap = mapRef.current;
+    
+    console.log("🔄 useCountryIcons useEffect triggered:", { 
+      hasMap: !!currentMap, 
+      hasActiveEvent: !!activeEvent, 
+      activeEventId: activeEvent?.id,
+      iconCount: activeEvent?.countryIcons?.length || 0,
+      mapStyleLoaded: currentMap?.isStyleLoaded() || false,
+      mapLoaded: currentMap?.loaded() || false
+    });
+
+    if (!currentMap) {
+      console.log("⚠️ useCountryIcons - Map not available");
+      // Remove all markers when map is not available
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current.clear();
+      return;
+    }
+
+    if (!activeEvent) {
+      console.log("⚠️ useCountryIcons - Active event not available");
+      // Remove all markers when event is not available
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current.clear();
       return;
     }
 
     const setupIcons = () => {
+      const map = mapRef.current;
+      if (!map) {
+        console.log("⚠️ setupIcons - Map became null");
+        return;
+      }
+      
+      console.log("🎬 setupIcons called, map style loaded:", map.isStyleLoaded());
       if (!map.isStyleLoaded()) {
+        console.log("⏳ Map style not loaded, waiting...");
         map.once("styledata", setupIcons);
         return;
       }
@@ -69,7 +105,7 @@ export function useCountryIcons(
       });
       markersRef.current.clear();
 
-      const icons = activeEvent.countryIcons || [];
+      const icons = countryIcons;
       
       console.log("🔍 useCountryIcons - Total icons:", icons.length);
       console.log("🔍 useCountryIcons - Icons with timelinePointId:", icons.filter(i => i.timelinePointId).length);
@@ -95,9 +131,27 @@ export function useCountryIcons(
         let shouldAppear = false;
 
         // If icon is linked to a timeline point, check if we're at that point
-        if (icon.timelinePointId && !icon.timelinePointId.startsWith('area-')) {
+        if (icon.timelinePointId && !icon.timelinePointId.startsWith('area-') && !icon.timelinePointId.startsWith('unified-area-')) {
           // Regular timeline point icon - show only when that point is active
-          shouldAppear = activeTimelinePointId === icon.timelinePointId;
+          // Handle duplicate IDs by stripping index suffix if present
+          const cleanActiveId = activeTimelinePointId?.replace(/-index-\d+$/, '') || activeTimelinePointId;
+          const cleanIconTimelinePointId = icon.timelinePointId?.replace(/-index-\d+$/, '') || icon.timelinePointId;
+          
+          // Match with both clean and original IDs
+          shouldAppear = cleanActiveId === cleanIconTimelinePointId || 
+                        activeTimelinePointId === icon.timelinePointId ||
+                        cleanActiveId === icon.timelinePointId ||
+                        activeTimelinePointId === cleanIconTimelinePointId;
+          
+          if (!shouldAppear) {
+            console.log(`🔍 Icon ${icon.id} (${icon.country}) not visible:`, {
+              iconTimelinePointId: icon.timelinePointId,
+              cleanIconTimelinePointId,
+              activeTimelinePointId,
+              cleanActiveId,
+              shouldAppear: false
+            });
+          }
         } else {
           // Unified area icon with position-based or auto-generated timeline point
           if (icon.appearAtPosition !== undefined) {
@@ -140,6 +194,13 @@ export function useCountryIcons(
       });
       
       console.log("✅ useCountryIcons - Visible icons to render:", visibleIcons.length);
+      console.log("✅ useCountryIcons - Active timeline point ID:", activeTimelinePointId);
+      console.log("✅ useCountryIcons - Visible icon details:", visibleIcons.map(i => ({ 
+        id: i.id, 
+        country: i.country, 
+        iconType: i.iconType, 
+        timelinePointId: i.timelinePointId 
+      })));
 
       // Add new markers
       visibleIcons.forEach((icon) => {
@@ -235,14 +296,39 @@ export function useCountryIcons(
         innerDiv.style.display = "flex";
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
-        // Use the icon type from the icon data, fallback to map-pin
-        // If iconType is missing, try to infer from event type if available
-        let iconType = icon.iconType || "map-pin";
         
-        // If iconType is still missing and we have the icon data, default to map-pin
-        if (!iconType || iconType === "") {
-          iconType = "map-pin";
-          console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType, defaulting to map-pin`);
+        // Get icon type - if missing, try to infer from timeline point's eventType
+        let iconType = icon.iconType;
+        
+        // If iconType is missing or is "map-pin" (default), try to infer from timeline point
+        if (!iconType || iconType === "" || iconType === "map-pin") {
+          if (icon.timelinePointId && activeEvent?.timelinePoints) {
+            // Find the timeline point linked to this icon
+            const linkedPoint = activeEvent.timelinePoints.find(
+              (p: any) => p.id === icon.timelinePointId || 
+                         p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
+            );
+            
+            if (linkedPoint?.eventType) {
+              // Map event type to icon type
+              const eventTypeToIconType: Record<string, string> = {
+                military: "shield",
+                diplomatic: "flag",
+                economic: "building",
+                ideological: "users",
+                technological: "zap",
+                mixed: "globe",
+              };
+              iconType = eventTypeToIconType[linkedPoint.eventType] || "map-pin";
+              console.log(`🔄 Inferred iconType "${iconType}" from timeline point eventType "${linkedPoint.eventType}" for icon ${icon.id}`);
+            } else {
+              iconType = "map-pin";
+              console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType and linked timeline point has no eventType, defaulting to map-pin`);
+            }
+          } else {
+            iconType = "map-pin";
+            console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType and no linked timeline point, defaulting to map-pin`);
+          }
         }
         
         console.log(`🎨 Rendering icon ${icon.id} (${icon.country}) with type: ${iconType}`);
@@ -306,7 +392,7 @@ export function useCountryIcons(
       });
       markersRef.current.clear();
     };
-  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey]);
+  }, [map, activeEvent?.id, countryIcons, activeTimelinePointId, countryIconsKey]);
   
   // Update icon colors when selectedIconId or activeTheory changes
   useEffect(() => {
@@ -429,15 +515,29 @@ export function useCountryIcons(
 }
 
 // Helper function to get icon SVG
+// Icons are designed to match the website's dark/gold theme and clearly represent each event type
 function getIconSVG(iconType: string): string {
   const iconMap: Record<string, string> = {
-    "map-pin": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
-    "shield": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
-    "users": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
-    "flag": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>',
-    "zap": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-    "building": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><line x1="9" y1="6" x2="9" y2="10"></line><line x1="12" y1="6" x2="12" y2="10"></line><line x1="15" y1="6" x2="15" y2="10"></line><line x1="9" y1="14" x2="9" y2="18"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="15" y1="14" x2="15" y2="18"></line></svg>',
-    "globe": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>',
+    // Default map pin icon
+    "map-pin": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+    
+    // Military - Shield with cross (represents defense/military action)
+    "shield": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>',
+    
+    // Diplomatic - Flag icon (represents diplomacy, international relations, and treaties)
+    "flag": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+    
+    // Economic - Building with dollar sign or coins (represents commerce/economy)
+    "building": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><line x1="9" y1="6" x2="9" y2="10"></line><line x1="12" y1="6" x2="12" y2="10"></line><line x1="15" y1="6" x2="15" y2="10"></line><line x1="9" y1="14" x2="9" y2="18"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="15" y1="14" x2="15" y2="18"></line><circle cx="12" cy="12" r="1" fill="currentColor"></circle></svg>',
+    
+    // Ideological - People/users icon (represents social movements, ideologies)
+    "users": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+    
+    // Technological - Lightning bolt/zap (represents technology and innovation)
+    "zap": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+    
+    // Mixed - Globe/world icon (represents global or multi-faceted events)
+    "globe": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>',
   };
 
   return iconMap[iconType] || iconMap["map-pin"];
