@@ -1058,26 +1058,41 @@ export default function WorldMap() {
                 const hasNext = currentIndex < timelinePoints.length - 1;
                 
                 const handleNext = () => {
-                  if (hasNext) {
-                    navigateTimelinePoint("next");
-                    // Find the icon for the next timeline point
+                  if (!hasNext) {
+                    console.log("⚠️ No next timeline point available");
+                    return;
+                  }
+                  
+                  console.log("🔄 Next button clicked, currentIndex:", currentIndex, "timelinePoints:", timelinePoints.length);
+                  
+                  // Navigate to next point first
+                  navigateTimelinePoint("next");
+                  
+                  // Use a small delay to ensure state has updated, then find the icon
+                  setTimeout(() => {
                     const nextIndex = currentIndex + 1;
                     const nextPointId = timelinePoints[nextIndex]?.id;
+                    console.log("🔍 Looking for next icon, nextPointId:", nextPointId);
+                    
                     if (nextPointId && activeEvent?.countryIcons) {
                       const nextIcon = activeEvent.countryIcons.find(
                         (icon) => icon.timelinePointId === nextPointId
                       );
+                      console.log("🎯 Found next icon:", nextIcon ? nextIcon.id : "none");
+                      
                       if (nextIcon) {
                         setSelectedIcon(nextIcon);
                       } else {
                         // No icon for next point, close the popup
+                        console.log("⚠️ No icon found for next point, closing popup");
                         setSelectedIcon(null);
                       }
                     } else {
                       // No next point or no icons, close popup
+                      console.log("⚠️ No next point ID or no country icons, closing popup");
                       setSelectedIcon(null);
                     }
-                  }
+                  }, 50); // Small delay to ensure state update
                 };
                 
                 return (

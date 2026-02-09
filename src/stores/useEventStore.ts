@@ -192,8 +192,11 @@ export const useEventStore = create<EventStore>((set, get) => ({
     });
   },
   navigateTimelinePoint: (direction) => {
-    const { activeEvent, activeTimelinePointId } = get();
-    if (!activeEvent?.timelinePoints) return;
+    const { activeEvent, activeTimelinePointId, timelinePointClickCounter } = get();
+    if (!activeEvent?.timelinePoints || activeEvent.timelinePoints.length === 0) {
+      console.warn("⚠️ Cannot navigate: no timeline points available");
+      return;
+    }
 
     const points = activeEvent.timelinePoints;
     const currentIndex = activeTimelinePointId
@@ -207,7 +210,23 @@ export const useEventStore = create<EventStore>((set, get) => ({
       newIndex = currentIndex > 0 ? currentIndex - 1 : points.length - 1;
     }
 
-    set({ activeTimelinePointId: points[newIndex].id });
+    if (newIndex < 0 || newIndex >= points.length) {
+      console.warn("⚠️ Invalid timeline point index:", newIndex);
+      return;
+    }
+
+    const newPointId = points[newIndex]?.id;
+    if (!newPointId) {
+      console.warn("⚠️ Timeline point at index", newIndex, "has no id");
+      return;
+    }
+
+    console.log(`🔄 Navigating timeline: ${direction}, from index ${currentIndex} to ${newIndex}, point ID: ${newPointId}`);
+    
+    set({ 
+      activeTimelinePointId: newPointId,
+      timelinePointClickCounter: timelinePointClickCounter + 1 // Increment counter to force re-render
+    });
   },
   playTimeline: () => {
     set({ isTimelinePlaying: true });
