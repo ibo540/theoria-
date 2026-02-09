@@ -78,7 +78,8 @@ export default function LoginPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
-                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all autofill:bg-[#14161a]/50 autofill:text-[#ffe4be]"
+                style={{ color: '#ffe4be' }}
                 required
               />
             </div>
@@ -95,7 +96,8 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all autofill:bg-[#14161a]/50 autofill:text-[#ffe4be]"
+                style={{ color: '#ffe4be' }}
                 required
               />
             </div>
@@ -112,7 +114,8 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
+                className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all autofill:bg-[#14161a]/50 autofill:text-[#ffe4be]"
+                style={{ color: '#ffe4be' }}
                 required
               />
             </div>
