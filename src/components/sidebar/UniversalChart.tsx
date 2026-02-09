@@ -348,8 +348,26 @@ export default function UniversalChart({
         }
     };
 
+    // Apply Flourish-style enhancements
+    const chartBackground = formatting?.backgroundColor || "rgba(0, 0, 0, 0.4)";
+    const chartBorder = formatting?.borderColor ? `1px solid ${formatting.borderColor}` : "1px solid rgba(255, 255, 255, 0.1)";
+    const chartBorderWidth = formatting?.borderWidth || 1;
+    const borderRadius = 12; // Flourish-style rounded corners
+    const boxShadow = formatting?.showGridlines !== false 
+      ? "0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)" 
+      : "none";
+
     return (
-        <div className="mt-6 border border-neutral-800 bg-black/40 rounded-lg overflow-hidden backdrop-blur-sm">
+        <div 
+          className="mt-6 border rounded-lg overflow-hidden backdrop-blur-sm transition-all"
+          style={{
+            backgroundColor: chartBackground,
+            border: chartBorder,
+            borderWidth: chartBorderWidth,
+            borderRadius: borderRadius,
+            boxShadow: boxShadow,
+          }}
+        >
             {/* Toggle Header */}
             <button
                 onClick={() => setIsOpen(!isOpen)}

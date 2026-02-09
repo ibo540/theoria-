@@ -12,6 +12,7 @@ import { useTheoryStore, TheoryType } from "@/stores/useTheoryStore";
 import UniversalChart from "@/components/sidebar/UniversalChart";
 import { DataSelector } from "./DataSelector";
 import { suggestChartTypes, convertToChartData } from "@/lib/chart-suggestions";
+import { FLOURISH_STYLES, getTheoryFlourishStyles, applyFlourishStyle, FLOURISH_COLOR_PALETTES } from "@/lib/flourish-styles";
 
 interface StatisticsTabProps {
   event: Partial<EventData>;
@@ -35,65 +36,19 @@ const THEORIES = [
   { id: "constructivism", name: "Constructivism" },
 ];
 
-// Helper function to generate theory-based styles (from ChartStyleSelector)
+// Helper function to generate theory-based styles using Flourish system
 const getTheoryBasedStyles = (theoryColor?: string) => {
-  if (!theoryColor) {
-    return [
-      { id: "style1", name: "Classic", description: "Classic with gridlines", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"] },
-      { id: "style2", name: "Minimal", description: "Minimal clean", colors: ["#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"] },
-      { id: "style3", name: "Bold", description: "Bold modern", colors: ["#ef4444", "#f97316", "#eab308", "#84cc16"] },
-    ];
-  }
-
-  // Generate 3 monochromatic variations from theory color
-  const generateMonochromaticVariations = (baseColor: string) => {
-    const hex = baseColor.replace("#", "");
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-
-    // Style 1: Classic - Darker variations
-    const style1Colors = [];
-    for (let i = 0; i < 4; i++) {
-      const factor = 0.3 + (i * 0.2); // 30% to 90% intensity
-      const newR = Math.round(r * factor);
-      const newG = Math.round(g * factor);
-      const newB = Math.round(b * factor);
-      style1Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
-    }
-
-    // Style 2: Minimal - Lighter, desaturated variations
-    const style2Colors = [];
-    for (let i = 0; i < 4; i++) {
-      const factor = 0.4 + (i * 0.15); // 40% to 85% intensity, more desaturated
-      const saturation = 0.6; // Reduce saturation
-      const newR = Math.round(r * factor * saturation + 255 * factor * (1 - saturation));
-      const newG = Math.round(g * factor * saturation + 255 * factor * (1 - saturation));
-      const newB = Math.round(b * factor * saturation + 255 * factor * (1 - saturation));
-      style2Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
-    }
-
-    // Style 3: Bold - Vibrant, high contrast variations
-    const style3Colors = [];
-    for (let i = 0; i < 4; i++) {
-      const factor = 0.5 + (i * 0.15); // 50% to 95% intensity
-      const boost = 1.2; // Boost saturation
-      const newR = Math.min(255, Math.round(r * factor * boost));
-      const newG = Math.min(255, Math.round(g * factor * boost));
-      const newB = Math.min(255, Math.round(b * factor * boost));
-      style3Colors.push(`#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`);
-    }
-
-    return [style1Colors, style2Colors, style3Colors];
-  };
-
-  const [style1Colors, style2Colors, style3Colors] = generateMonochromaticVariations(theoryColor);
-
-  return [
-    { id: "style1", name: "Classic", description: "Classic with gridlines", colors: style1Colors },
-    { id: "style2", name: "Minimal", description: "Minimal clean", colors: style2Colors },
-    { id: "style3", name: "Bold", description: "Bold modern", colors: style3Colors },
-  ];
+  // Use Flourish styles, adapted for theory colors
+  const flourishStyles = getTheoryFlourishStyles(theoryColor);
+  
+  // Return simplified format for compatibility
+  return flourishStyles.map((style) => ({
+    id: style.id,
+    name: style.name,
+    description: style.description,
+    colors: style.colors.slice(0, 4), // Limit to 4 colors for compatibility
+    flourishStyle: style, // Keep full style for advanced features
+  }));
 };
 
 export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
@@ -741,12 +696,16 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                           {recommendedStyles.map((style) => {
                             const isSelected = selectedStyleId === style.id;
                             const styleColors = style.colors.slice(0, seriesCount);
-                            const formatting = {
-                              showGridlines: style.id === "style1" || style.id === "style3",
-                              legendPosition: "bottom" as const,
-                              showDataLabels: style.id === "style3",
-                              backgroundColor: style.id === "style3" ? "#1e293b" : undefined,
-                            };
+                            // Use Flourish style formatting if available
+                            const flourishStyle = (style as any).flourishStyle;
+                            const formatting = flourishStyle
+                              ? applyFlourishStyle(flourishStyle, styleColors).formatting
+                              : {
+                                  showGridlines: style.id === "style1" || style.id === "style3",
+                                  legendPosition: "bottom" as const,
+                                  showDataLabels: style.id === "style3",
+                                  backgroundColor: style.id === "style3" ? "#1e293b" : undefined,
+                                };
 
                             return (
                               <button
@@ -762,7 +721,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                                   // Apply style colors
                                   handleUpdatePreviewChart("customColors", styleColors);
                                   
-                                  // Apply style formatting
+                                  // Apply Flourish style formatting
                                   handleUpdatePreviewChart("formatting", {
                                     ...previewChart.formatting,
                                     ...formatting,
@@ -773,6 +732,18 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                                   <span className="text-sm text-gray-300 font-medium">{style.name}</span>
                                   <span className="text-xs text-gray-500">{style.description}</span>
                                 </div>
+                                {flourishStyle && (
+                                  <div className="mt-2 flex gap-1">
+                                    {styleColors.slice(0, 4).map((color, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="w-4 h-4 rounded border border-slate-600"
+                                        style={{ backgroundColor: color }}
+                                        title={color}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
                               </button>
                             );
                           })}
@@ -805,6 +776,38 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                       className="w-full px-3 py-2 text-sm border border-slate-600/50 bg-slate-800 rounded-lg text-white"
                       placeholder="e.g., Values, Percentage"
                     />
+                  </div>
+
+                  {/* Flourish Color Palettes */}
+                  <div className="border-t border-slate-700 pt-4">
+                    <h5 className="text-xs font-semibold text-gray-300 mb-3">Flourish Color Palettes</h5>
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {Object.entries(FLOURISH_COLOR_PALETTES).map(([name, colors]) => (
+                        <button
+                          key={name}
+                          type="button"
+                          onClick={() => {
+                            const paletteColors = colors.slice(0, previewChart.dataKeys?.length || 1);
+                            handleUpdatePreviewChart("customColors", paletteColors);
+                          }}
+                          className="p-2 border border-slate-600/50 rounded-lg hover:border-slate-500 bg-slate-800/30 transition-all"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-gray-300 capitalize">{name}</span>
+                          </div>
+                          <div className="flex gap-1">
+                            {colors.slice(0, 5).map((color, idx) => (
+                              <div
+                                key={idx}
+                                className="flex-1 h-4 rounded border border-slate-600"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Formatting Options */}
