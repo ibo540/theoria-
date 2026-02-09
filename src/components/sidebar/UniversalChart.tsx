@@ -284,25 +284,115 @@ export default function UniversalChart({
                 );
 
             case "pie":
+                // Calculate dynamic sizing based on chart height
+                const pieOuterRadius = Math.min(chartHeight * 0.35, 120);
+                const pieInnerRadius = pieOuterRadius * 0.6; // Donut style
+                const pieLabelRadius = pieOuterRadius + 20;
+                
+                // Limit data points for better visualization (too many segments look cluttered)
+                const maxPieSegments = 12;
+                const pieData = data.length > maxPieSegments 
+                    ? [...data.slice(0, maxPieSegments - 1), {
+                        label: `Other (${data.length - maxPieSegments + 1} items)`,
+                        value: data.slice(maxPieSegments - 1).reduce((sum, item) => sum + (item.value || 0), 0)
+                      }]
+                    : data;
+                
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <RechartsPieChart>
                             <Pie
-                                data={data}
+                                data={pieData}
                                 cx="50%"
                                 cy="50%"
-                                outerRadius={80}
-                                fill="#8884d8"
+                                outerRadius={pieOuterRadius}
+                                innerRadius={pieInnerRadius}
+                                paddingAngle={2}
                                 dataKey="value"
-                                label={({ name, value, percent }) => `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`}
-                                labelLine={{ stroke: "#ffe4be", strokeWidth: 1 }}
-                                animationDuration={isAnimating ? 1000 : 0}
+                                label={({ name, percent }) => {
+                                    // Only show labels for segments > 5%
+                                    if ((percent || 0) < 0.05) return "";
+                                    return `${((percent || 0) * 100).toFixed(0)}%`;
+                                }}
+                                labelLine={false}
+                                animationDuration={800}
+                                animationBegin={0}
+                                style={{
+                                    filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
+                                }}
                             >
-                                {data.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color || colors[index % colors.length]} />
-                                ))}
+                                {pieData.map((entry, index) => {
+                                    const color = entry.color || chartColors[index % chartColors.length];
+                                    return (
+                                        <Cell 
+                                            key={`cell-${index}`} 
+                                            fill={color}
+                                            stroke={chartBackground || "rgba(15, 23, 42, 0.9)"}
+                                            strokeWidth={2}
+                                            style={{
+                                                transition: "opacity 0.3s ease",
+                                                cursor: "pointer",
+                                            }}
+                                            onMouseEnter={(e: any) => {
+                                                if (e.target) {
+                                                    e.target.style.opacity = "0.8";
+                                                    e.target.style.transform = "scale(1.05)";
+                                                }
+                                            }}
+                                            onMouseLeave={(e: any) => {
+                                                if (e.target) {
+                                                    e.target.style.opacity = "1";
+                                                    e.target.style.transform = "scale(1)";
+                                                }
+                                            }}
+                                        />
+                                    );
+                                })}
                             </Pie>
-                            <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
+                            <Tooltip 
+                                contentStyle={{
+                                    ...CUSTOM_TOOLTIP_STYLE,
+                                    padding: "12px 16px",
+                                    borderRadius: "8px",
+                                    border: "1px solid rgba(255, 228, 190, 0.3)",
+                                    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
+                                }}
+                                itemStyle={{ 
+                                    color: "#fff",
+                                    padding: "4px 0",
+                                    fontSize: "13px",
+                                }}
+                                formatter={(value: any, name: any, props: any) => {
+                                    const percent = ((props.payload.percent || 0) * 100).toFixed(1);
+                                    return [
+                                        `${value.toLocaleString()} (${percent}%)`,
+                                        props.payload.label || name
+                                    ];
+                                }}
+                            />
+                            {legendPosition !== "none" && (
+                                <Legend 
+                                    wrapperStyle={{ 
+                                        paddingTop: legendPosition === "top" ? "10px" : "0",
+                                        paddingBottom: legendPosition === "bottom" ? "10px" : "0",
+                                        fontSize: "12px",
+                                    }}
+                                    iconType="circle"
+                                    verticalAlign={legendPosition === "top" ? "top" : legendPosition === "bottom" ? "bottom" : "middle"}
+                                    align={legendPosition === "left" ? "left" : legendPosition === "right" ? "right" : "center"}
+                                    formatter={(value, entry: any) => {
+                                        const dataPoint = pieData.find(d => d.label === value);
+                                        const percent = dataPoint 
+                                            ? ((dataPoint.value / pieData.reduce((sum, d) => sum + (d.value || 0), 0)) * 100).toFixed(1)
+                                            : "0";
+                                        return (
+                                            <span style={{ color: "#ffe4be", fontWeight: 500 }}>
+                                                {value} <span style={{ opacity: 0.7 }}>({percent}%)</span>
+                                            </span>
+                                        );
+                                    }}
+                                />
+                            )}
                         </RechartsPieChart>
                     </ResponsiveContainer>
                 );
