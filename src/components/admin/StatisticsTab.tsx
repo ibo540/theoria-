@@ -46,7 +46,8 @@ const getTheoryBasedStyles = (theoryColor?: string) => {
     id: style.id,
     name: style.name,
     description: style.description,
-    colors: style.colors.slice(0, 4), // Limit to 4 colors for compatibility
+    // Keep all colors - especially important for Minimal and Monochrome which have specific palettes
+    colors: style.colors.length > 0 ? style.colors : ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"],
     flourishStyle: style, // Keep full style for advanced features
   }));
 };
