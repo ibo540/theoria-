@@ -80,7 +80,7 @@ export function ChartPreview({ chart, onChartUpdate, isEditable = false }: Chart
           height={300}
           xAxisLabel={chart.xAxisLabel}
           yAxisLabel={chart.yAxisLabel}
-          customColors={chart.customColors}
+          customColors={chart.customColors && chart.customColors.length > 0 ? chart.customColors : undefined}
           formatting={chart.formatting}
         />
       </div>

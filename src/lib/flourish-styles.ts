@@ -251,14 +251,24 @@ export function getTheoryFlourishStyles(theoryColor?: string): FlourishStyle[] {
 
   const theoryColors = generateTheoryPalette(theoryColor, 10);
   
-  return FLOURISH_STYLES.map((style, index) => ({
-    ...style,
-    colors: theoryColors,
-    formatting: {
-      ...style.formatting,
-      borderColor: theoryColor + "40", // Add opacity
-    },
-  }));
+  return FLOURISH_STYLES.map((style, index) => {
+    // Keep original colors for Minimal and Monochrome styles
+    // These styles have specific color palettes that shouldn't be overridden
+    const shouldKeepOriginalColors = 
+      style.id === "flourish-minimal" || 
+      style.id === "flourish-monochrome";
+    
+    return {
+      ...style,
+      colors: shouldKeepOriginalColors ? style.colors : theoryColors,
+      formatting: {
+        ...style.formatting,
+        borderColor: shouldKeepOriginalColors 
+          ? style.formatting.borderColor 
+          : theoryColor + "40", // Add opacity
+      },
+    };
+  });
 }
 
 // Apply Flourish style to chart formatting

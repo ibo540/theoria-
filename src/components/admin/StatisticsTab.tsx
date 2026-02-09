@@ -698,7 +698,12 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                         <div className="space-y-2">
                           {recommendedStyles.map((style) => {
                             const isSelected = selectedStyleId === style.id;
-                            const styleColors = style.colors.slice(0, seriesCount);
+                            // Ensure we have enough colors - use at least 4 for visibility
+                            const minColors = Math.max(seriesCount, 4);
+                            const styleColors = style.colors && style.colors.length > 0
+                              ? style.colors.slice(0, minColors)
+                              : ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"]; // Fallback colors
+                            
                             // Use Flourish style formatting if available
                             const flourishStyle = (style as any).flourishStyle;
                             const formatting = flourishStyle
@@ -721,8 +726,13 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                                 }`}
                                 onClick={() => {
                                   setSelectedStyleId(style.id);
-                                  // Apply style colors
-                                  handleUpdatePreviewChart("customColors", styleColors);
+                                  console.log("Applying style:", style.id, "Colors:", styleColors);
+                                  // Apply style colors - ensure we have an array
+                                  if (styleColors && styleColors.length > 0) {
+                                    handleUpdatePreviewChart("customColors", styleColors);
+                                  } else {
+                                    console.warn("No colors found for style:", style.id);
+                                  }
                                   
                                   // Apply Flourish style formatting
                                   handleUpdatePreviewChart("formatting", {
@@ -735,18 +745,16 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                                   <span className="text-sm text-gray-300 font-medium">{style.name}</span>
                                   <span className="text-xs text-gray-500">{style.description}</span>
                                 </div>
-                                {flourishStyle && (
-                                  <div className="mt-2 flex gap-1">
-                                    {styleColors.slice(0, 4).map((color, idx) => (
-                                      <div
-                                        key={idx}
-                                        className="w-4 h-4 rounded border border-slate-600"
-                                        style={{ backgroundColor: color }}
-                                        title={color}
-                                      />
-                                    ))}
-                                  </div>
-                                )}
+                                <div className="mt-2 flex gap-1">
+                                  {styleColors.slice(0, 4).map((color, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="w-4 h-4 rounded border border-slate-600"
+                                      style={{ backgroundColor: color }}
+                                      title={color}
+                                    />
+                                  ))}
+                                </div>
                               </button>
                             );
                           })}
