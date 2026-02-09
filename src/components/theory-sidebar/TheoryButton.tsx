@@ -68,10 +68,10 @@ export default function TheoryButton({
     // Determine icon color
     let iconColor: string;
     if (isActive) {
-      // Active: use theory color
+      // Active: use theory color (always, regardless of hover)
       iconColor = theoryColor;
     } else if (isHovered) {
-      // Hovered but not active: use theory color
+      // Hovered but not active: use theory color (only when actually hovering)
       iconColor = theoryColor;
     } else if (hasActiveTheory) {
       // Another theory is active: use muted gold
@@ -135,13 +135,23 @@ export default function TheoryButton({
   }, [visualState]);
 
   // Hover handlers - show theory color on hover
+  // Only show hover color if not active (active buttons always show their color)
   const handleMouseEnter = () => {
-    setIsHovered(true);
+    if (!isActive) {
+      setIsHovered(true);
+    }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
+  
+  // Clear hover state when button becomes active (to prevent hover from showing on active button)
+  useEffect(() => {
+    if (isActive) {
+      setIsHovered(false);
+    }
+  }, [isActive]);
 
   const { color: initialColor } = visualState;
 
@@ -183,7 +193,11 @@ export default function TheoryButton({
         <span
           className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-bold text-center whitespace-nowrap transition-colors duration-300 pointer-events-none z-10"
           style={{
-            color: isActive ? initialColor : isHovered ? theoryColor : MUTED_GOLD,
+            color: isActive 
+              ? initialColor 
+              : isHovered 
+                ? theoryColor 
+                : MUTED_GOLD,
             opacity: isActive ? 1 : hasActiveTheory ? 0.8 : 0.9,
             textShadow: "0 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5)",
           }}

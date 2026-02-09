@@ -138,7 +138,10 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
             {/* Points */}
             {timelinePoints.map((point, index) => {
               const isHovered = hoveredPoint === point.id;
-              const isActive = activeTimelinePointId === point.id;
+              // Check if this point is active - handle duplicate IDs by stripping index suffix
+              const cleanActiveId = activeTimelinePointId?.replace(/-index-\d+$/, '') || activeTimelinePointId;
+              const cleanPointId = point.id?.replace(/-index-\d+$/, '') || point.id;
+              const isActive = cleanActiveId === cleanPointId || activeTimelinePointId === point.id;
 
               const matchesTheory = theoryDataKey
                 ? point.relevantTheories?.includes(theoryDataKey) ?? false
@@ -146,27 +149,22 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
 
               const isTurningPoint = Boolean(point.isTurningPoint);
               
-              // Determine colors based on point type and state
-              // Normal points: always beige
-              // Turning points: theory color when active, beige when not active
-              let fillColor = "#ffe4be"; // Default beige for normal points
+              // Determine colors based on point state
+              // When active (card is open) and theory is selected: use theory color
+              // Otherwise: use beige
+              let fillColor = "#ffe4be"; // Default beige
               let borderColor = "rgba(212, 175, 55, 0.8)"; // Darker beige border
               
-              if (isTurningPoint && isActive && activeTheory) {
-                // Turning point that's active - use theory color
+              if (isActive && activeTheory) {
+                // Active point with theory selected - use theory color
                 if (activeTheory === "realism") {
                   fillColor = "#f9464c"; // Red for realism
-                  borderColor = "#d32f2f"; // Darker red border
+                  borderColor = "rgba(249, 70, 76, 0.9)"; // Red border with opacity
                 } else {
                   fillColor = theoryAccent; // Theory color for other theories
                   borderColor = theoryAccent; // Same color for border
                 }
-              } else if (isTurningPoint && !isActive) {
-                // Turning point but not active - use beige
-                fillColor = "#ffe4be";
-                borderColor = "rgba(212, 175, 55, 0.8)";
               }
-              // Normal points (not turning points) always use beige
 
               return (
                 <div
@@ -199,8 +197,8 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
                         transform: `translate(-50%, -50%) rotate(45deg) scale(${
                           isHovered || isActive ? 1.2 : 1
                         })`,
-                        boxShadow: isActive && isTurningPoint
-                          ? `0 0 18px ${fillColor}55`
+                        boxShadow: isActive && activeTheory
+                          ? `0 0 18px ${fillColor}55, 0 0 30px ${fillColor}33`
                           : undefined,
                       }}
                     />
@@ -213,8 +211,8 @@ export default function Timeline({ timelineContainerRef }: TimelineProps) {
                         height: 14,
                         backgroundColor: fillColor,
                         border: "none",
-                        boxShadow: isActive && isTurningPoint
-                          ? `0 0 12px ${fillColor}88`
+                        boxShadow: isActive && activeTheory
+                          ? `0 0 12px ${fillColor}88, 0 0 20px ${fillColor}66`
                           : "none",
                         transform: `rotate(45deg) scale(${
                           isHovered || isActive ? 1.3 : 1

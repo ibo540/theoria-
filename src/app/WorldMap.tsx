@@ -94,6 +94,13 @@ export default function WorldMap() {
     console.log("selectedIcon state changed:", selectedIcon);
   }, [selectedIcon]);
   
+  // Hide theory notification immediately when a theory is selected
+  useEffect(() => {
+    if (activeTheory && showTheoryNotification) {
+      setShowTheoryNotification(false);
+    }
+  }, [activeTheory, showTheoryNotification]);
+  
   // Reset last active timeline point when event changes
   useEffect(() => {
     if (activeEvent) {
