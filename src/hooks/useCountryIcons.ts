@@ -399,8 +399,9 @@ export function useCountryIcons(
         }
         
         // Update inner icon color
+        const innerDiamondEl = outerDiv.querySelector('.inner-diamond') as HTMLElement;
         const innerIcon = outerDiv.querySelector('div:not(.inner-diamond)') as HTMLElement;
-        if (innerIcon && innerIcon !== innerDiamond) {
+        if (innerIcon && innerIcon !== innerDiamondEl) {
           innerIcon.style.color = isSelected ? "#ffffff" : "#1e293b";
         }
         
