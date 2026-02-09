@@ -115,7 +115,8 @@ export function ExcelLikeSpreadsheet({
       const colIndex = colLetterToIndex(colLetter);
       const rowIndex = parseInt(rowNum) - 1;
       const cellValue = data[rowIndex]?.[colIndex] ?? 0;
-      return isNaN(Number(cellValue)) ? 0 : Number(cellValue);
+      const numValue = isNaN(Number(cellValue)) ? 0 : Number(cellValue);
+      return String(numValue);
     });
     
     // Evaluate basic math expressions
