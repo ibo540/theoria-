@@ -329,7 +329,7 @@ export default function UniversalChart({
                                 >
                                     {/* Optional: Add cell coloring if single series */}
                                     {dataKeys.length === 1 && data.map((entry, idx) => (
-                                        <Cell key={`cell-${idx}`} fill={entry.color || colors[idx % colors.length]} />
+                                        <Cell key={`cell-${idx}`} fill={entry.color || chartColors[idx % chartColors.length]} />
                                     ))}
                                 </Bar>
                             ))}
