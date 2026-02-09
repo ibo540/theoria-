@@ -210,15 +210,23 @@ export function useCountryIcons(
         outerDiv.style.width = "40px";
         outerDiv.style.height = "40px";
         outerDiv.style.position = "relative";
-        outerDiv.style.transform = "rotate(45deg)";
-        outerDiv.style.border = `2px solid ${iconColor}`;
+        outerDiv.style.transform = isSelected ? "rotate(45deg)" : "rotate(45deg)";
+        outerDiv.style.border = isSelected ? `2px solid rgba(0, 0, 0, 0.3)` : `2px solid ${iconColor}`;
         outerDiv.style.backgroundColor = iconBgColor;
-        outerDiv.style.borderRadius = "4px";
-        outerDiv.style.boxShadow = `0 0 ${isSelected ? '20px' : '12px'} ${iconShadowColor}`;
+        outerDiv.style.borderRadius = isSelected ? "0" : "4px"; // Diamond shape when selected (no border radius)
+        outerDiv.style.boxShadow = isSelected 
+          ? `0 0 20px ${iconShadowColor}, 0 0 30px ${iconShadowColor}80` 
+          : `0 0 12px ${iconShadowColor}`;
         outerDiv.style.display = "flex";
         outerDiv.style.alignItems = "center";
         outerDiv.style.justifyContent = "center";
         outerDiv.style.transition = "all 0.3s ease"; // Transition all properties for smooth color change
+        
+        // Add inner diamond layer when selected
+        if (isSelected) {
+          outerDiv.style.position = "relative";
+          outerDiv.style.overflow = "visible";
+        }
         
         // Create inner div for icon - use iconType from icon data
         const innerDiv = document.createElement("div");
@@ -346,9 +354,55 @@ export function useCountryIcons(
           }
         }
         
-        outerDiv.style.border = `2px solid ${iconColor}`;
+        // Update outer diamond
+        outerDiv.style.border = isSelected ? `2px solid rgba(0, 0, 0, 0.3)` : `2px solid ${iconColor}`;
         outerDiv.style.backgroundColor = iconBgColor;
-        outerDiv.style.boxShadow = `0 0 ${isSelected ? '20px' : '12px'} ${iconShadowColor}`;
+        outerDiv.style.borderRadius = isSelected ? "0" : "4px"; // Diamond shape when selected
+        outerDiv.style.boxShadow = isSelected 
+          ? `0 0 20px ${iconShadowColor}, 0 0 30px ${iconShadowColor}80` 
+          : `0 0 12px ${iconShadowColor}`;
+        
+        // Update or create inner diamond
+        if (isSelected && activeTheory) {
+          let innerDiamond = outerDiv.querySelector('.inner-diamond') as HTMLElement;
+          if (!innerDiamond) {
+            innerDiamond = document.createElement("div");
+            innerDiamond.className = "inner-diamond";
+            innerDiamond.style.position = "absolute";
+            innerDiamond.style.width = "60%";
+            innerDiamond.style.height = "60%";
+            innerDiamond.style.transform = "rotate(45deg)";
+            innerDiamond.style.borderRadius = "0";
+            innerDiamond.style.zIndex = "1";
+            outerDiv.appendChild(innerDiamond);
+          }
+          
+          innerDiamond.style.backgroundColor = activeTheory === "realism" 
+            ? "rgba(200, 30, 40, 0.9)" // Darker red for inner diamond
+            : (() => {
+                const theoryColor = getTheoryColor(activeTheory);
+                if (theoryColor) {
+                  const hex = theoryColor.replace('#', '');
+                  const r = Math.max(0, parseInt(hex.substring(0, 2), 16) - 30);
+                  const g = Math.max(0, parseInt(hex.substring(2, 4), 16) - 30);
+                  const b = Math.max(0, parseInt(hex.substring(4, 6), 16) - 30);
+                  return `rgb(${r}, ${g}, ${b})`;
+                }
+                return "rgba(200, 30, 40, 0.9)";
+              })();
+        } else {
+          // Remove inner diamond if not selected
+          const innerDiamond = outerDiv.querySelector('.inner-diamond');
+          if (innerDiamond) {
+            innerDiamond.remove();
+          }
+        }
+        
+        // Update inner icon color
+        const innerIcon = outerDiv.querySelector('div:not(.inner-diamond)') as HTMLElement;
+        if (innerIcon && innerIcon !== innerDiamond) {
+          innerIcon.style.color = isSelected ? "#ffffff" : "#1e293b";
+        }
         
         console.log(`✅ Updated icon ${iconId} - isSelected: ${isSelected}, color: ${iconBgColor}`);
       } catch (error) {
