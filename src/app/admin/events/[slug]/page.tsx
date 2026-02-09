@@ -132,8 +132,8 @@ export default function EventEditor() {
         // Generate new icons from unified areas
         const unifiedAreaIcons = unifiedAreasToIcons(finalEvent.unifiedAreas);
         
-        // Merge with existing icons
-        finalEvent.countryIcons = [...filteredIcons, ...unifiedAreaIcons];
+        // Merge with existing icons (cast to CountryIcon[] for type compatibility)
+        finalEvent.countryIcons = [...filteredIcons, ...unifiedAreaIcons] as any;
         
         console.log(`✅ Converted ${unifiedAreaIcons.length} unified areas to timeline icons`);
       }
