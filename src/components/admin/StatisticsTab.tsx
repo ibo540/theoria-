@@ -344,7 +344,10 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
 
   const handleUpdatePreviewChart = (field: keyof ChartData, value: any) => {
     if (!previewChart) return;
-    setPreviewChart({ ...previewChart, [field]: value });
+    const updated = { ...previewChart, [field]: value };
+    setPreviewChart(updated);
+    // Force re-render by creating a new object reference
+    console.log("Updated preview chart:", field, value);
   };
 
   return (
@@ -782,31 +785,40 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
                   <div className="border-t border-slate-700 pt-4">
                     <h5 className="text-xs font-semibold text-gray-300 mb-3">Flourish Color Palettes</h5>
                     <div className="grid grid-cols-2 gap-2 mb-4">
-                      {Object.entries(FLOURISH_COLOR_PALETTES).map(([name, colors]) => (
-                        <button
-                          key={name}
-                          type="button"
-                          onClick={() => {
-                            const paletteColors = colors.slice(0, previewChart.dataKeys?.length || 1);
-                            handleUpdatePreviewChart("customColors", paletteColors);
-                          }}
-                          className="p-2 border border-slate-600/50 rounded-lg hover:border-slate-500 bg-slate-800/30 transition-all"
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-gray-300 capitalize">{name}</span>
-                          </div>
-                          <div className="flex gap-1">
-                            {colors.slice(0, 5).map((color, idx) => (
-                              <div
-                                key={idx}
-                                className="flex-1 h-4 rounded border border-slate-600"
-                                style={{ backgroundColor: color }}
-                                title={color}
-                              />
-                            ))}
-                          </div>
-                        </button>
-                      ))}
+                      {Object.entries(FLOURISH_COLOR_PALETTES).map(([name, colors]) => {
+                        // Determine how many colors we need
+                        const seriesCount = previewChart?.dataKeys?.length || 1;
+                        const paletteColors = colors.slice(0, Math.max(seriesCount, 4)); // At least 4 colors for visibility
+                        
+                        return (
+                          <button
+                            key={name}
+                            type="button"
+                            onClick={() => {
+                              if (!previewChart) return;
+                              console.log("Applying palette:", name, "Colors:", paletteColors);
+                              handleUpdatePreviewChart("customColors", paletteColors);
+                              // Force a re-render by updating the chart
+                              setPreviewChart({ ...previewChart, customColors: paletteColors });
+                            }}
+                            className="p-2 border border-slate-600/50 rounded-lg hover:border-slate-500 bg-slate-800/30 transition-all active:scale-95"
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-300 capitalize">{name}</span>
+                            </div>
+                            <div className="flex gap-1">
+                              {colors.slice(0, 5).map((color, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex-1 h-4 rounded border border-slate-600"
+                                  style={{ backgroundColor: color }}
+                                  title={color}
+                                />
+                              ))}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
