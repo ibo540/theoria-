@@ -54,7 +54,11 @@ export function unifiedAreaToIcon(area: UnifiedArea): CountryIcon | null {
   // Use timeline point ID if available, otherwise generate one
   const timelinePointId = area.appearAtTimelinePoint || `area-${area.id}`;
 
-  const icon: CountryIcon = {
+  // Create icon with extended properties for disappear settings
+  const icon: CountryIcon & { 
+    disappearAtTimelinePoint?: string;
+    disappearAtPosition?: number;
+  } = {
     id: `unified-area-${area.id}`,
     country: area.name, // Use area name as "country"
     iconType: "globe", // Use globe icon for unified areas/blocs
@@ -62,25 +66,34 @@ export function unifiedAreaToIcon(area: UnifiedArea): CountryIcon | null {
     title: area.name,
     description: area.description || `Unified area: ${area.name}`,
     timelinePointId: timelinePointId, // Link to timeline point
-    // Store disappear settings in a custom field (we'll handle this in filtering)
     appearAtPosition: area.appearAtPosition,
+    // Store disappear settings as custom properties
     disappearAtTimelinePoint: area.disappearAtTimelinePoint,
     disappearAtPosition: area.disappearAtPosition,
   };
 
-  return icon;
+  return icon as CountryIcon;
 }
 
 /**
  * Convert all unified areas with timeline settings to icons
  */
-export function unifiedAreasToIcons(unifiedAreas: UnifiedArea[]): CountryIcon[] {
-  const icons: CountryIcon[] = [];
+export function unifiedAreasToIcons(unifiedAreas: UnifiedArea[]): (CountryIcon & { 
+  disappearAtTimelinePoint?: string;
+  disappearAtPosition?: number;
+})[] {
+  const icons: (CountryIcon & { 
+    disappearAtTimelinePoint?: string;
+    disappearAtPosition?: number;
+  })[] = [];
   
   for (const area of unifiedAreas) {
     const icon = unifiedAreaToIcon(area);
     if (icon) {
-      icons.push(icon);
+      icons.push(icon as CountryIcon & { 
+        disappearAtTimelinePoint?: string;
+        disappearAtPosition?: number;
+      });
     }
   }
   
