@@ -68,14 +68,96 @@ const THEME_COLORS = [
     "#d4a8c8", // Soft purple (from #f5d6f9)
 ];
 
+// Professional tooltip styling matching website theme
 const CUSTOM_TOOLTIP_STYLE = {
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
-    border: "1px solid #333",
-    borderRadius: "4px",
-    color: "#f59e0b",
-    fontSize: "12px",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
+    backgroundColor: "rgba(15, 23, 42, 0.98)",
+    border: "1px solid rgba(255, 228, 190, 0.3)",
+    borderRadius: "12px",
+    padding: "12px 16px",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3)",
+    backdropFilter: "blur(8px)",
+    minWidth: "160px",
+};
+
+// Custom tooltip component for better control
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) {
+        return null;
+    }
+
+    return (
+        <div
+            style={{
+                ...CUSTOM_TOOLTIP_STYLE,
+            }}
+            className="tooltip-container"
+        >
+            {label && (
+                <div
+                    style={{
+                        color: "#ffe4be",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        marginBottom: "8px",
+                        paddingBottom: "8px",
+                        borderBottom: "1px solid rgba(255, 228, 190, 0.2)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                    }}
+                >
+                    {label}
+                </div>
+            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {payload.map((entry: any, index: number) => (
+                    <div
+                        key={index}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: "12px",
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div
+                                style={{
+                                    width: "10px",
+                                    height: "10px",
+                                    borderRadius: "2px",
+                                    backgroundColor: entry.color || "#ffe4be",
+                                    boxShadow: `0 0 8px ${entry.color || "#ffe4be"}40`,
+                                }}
+                            />
+                            <span
+                                style={{
+                                    color: "rgba(255, 228, 190, 0.9)",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.03em",
+                                }}
+                            >
+                                {entry.name || entry.dataKey}:
+                            </span>
+                        </div>
+                        <span
+                            style={{
+                                color: "#ffe4be",
+                                fontSize: "13px",
+                                fontWeight: 600,
+                                fontFamily: "monospace",
+                            }}
+                        >
+                            {typeof entry.value === "number"
+                                ? entry.value.toLocaleString()
+                                : entry.value}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default function UniversalChart({
@@ -151,9 +233,8 @@ export default function UniversalChart({
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
                             <Tooltip 
-                                contentStyle={CUSTOM_TOOLTIP_STYLE} 
-                                itemStyle={{ color: "#fff" }}
-                                cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
+                                content={<CustomTooltip />}
+                                cursor={{ stroke: "#ffe4be", strokeWidth: 2, strokeDasharray: "4 4", strokeOpacity: 0.6 }}
                             />
                             {legendPosition !== "none" && (
                                 <Legend 
@@ -218,9 +299,8 @@ export default function UniversalChart({
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#ffe4be", fontSize: 12, fontWeight: 600, textAnchor: "middle" }} />}
                             </YAxis>
                             <Tooltip 
-                                contentStyle={CUSTOM_TOOLTIP_STYLE} 
-                                itemStyle={{ color: "#fff" }}
-                                cursor={{ stroke: "#ffe4be", strokeWidth: 1, strokeDasharray: "3 3" }}
+                                content={<CustomTooltip />}
+                                cursor={{ stroke: "#ffe4be", strokeWidth: 2, strokeDasharray: "4 4", strokeOpacity: 0.6 }}
                             />
                             {legendPosition !== "none" && (
                                 <Legend 
@@ -278,7 +358,7 @@ export default function UniversalChart({
                                     formatter={(value) => <span style={{ color: "#ffe4be", fontWeight: 500 }}>{value}</span>}
                                 />
                             )}
-                            <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} itemStyle={{ color: "#fff" }} />
+                            <Tooltip content={<CustomTooltip />} />
                         </RadarChart>
                     </ResponsiveContainer>
                 );
@@ -350,25 +430,7 @@ export default function UniversalChart({
                                 })}
                             </Pie>
                             <Tooltip 
-                                contentStyle={{
-                                    ...CUSTOM_TOOLTIP_STYLE,
-                                    padding: "12px 16px",
-                                    borderRadius: "8px",
-                                    border: "1px solid rgba(255, 228, 190, 0.3)",
-                                    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
-                                }}
-                                itemStyle={{ 
-                                    color: "#fff",
-                                    padding: "4px 0",
-                                    fontSize: "13px",
-                                }}
-                                formatter={(value: any, name: any, props: any) => {
-                                    const percent = ((props.payload.percent || 0) * 100).toFixed(1);
-                                    return [
-                                        `${value.toLocaleString()} (${percent}%)`,
-                                        props.payload.label || name
-                                    ];
-                                }}
+                                content={<CustomTooltip />}
                             />
                             {legendPosition !== "none" && (
                                 <Legend 
@@ -431,7 +493,10 @@ export default function UniversalChart({
                             >
                                 {yAxisLabel && <Label value={yAxisLabel} angle={-90} position="insideLeft" style={{ fill: "#888", fontSize: 11, textAnchor: "middle" }} />}
                             </YAxis>
-                            <Tooltip contentStyle={CUSTOM_TOOLTIP_STYLE} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
+                            <Tooltip 
+                                content={<CustomTooltip />}
+                                cursor={{ fill: "rgba(255, 228, 190, 0.1)", stroke: "#ffe4be", strokeWidth: 1 }}
+                            />
                             {dataKeys.map((key, index) => (
                                 <Bar
                                     key={key}
