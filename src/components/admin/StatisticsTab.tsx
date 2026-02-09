@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Plus, Trash2, Edit2, Save, X, Upload, Eye, CheckCircle, Info, Settings, ChevronLeft, ChevronRight, Palette, Menu } from "lucide-react";
 import { EventData, ChartData } from "@/data/events";
 import { DataUploader } from "./DataUploader";
-import { SpreadsheetEditor } from "./SpreadsheetEditor";
+import { ExcelLikeSpreadsheet } from "./ExcelLikeSpreadsheet";
 import { ChartPreview } from "./ChartPreview";
 import { ColorPalettePicker } from "./ColorPalettePicker";
 import { ChartStyleSelector } from "./ChartStyleSelector";
@@ -477,7 +477,7 @@ export function StatisticsTab({ event, setEvent }: StatisticsTabProps) {
             </button>
           </div>
 
-          <SpreadsheetEditor
+          <ExcelLikeSpreadsheet
             headers={uploadedData.headers}
             initialData={uploadedData.data}
             onDataChange={handleSpreadsheetDataChange}
