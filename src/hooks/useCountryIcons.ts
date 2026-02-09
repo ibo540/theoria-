@@ -5,6 +5,12 @@ import maplibregl from "maplibre-gl";
 import { useEventStore } from "@/stores/useEventStore";
 import { CountryIcon } from "@/data/events";
 
+// Extended icon type to include disappear settings
+interface ExtendedCountryIcon extends CountryIcon {
+  disappearAtTimelinePoint?: string;
+  disappearAtPosition?: number;
+}
+
 /**
  * Hook to render country icons on the map
  * Icons are filtered based on timeline progression
@@ -65,17 +71,68 @@ export function useCountryIcons(
       console.log("🔍 useCountryIcons - Icons with timelinePointId:", icons.filter(i => i.timelinePointId).length);
       console.log("🔍 useCountryIcons - Icon types:", icons.map(i => ({ id: i.id, country: i.country, iconType: i.iconType, timelinePointId: i.timelinePointId })));
 
-      // Filter icons - show all icons that are linked to timeline points
-      // Icons remain visible on the map even after closing the popup
-      // Icons without timeline linkage should NOT appear (they must be added from timeline)
+      // Filter icons - show icons based on timeline progression
+      const timelinePoints = activeEvent.timelinePoints || [];
+      const currentPoint = activeTimelinePointId
+        ? timelinePoints.find((p: any) => p.id === activeTimelinePointId)
+        : null;
+      const currentPosition = currentPoint?.position ?? 0;
+      
       const visibleIcons = icons.filter((icon) => {
-        // Show all icons that have a timelinePointId (were added from timeline)
-        // Icons remain visible regardless of which timeline point is currently active
-        const hasTimelinePoint = !!icon.timelinePointId;
-        if (!hasTimelinePoint) {
+        // Icons must have a timelinePointId to be displayed
+        if (!icon.timelinePointId) {
           console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no timelinePointId - will not be displayed`);
+          return false;
         }
-        return hasTimelinePoint;
+
+        const extendedIcon = icon as ExtendedCountryIcon;
+
+        // Check if icon should appear
+        let shouldAppear = false;
+
+        // If icon is linked to a timeline point, check if we're at that point
+        if (icon.timelinePointId && !icon.timelinePointId.startsWith('area-')) {
+          // Regular timeline point icon - show only when that point is active
+          shouldAppear = activeTimelinePointId === icon.timelinePointId;
+        } else {
+          // Unified area icon with position-based or auto-generated timeline point
+          if (icon.appearAtPosition !== undefined) {
+            // Position-based appearance
+            if (!activeTimelinePointId) {
+              shouldAppear = icon.appearAtPosition <= 0;
+            } else {
+              shouldAppear = currentPosition >= icon.appearAtPosition;
+            }
+          } else {
+            // Default: show when timeline point is active (for auto-generated timeline points)
+            shouldAppear = activeTimelinePointId === icon.timelinePointId;
+          }
+        }
+
+        if (!shouldAppear) {
+          return false;
+        }
+
+        // Check if icon should disappear (for unified areas)
+        if (extendedIcon.disappearAtTimelinePoint) {
+          const disappearIndex = timelinePoints.findIndex(
+            (p: any) => p.id === extendedIcon.disappearAtTimelinePoint
+          );
+          const currentIndex = timelinePoints.findIndex(
+            (p: any) => p.id === activeTimelinePointId
+          );
+          // Hide if we've reached or passed the disappear point
+          if (disappearIndex >= 0 && currentIndex >= disappearIndex) {
+            return false;
+          }
+        } else if (extendedIcon.disappearAtPosition !== undefined) {
+          // Position-based disappearance
+          if (activeTimelinePointId && currentPosition >= extendedIcon.disappearAtPosition) {
+            return false;
+          }
+        }
+
+        return true;
       });
       
       console.log("✅ useCountryIcons - Visible icons to render:", visibleIcons.length);

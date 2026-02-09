@@ -10,6 +10,7 @@ import { BasicInfoTab } from "@/components/admin/BasicInfoTab";
 import { TimelineBuilder } from "@/components/admin/TimelineBuilder";
 import { StatisticsTab } from "@/components/admin/StatisticsTab";
 import { saveEventToStorage, saveEventToAPI, loadEventFromAPI, getBaseEventId, createEventIdWithTheory, loadEventFromStorage } from "@/lib/admin-utils";
+import { unifiedAreasToIcons } from "@/lib/unified-area-utils";
 import { THEORY_COLORS, THEORY_COLORS_DARK } from "@/lib/theoryTokens";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -120,6 +121,21 @@ export default function EventEditor() {
         if (!finalEvent.id.includes(`-${finalEvent.theory}`)) {
           finalEvent.id = createEventIdWithTheory(baseId, finalEvent.theory);
         }
+      }
+
+      // Convert unified areas with timeline settings to icons
+      if (finalEvent.unifiedAreas && finalEvent.unifiedAreas.length > 0) {
+        // Remove old unified area icons
+        const existingIcons = finalEvent.countryIcons || [];
+        const filteredIcons = existingIcons.filter(icon => !icon.id.startsWith('unified-area-'));
+        
+        // Generate new icons from unified areas
+        const unifiedAreaIcons = unifiedAreasToIcons(finalEvent.unifiedAreas);
+        
+        // Merge with existing icons
+        finalEvent.countryIcons = [...filteredIcons, ...unifiedAreaIcons];
+        
+        console.log(`✅ Converted ${unifiedAreaIcons.length} unified areas to timeline icons`);
       }
 
       // Save directly to Supabase (skip API endpoint)
