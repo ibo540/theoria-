@@ -116,7 +116,15 @@ export default function UniversalChart({
             case "line":
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
-                        <LineChart data={data} margin={{ bottom: 20, right: 10, left: 10, top: 10 }}>
+                        <LineChart 
+                            data={data} 
+                            margin={{ 
+                                bottom: 20, 
+                                right: legendPosition === "right" ? 80 : 10, 
+                                left: 10, 
+                                top: 10 
+                            }}
+                        >
                             {showGridlines && <CartesianGrid strokeDasharray="3 3" stroke="#333" />}
                             <XAxis
                                 dataKey="label"
@@ -295,7 +303,16 @@ export default function UniversalChart({
             default:
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
-                        <BarChart data={data} layout="vertical">
+                        <BarChart 
+                            data={data} 
+                            layout="vertical"
+                            margin={{ 
+                                bottom: 20, 
+                                right: legendPosition === "right" ? 80 : 10, 
+                                left: 10, 
+                                top: 10 
+                            }}
+                        >
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                             <XAxis 
                                 type="number" 
