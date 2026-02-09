@@ -554,18 +554,6 @@ export function ExcelLikeSpreadsheet({
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="text-xs text-gray-400 space-y-1">
-        <p><strong>Excel-like features:</strong></p>
-        <ul className="list-disc list-inside space-y-0.5 ml-2">
-          <li>Click to select, Shift+Click to extend selection</li>
-          <li>Double-click to edit cell</li>
-          <li>Use formulas starting with = (e.g., =A1+B1, =SUM(A1:A5))</li>
-          <li>Ctrl+C to copy, Ctrl+V to paste, Ctrl+X to cut</li>
-          <li>Arrow keys to navigate, Enter to move down, Tab to move right</li>
-          <li>Drag the blue handle to fill cells</li>
-        </ul>
-      </div>
     </div>
   );
 }
