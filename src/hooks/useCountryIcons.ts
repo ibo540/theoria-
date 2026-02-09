@@ -298,7 +298,7 @@ export function useCountryIcons(
       });
       markersRef.current.clear();
     };
-  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey, selectedIconId, activeTheory, getTheoryColor]);
+  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey]);
   
   // Update icon colors when selectedIconId or activeTheory changes
   useEffect(() => {
