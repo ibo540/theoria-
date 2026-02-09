@@ -189,7 +189,15 @@ export default function UniversalChart({
             case "area":
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
-                        <AreaChart data={data} margin={{ bottom: 20, right: 10, left: 10, top: 10 }}>
+                        <AreaChart 
+                            data={data} 
+                            margin={{ 
+                                bottom: 20, 
+                                right: legendPosition === "right" ? 80 : 10, 
+                                left: 10, 
+                                top: 10 
+                            }}
+                        >
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis 
                                 dataKey="label" 
