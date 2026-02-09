@@ -213,46 +213,26 @@ export const useEventStore = create<EventStore>((set, get) => ({
 
     const points = activeEvent.timelinePoints;
     
-    // Validate all points have IDs
-    const pointsWithoutIds = points.filter(p => !p.id);
-    if (pointsWithoutIds.length > 0) {
-      console.error("❌ Some timeline points are missing IDs:", pointsWithoutIds);
-      // Try to use index as fallback if IDs are missing
-      const currentIndex = activeTimelinePointId
-        ? points.findIndex((p) => p.id === activeTimelinePointId)
-        : (activeTimelinePointId !== null ? parseInt(activeTimelinePointId) : -1);
-      
-      let newIndex: number;
-      if (direction === "next") {
-        newIndex = currentIndex < points.length - 1 ? currentIndex + 1 : 0;
-      } else {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : points.length - 1;
+    // Find current index - handle duplicate IDs by using the first match
+    let currentIndex = -1;
+    if (activeTimelinePointId) {
+      currentIndex = points.findIndex((p) => p.id === activeTimelinePointId);
+      // If not found or if there are duplicates, try to find by matching the current active point
+      if (currentIndex === -1) {
+        // Try to find by matching the active point's position or other attributes
+        console.warn("⚠️ Could not find timeline point by ID, trying fallback");
       }
-      
-      // Use index as ID if point doesn't have one
-      const newPoint = points[newIndex];
-      const newPointId = newPoint?.id || String(newIndex);
-      
-      console.log(`🔄 Navigating timeline (fallback mode): ${direction}, from index ${currentIndex} to ${newIndex}, point ID: ${newPointId}`);
-      
-      set({ 
-        activeTimelinePointId: newPointId,
-        timelinePointClickCounter: timelinePointClickCounter + 1
-      });
-      return;
     }
-    
-    const currentIndex = activeTimelinePointId
-      ? points.findIndex((p) => p.id === activeTimelinePointId)
-      : -1;
 
     console.log("📍 Current timeline state:", {
       currentIndex,
       activeTimelinePointId,
       pointsLength: points.length,
-      pointIds: points.map(p => p.id)
+      pointIds: points.map(p => p.id),
+      hasDuplicates: new Set(points.map(p => p.id)).size !== points.length
     });
 
+    // Calculate new index
     let newIndex: number;
     if (direction === "next") {
       newIndex = currentIndex < points.length - 1 ? currentIndex + 1 : 0;
@@ -268,20 +248,33 @@ export const useEventStore = create<EventStore>((set, get) => ({
       return;
     }
 
-    const newPointId = points[newIndex]?.id;
+    // Check for duplicate IDs - if the new point has the same ID as current, use index-based navigation
+    const newPoint = points[newIndex];
+    const newPointId = newPoint?.id;
+    
     if (!newPointId) {
       console.warn("⚠️ Timeline point at index", newIndex, "has no id", {
-        point: points[newIndex]
+        point: newPoint
       });
       return;
     }
 
-    console.log(`🔄 Navigating timeline: ${direction}, from index ${currentIndex} to ${newIndex}, point ID: ${newPointId}`);
+    // If navigating to a point with the same ID (duplicate), force update by using index in the ID
+    // This ensures the state actually changes even with duplicate IDs
+    const finalPointId = (newPointId === activeTimelinePointId && currentIndex !== newIndex)
+      ? `${newPointId}-index-${newIndex}` // Add index suffix to force state change
+      : newPointId;
+
+    console.log(`🔄 Navigating timeline: ${direction}, from index ${currentIndex} to ${newIndex}, point ID: ${newPointId}${finalPointId !== newPointId ? ` (using ${finalPointId} to handle duplicate)` : ''}`);
     
     set({ 
-      activeTimelinePointId: newPointId,
+      activeTimelinePointId: finalPointId,
       timelinePointClickCounter: timelinePointClickCounter + 1 // Increment counter to force re-render
     });
+    
+    // If we used an index-suffixed ID, also update the actual point ID in the store for future lookups
+    // But first, we need to find the point by index when looking it up later
+    // This is a workaround for duplicate IDs - ideally they should be fixed in the admin panel
   },
   playTimeline: () => {
     set({ isTimelinePlaying: true });

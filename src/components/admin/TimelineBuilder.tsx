@@ -51,7 +51,21 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       return;
     }
 
-    const pointId = newPoint.id || `point-${Date.now()}`;
+    // Ensure unique ID - if user-provided ID already exists, generate a unique one
+    let pointId = newPoint.id || `point-${Date.now()}`;
+    const existingIds = timelinePoints.map(p => p.id);
+    if (existingIds.includes(pointId)) {
+      // ID already exists, generate a unique one
+      let counter = 1;
+      let uniqueId = `${pointId}-${counter}`;
+      while (existingIds.includes(uniqueId)) {
+        counter++;
+        uniqueId = `${pointId}-${counter}`;
+      }
+      pointId = uniqueId;
+      console.log(`⚠️ Timeline point ID "${newPoint.id}" already exists, using "${pointId}" instead`);
+    }
+    
     const point: TimelinePoint = {
       id: pointId,
       label: newPoint.label,

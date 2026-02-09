@@ -597,8 +597,13 @@ export default function WorldMap() {
       lastActiveTimelinePointRef.current = activeTimelinePointId;
 
       // Find the icon linked to this timeline point
+      // Handle duplicate IDs by stripping index suffix if present
+      const cleanTimelinePointId = activeTimelinePointId?.replace(/-index-\d+$/, '') || activeTimelinePointId;
       const linkedIcon = activeEvent.countryIcons?.find(
-        icon => icon.timelinePointId === activeTimelinePointId
+        icon => {
+          const iconTimelinePointId = icon.timelinePointId?.replace(/-index-\d+$/, '');
+          return iconTimelinePointId === cleanTimelinePointId;
+        }
       );
 
       if (linkedIcon) {
