@@ -127,36 +127,6 @@ export const FLOURISH_STYLES: FlourishStyle[] = [
     },
   },
   {
-    id: "flourish-minimal",
-    name: "Minimal Flourish",
-    description: "Ultra-clean, minimal aesthetic",
-    colors: [
-      "#E8D5B7", // Light beige
-      "#D4A574", // Medium beige
-      "#C4956A", // Darker beige
-      "#B8865F", // Dark beige
-      "#A67854", // Darkest beige
-    ],
-    formatting: {
-      showGridlines: false,
-      gridlineStyle: "none",
-      gridlineColor: "transparent",
-      legendPosition: "right",
-      showDataLabels: false,
-      dataLabelStyle: "minimal",
-      backgroundColor: "rgba(15, 23, 42, 0.85)",
-      borderRadius: 16,
-      padding: 16,
-      fontFamily: "system-ui, sans-serif",
-      fontSize: 11,
-      fontWeight: "normal",
-      animation: "none",
-      shadow: false,
-      gradient: false,
-      opacity: 1,
-    },
-  },
-  {
     id: "flourish-bold",
     name: "Bold Flourish",
     description: "High-impact, vibrant design",
@@ -206,41 +176,6 @@ export const FLOURISH_STYLES: FlourishStyle[] = [
       opacity: 1,
     },
   },
-  {
-    id: "flourish-monochrome",
-    name: "Monochrome Flourish",
-    description: "Classic black and white elegance",
-    colors: [
-      "#FFFFFF", // White
-      "#E6E6E6", // Very light gray
-      "#CCCCCC", // Light gray
-      "#B3B3B3", // Medium-light gray
-      "#999999", // Medium gray
-      "#808080", // Medium-dark gray
-      "#666666", // Dark gray
-      "#4D4D4D", // Darker gray
-    ],
-    formatting: {
-      showGridlines: true,
-      gridlineStyle: "solid",
-      gridlineColor: "rgba(255, 255, 255, 0.3)",
-      legendPosition: "right",
-      showDataLabels: true,
-      dataLabelStyle: "minimal",
-      backgroundColor: "rgba(15, 23, 42, 0.95)",
-      borderColor: "rgba(255, 255, 255, 0.2)",
-      borderWidth: 1,
-      borderRadius: 4,
-      padding: 20,
-      fontFamily: "Courier New, monospace",
-      fontSize: 11,
-      fontWeight: "normal",
-      animation: "fade",
-      shadow: false,
-      gradient: false,
-      opacity: 1,
-    },
-  },
 ];
 
 // Generate theory-specific Flourish styles
@@ -251,24 +186,14 @@ export function getTheoryFlourishStyles(theoryColor?: string): FlourishStyle[] {
 
   const theoryColors = generateTheoryPalette(theoryColor, 10);
   
-  return FLOURISH_STYLES.map((style, index) => {
-    // Keep original colors for Minimal and Monochrome styles
-    // These styles have specific color palettes that shouldn't be overridden
-    const shouldKeepOriginalColors = 
-      style.id === "flourish-minimal" || 
-      style.id === "flourish-monochrome";
-    
-    return {
-      ...style,
-      colors: shouldKeepOriginalColors ? style.colors : theoryColors,
-      formatting: {
-        ...style.formatting,
-        borderColor: shouldKeepOriginalColors 
-          ? style.formatting.borderColor 
-          : theoryColor + "40", // Add opacity
-      },
-    };
-  });
+  return FLOURISH_STYLES.map((style, index) => ({
+    ...style,
+    colors: theoryColors,
+    formatting: {
+      ...style.formatting,
+      borderColor: theoryColor + "40", // Add opacity
+    },
+  }));
 }
 
 // Apply Flourish style to chart formatting
