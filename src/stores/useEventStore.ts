@@ -193,15 +193,65 @@ export const useEventStore = create<EventStore>((set, get) => ({
   },
   navigateTimelinePoint: (direction) => {
     const { activeEvent, activeTimelinePointId, timelinePointClickCounter } = get();
+    
+    console.log("🔍 navigateTimelinePoint called:", {
+      direction,
+      activeEventId: activeEvent?.id,
+      activeTimelinePointId,
+      timelinePointsCount: activeEvent?.timelinePoints?.length || 0,
+      timelinePoints: activeEvent?.timelinePoints?.map(p => ({ id: p.id, label: p.label }))
+    });
+    
     if (!activeEvent?.timelinePoints || activeEvent.timelinePoints.length === 0) {
-      console.warn("⚠️ Cannot navigate: no timeline points available");
+      console.warn("⚠️ Cannot navigate: no timeline points available", {
+        hasActiveEvent: !!activeEvent,
+        hasTimelinePoints: !!activeEvent?.timelinePoints,
+        timelinePointsLength: activeEvent?.timelinePoints?.length
+      });
       return;
     }
 
     const points = activeEvent.timelinePoints;
+    
+    // Validate all points have IDs
+    const pointsWithoutIds = points.filter(p => !p.id);
+    if (pointsWithoutIds.length > 0) {
+      console.error("❌ Some timeline points are missing IDs:", pointsWithoutIds);
+      // Try to use index as fallback if IDs are missing
+      const currentIndex = activeTimelinePointId
+        ? points.findIndex((p) => p.id === activeTimelinePointId)
+        : (activeTimelinePointId !== null ? parseInt(activeTimelinePointId) : -1);
+      
+      let newIndex: number;
+      if (direction === "next") {
+        newIndex = currentIndex < points.length - 1 ? currentIndex + 1 : 0;
+      } else {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : points.length - 1;
+      }
+      
+      // Use index as ID if point doesn't have one
+      const newPoint = points[newIndex];
+      const newPointId = newPoint?.id || String(newIndex);
+      
+      console.log(`🔄 Navigating timeline (fallback mode): ${direction}, from index ${currentIndex} to ${newIndex}, point ID: ${newPointId}`);
+      
+      set({ 
+        activeTimelinePointId: newPointId,
+        timelinePointClickCounter: timelinePointClickCounter + 1
+      });
+      return;
+    }
+    
     const currentIndex = activeTimelinePointId
       ? points.findIndex((p) => p.id === activeTimelinePointId)
       : -1;
+
+    console.log("📍 Current timeline state:", {
+      currentIndex,
+      activeTimelinePointId,
+      pointsLength: points.length,
+      pointIds: points.map(p => p.id)
+    });
 
     let newIndex: number;
     if (direction === "next") {
@@ -211,13 +261,18 @@ export const useEventStore = create<EventStore>((set, get) => ({
     }
 
     if (newIndex < 0 || newIndex >= points.length) {
-      console.warn("⚠️ Invalid timeline point index:", newIndex);
+      console.warn("⚠️ Invalid timeline point index:", newIndex, {
+        pointsLength: points.length,
+        currentIndex
+      });
       return;
     }
 
     const newPointId = points[newIndex]?.id;
     if (!newPointId) {
-      console.warn("⚠️ Timeline point at index", newIndex, "has no id");
+      console.warn("⚠️ Timeline point at index", newIndex, "has no id", {
+        point: points[newIndex]
+      });
       return;
     }
 
