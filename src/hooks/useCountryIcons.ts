@@ -175,20 +175,50 @@ export function useCountryIcons(
         el.style.position = "absolute"; // Changed from relative to absolute
         el.style.pointerEvents = "auto"; // Ensure clicks work
         
+        // Check if this icon is selected
+        const isSelected = selectedIconId === icon.id;
+        
+        // Determine color based on theory - red for Realism, theory color for others
+        let iconColor = "rgba(255, 228, 190, 0.6)"; // Default beige
+        let iconBgColor = "#ffe4be"; // Default beige background
+        let iconShadowColor = "rgba(255, 228, 190, 0.6)"; // Default beige shadow
+        
+        if (isSelected && activeTheory) {
+          if (activeTheory === "realism") {
+            // Red for Realism
+            iconColor = "rgba(249, 70, 76, 0.9)"; // #f9464c with opacity
+            iconBgColor = "#f9464c";
+            iconShadowColor = "rgba(249, 70, 76, 0.8)";
+          } else {
+            // Theory color for others
+            const theoryColor = getTheoryColor(activeTheory);
+            if (theoryColor) {
+              // Convert hex to rgba
+              const hex = theoryColor.replace('#', '');
+              const r = parseInt(hex.substring(0, 2), 16);
+              const g = parseInt(hex.substring(2, 4), 16);
+              const b = parseInt(hex.substring(4, 6), 16);
+              iconColor = `rgba(${r}, ${g}, ${b}, 0.9)`;
+              iconBgColor = theoryColor;
+              iconShadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+            }
+          }
+        }
+        
         // Create outer container with fixed positioning
         const outerDiv = document.createElement("div");
         outerDiv.style.width = "40px";
         outerDiv.style.height = "40px";
         outerDiv.style.position = "relative";
         outerDiv.style.transform = "rotate(45deg)";
-        outerDiv.style.border = "2px solid rgba(255, 228, 190, 0.6)";
-        outerDiv.style.backgroundColor = "#ffe4be";
+        outerDiv.style.border = `2px solid ${iconColor}`;
+        outerDiv.style.backgroundColor = iconBgColor;
         outerDiv.style.borderRadius = "4px";
-        outerDiv.style.boxShadow = "0 0 12px rgba(255, 228, 190, 0.6)";
+        outerDiv.style.boxShadow = `0 0 ${isSelected ? '20px' : '12px'} ${iconShadowColor}`;
         outerDiv.style.display = "flex";
         outerDiv.style.alignItems = "center";
         outerDiv.style.justifyContent = "center";
-        outerDiv.style.transition = "transform 0.3s ease"; // Only transform, not all
+        outerDiv.style.transition = "all 0.3s ease"; // Transition all properties for smooth color change
         
         // Create inner div for icon - use iconType from icon data
         const innerDiv = document.createElement("div");
@@ -268,7 +298,46 @@ export function useCountryIcons(
       });
       markersRef.current.clear();
     };
-  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey]);
+  }, [map, activeEvent?.id, activeEvent?.countryIcons, activeTimelinePointId, countryIconsKey, selectedIconId, activeTheory, getTheoryColor]);
+  
+  // Update icon colors when selectedIconId or activeTheory changes
+  useEffect(() => {
+    if (!map || !activeEvent) return;
+    
+    markersRef.current.forEach((marker, iconId) => {
+      const markerElement = marker.getElement();
+      const outerDiv = markerElement?.querySelector('div') as HTMLElement;
+      if (outerDiv) {
+        const isSelected = iconId === selectedIconId;
+        let iconColor = "rgba(255, 228, 190, 0.6)";
+        let iconBgColor = "#ffe4be";
+        let iconShadowColor = "rgba(255, 228, 190, 0.6)";
+        
+        if (isSelected && activeTheory) {
+          if (activeTheory === "realism") {
+            iconColor = "rgba(249, 70, 76, 0.9)";
+            iconBgColor = "#f9464c";
+            iconShadowColor = "rgba(249, 70, 76, 0.8)";
+          } else {
+            const theoryColor = getTheoryColor(activeTheory);
+            if (theoryColor) {
+              const hex = theoryColor.replace('#', '');
+              const r = parseInt(hex.substring(0, 2), 16);
+              const g = parseInt(hex.substring(2, 4), 16);
+              const b = parseInt(hex.substring(4, 6), 16);
+              iconColor = `rgba(${r}, ${g}, ${b}, 0.9)`;
+              iconBgColor = theoryColor;
+              iconShadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+            }
+          }
+        }
+        
+        outerDiv.style.border = `2px solid ${iconColor}`;
+        outerDiv.style.backgroundColor = iconBgColor;
+        outerDiv.style.boxShadow = `0 0 ${isSelected ? '20px' : '12px'} ${iconShadowColor}`;
+      }
+    });
+  }, [selectedIconId, activeTheory, getTheoryColor, map, activeEvent]);
   
   // Debug: Log when activeEvent or countryIcons change
   useEffect(() => {
