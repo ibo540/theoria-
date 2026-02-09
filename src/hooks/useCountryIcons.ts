@@ -304,16 +304,30 @@ export function useCountryIcons(
   useEffect(() => {
     if (!map || !activeEvent) return;
     
+    console.log("🎨 Updating icon colors - selectedIconId:", selectedIconId, "activeTheory:", activeTheory);
+    
     markersRef.current.forEach((marker, iconId) => {
-      const markerElement = marker.getElement();
-      const outerDiv = markerElement?.querySelector('div') as HTMLElement;
-      if (outerDiv) {
+      try {
+        const markerElement = marker.getElement();
+        if (!markerElement) {
+          console.warn(`⚠️ Marker element not found for icon ${iconId}`);
+          return;
+        }
+        
+        // The outerDiv is the first direct child div of the marker element
+        const outerDiv = markerElement.firstElementChild as HTMLElement;
+        if (!outerDiv) {
+          console.warn(`⚠️ Outer div not found for icon ${iconId}`);
+          return;
+        }
+        
         const isSelected = iconId === selectedIconId;
         let iconColor = "rgba(255, 228, 190, 0.6)";
         let iconBgColor = "#ffe4be";
         let iconShadowColor = "rgba(255, 228, 190, 0.6)";
         
         if (isSelected && activeTheory) {
+          console.log(`✨ Icon ${iconId} is selected with theory ${activeTheory}`);
           if (activeTheory === "realism") {
             iconColor = "rgba(249, 70, 76, 0.9)";
             iconBgColor = "#f9464c";
@@ -335,6 +349,10 @@ export function useCountryIcons(
         outerDiv.style.border = `2px solid ${iconColor}`;
         outerDiv.style.backgroundColor = iconBgColor;
         outerDiv.style.boxShadow = `0 0 ${isSelected ? '20px' : '12px'} ${iconShadowColor}`;
+        
+        console.log(`✅ Updated icon ${iconId} - isSelected: ${isSelected}, color: ${iconBgColor}`);
+      } catch (error) {
+        console.error(`❌ Error updating icon ${iconId}:`, error);
       }
     });
   }, [selectedIconId, activeTheory, getTheoryColor, map, activeEvent]);
