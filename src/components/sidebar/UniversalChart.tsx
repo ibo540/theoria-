@@ -384,13 +384,15 @@ export default function UniversalChart({
 
     return (
         <div 
-          className="mt-6 border rounded-lg overflow-hidden backdrop-blur-sm transition-all"
+          className="mt-6 border rounded-lg overflow-visible backdrop-blur-sm transition-all"
           style={{
             backgroundColor: chartBackground,
             border: chartBorder,
             borderWidth: chartBorderWidth,
             borderRadius: borderRadius,
             boxShadow: boxShadow,
+            width: "100%",
+            minWidth: "100%",
           }}
         >
             {/* Toggle Header */}
