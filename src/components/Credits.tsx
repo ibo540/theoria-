@@ -144,6 +144,7 @@ export default function Credits({ isOpen, onOpenChange }: CreditsProps) {
               backgroundColor: COLORS.background,
               willChange: "transform",
               zIndex: 1,
+              pointerEvents: "none",
             }}
           />
           {/* Bottom Curtain */}
@@ -155,24 +156,28 @@ export default function Credits({ isOpen, onOpenChange }: CreditsProps) {
               backgroundColor: COLORS.background,
               willChange: "transform",
               zIndex: 1,
+              pointerEvents: "none",
             }}
           />
-          {/* Content */}
+          {/* Content - Scrollable */}
           <div
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 overflow-y-auto"
             style={{ zIndex: 2 }}
           >
             <div
-              ref={contentRef}
-              className="w-full max-w-6xl px-16 py-16 relative"
-              style={{
-                fontFamily: "var(--font-forum)",
-                color: COLORS.gold,
-                willChange: "transform, opacity",
-              }}
+              className="flex items-start justify-center min-h-full py-16"
             >
-              {/* Close Button - Top Right */}
-              <div className="absolute top-8 right-8">
+              <div
+                ref={contentRef}
+                className="w-full max-w-6xl px-16 py-16 relative"
+                style={{
+                  fontFamily: "var(--font-forum)",
+                  color: COLORS.gold,
+                  willChange: "transform, opacity",
+                }}
+              >
+              {/* Close Button - Top Right - Fixed */}
+              <div className="fixed top-8 right-8 z-50">
                 <Button
                   onClick={handleClose}
                   borderStyle="five"

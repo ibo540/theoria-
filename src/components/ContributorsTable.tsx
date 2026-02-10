@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchContributors, Contributor } from "@/lib/contributor-utils";
-import { Trophy, Medal, Award, User } from "lucide-react";
+import { User } from "lucide-react";
 
 const COLORS = {
   gold: "var(--primary-gold)",
@@ -40,11 +40,97 @@ export default function ContributorsTable({ className = "" }: ContributorsTableP
 
   const getRankIcon = (index: number) => {
     if (index === 0) {
-      return <Trophy className="w-5 h-5" style={{ color: "#FFD700" }} />; // Gold
+      // First place - Elegant filled diamond in gold
+      return (
+        <div
+          className="flex items-center justify-center"
+          style={{ width: "24px", height: "24px" }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L16 10L24 12L16 14L12 22L8 14L0 12L8 10L12 2Z"
+              fill={COLORS.gold}
+              opacity="0.95"
+            />
+          </svg>
+        </div>
+      );
     } else if (index === 1) {
-      return <Medal className="w-5 h-5" style={{ color: "#C0C0C0" }} />; // Silver
+      // Second place - Minimal double circle in silver
+      return (
+        <div
+          className="flex items-center justify-center"
+          style={{ width: "24px", height: "24px" }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              fill="none"
+              stroke="#B8B8B8"
+              strokeWidth="1.5"
+              opacity="0.85"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="5"
+              fill="none"
+              stroke="#B8B8B8"
+              strokeWidth="1.5"
+              opacity="0.85"
+            />
+          </svg>
+        </div>
+      );
     } else if (index === 2) {
-      return <Award className="w-5 h-5" style={{ color: "#CD7F32" }} />; // Bronze
+      // Third place - Elegant square with corner accent in bronze
+      return (
+        <div
+          className="flex items-center justify-center"
+          style={{ width: "24px", height: "24px" }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="none"
+              stroke="#CD7F32"
+              strokeWidth="1.5"
+              opacity="0.75"
+            />
+            <path
+              d="M4 4L12 12M20 4L12 12"
+              stroke="#CD7F32"
+              strokeWidth="1.5"
+              opacity="0.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      );
     }
     return (
       <span
