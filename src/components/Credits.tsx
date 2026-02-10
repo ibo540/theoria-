@@ -332,6 +332,7 @@ export default function Credits({ isOpen, onOpenChange }: CreditsProps) {
                   International Relations
                 </p>
               </div>
+              </div>
             </div>
           </div>
         </div>
