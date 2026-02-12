@@ -5,6 +5,8 @@ import { EventData, TimelinePoint, CountryIcon } from "@/data/events";
 import { Plus, Trash2, Edit2, Save, X, ChevronUp, ChevronDown } from "lucide-react";
 import { RichTextEditor } from "./RichTextEditor";
 import { getCountryCoordinates, COUNTRY_COORDINATES } from "@/lib/country-coordinates";
+import { TheoryType } from "@/stores/useTheoryStore";
+import { THEORY_LABELS } from "@/lib/theoryTokens";
 
 interface TimelineBuilderProps {
   event: Partial<EventData>;
@@ -37,6 +39,8 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
     eventType: "diplomatic",
   });
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedTheoryForAnalysis, setSelectedTheoryForAnalysis] = useState<TheoryType>("realism");
+  const [editingTheoryForAnalysis, setEditingTheoryForAnalysis] = useState<Record<number, TheoryType>>({});
 
   const timelinePoints = event.timelinePoints || [];
 
@@ -80,6 +84,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       focusLocation: newPoint.focusLocation,
       focusZoom: newPoint.focusZoom,
       mapData: newPoint.mapData,
+      theoryAnalysis: newPoint.theoryAnalysis || {},
     };
 
     // If a country is selected, create/update a country icon linked to this timeline point
@@ -161,6 +166,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       position: nextPosition,
       isTurningPoint: false,
       eventType: "diplomatic",
+      theoryAnalysis: {},
     });
     setSelectedCountry(""); // Reset country selection
   };
@@ -381,7 +387,47 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
             onChange={(content) => setNewPoint({ ...newPoint, description: content })}
             placeholder="Description of this timeline point..."
           />
+          <p className="text-xs text-gray-500 mt-1">
+            This description is shown for all theories. Enter theory-specific analysis below.
+          </p>
         </div>
+
+        {/* Theory Analysis Section - Single Box with Theory Selector */}
+        <div className="mb-4 border-t pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Theory Analysis
+            </label>
+            <select
+              value={selectedTheoryForAnalysis}
+              onChange={(e) => setSelectedTheoryForAnalysis(e.target.value as TheoryType)}
+              className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {(Object.keys(THEORY_LABELS) as TheoryType[]).map((theory) => (
+                <option key={theory} value={theory}>
+                  {THEORY_LABELS[theory]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="text-xs text-gray-500 mb-2">
+            Select a theory and enter how it interprets this timeline point.
+          </p>
+          <RichTextEditor
+            content={newPoint.theoryAnalysis?.[selectedTheoryForAnalysis] || ""}
+            onChange={(content) => {
+              setNewPoint({
+                ...newPoint,
+                theoryAnalysis: {
+                  ...(newPoint.theoryAnalysis || {}),
+                  [selectedTheoryForAnalysis]: content,
+                },
+              });
+            }}
+            placeholder={`Enter ${THEORY_LABELS[selectedTheoryForAnalysis]} analysis for this timeline point...`}
+          />
+        </div>
+
         <div className="flex items-center gap-4 mb-4">
           <label className="flex items-center gap-2">
             <input
@@ -461,7 +507,56 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
                           content={point.description || ""}
                           onChange={(content) => handleUpdatePoint(index, "description", content)}
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                          This description is shown for all theories. Enter theory-specific analysis below.
+                        </p>
                       </div>
+
+                      {/* Theory Analysis Section - Single Box with Theory Selector */}
+                      <div className="border-t pt-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-xs font-medium text-gray-700">
+                            Theory Analysis
+                          </label>
+                          <select
+                            value={editingTheoryForAnalysis[index] || selectedTheoryForAnalysis}
+                            onChange={(e) => {
+                              setEditingTheoryForAnalysis({
+                                ...editingTheoryForAnalysis,
+                                [index]: e.target.value as TheoryType,
+                              });
+                            }}
+                            className="text-xs px-2 py-1 border border-gray-300 rounded bg-white text-gray-700"
+                          >
+                            {(Object.keys(THEORY_LABELS) as TheoryType[]).map((theory) => (
+                              <option key={theory} value={theory}>
+                                {THEORY_LABELS[theory]}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-2">
+                          Select a theory and enter how it interprets this timeline point.
+                        </p>
+                        <RichTextEditor
+                          content={
+                            point.theoryAnalysis?.[editingTheoryForAnalysis[index] || selectedTheoryForAnalysis] || ""
+                          }
+                          onChange={(content) => {
+                            const updated = [...timelinePoints];
+                            if (!updated[index].theoryAnalysis) {
+                              updated[index].theoryAnalysis = {};
+                            }
+                            const currentTheory = editingTheoryForAnalysis[index] || selectedTheoryForAnalysis;
+                            updated[index].theoryAnalysis = {
+                              ...updated[index].theoryAnalysis,
+                              [currentTheory]: content,
+                            };
+                            setEvent({ ...event, timelinePoints: updated });
+                          }}
+                        />
+                      </div>
+
                       <div className="flex gap-2">
                         <button
                           onClick={handleSaveEdit}

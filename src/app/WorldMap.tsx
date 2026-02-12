@@ -967,10 +967,28 @@ export default function WorldMap() {
         const shadowColor = activeTheory 
           ? hexToRgba(theoryBorderColor, 0.3) 
           : "rgba(0, 0, 0, 0.5)";
+
+        // Find the linked timeline point to get description and theory analysis
+        const timelinePoints = activeEvent?.timelinePoints || [];
+        const cleanTimelinePointId = activeTimelinePointId?.replace(/-index-\d+$/, '') || activeTimelinePointId;
+        const linkedTimelinePoint = timelinePoints.find(
+          (p) => {
+            const cleanPointId = p.id?.replace(/-index-\d+$/, '') || p.id;
+            return cleanPointId === cleanTimelinePointId || p.id === cleanTimelinePointId;
+          }
+        );
+
+        // Get timeline point description (preferred) or fallback to icon description
+        const timelineDescription = linkedTimelinePoint?.description || selectedIcon.description || "No description provided.";
+        
+        // Get theory analysis for the active theory
+        const theoryAnalysis = activeTheory && linkedTimelinePoint?.theoryAnalysis 
+          ? linkedTimelinePoint.theoryAnalysis[activeTheory] 
+          : null;
         
         return (
           <div
-            className="px-6 py-5 rounded-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto"
+            className="rounded-lg shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto overflow-hidden"
             style={{
               position: 'fixed',
               zIndex: 9999,
@@ -982,66 +1000,121 @@ export default function WorldMap() {
                 bottom: '120px',
                 right: '24px',
               }),
-              maxWidth: '400px',
+              maxWidth: '480px',
+              maxHeight: '85vh',
               width: 'auto',
-              backgroundColor: "rgba(0, 0, 0, 0.96)",
+              backgroundColor: "rgba(0, 0, 0, 0.98)",
               border: `1.5px solid ${borderColor}`,
               boxShadow: `0 8px 32px ${shadowColor}, 0 0 20px ${shadowColor}`,
+              display: 'flex',
+              flexDirection: 'column',
             }}
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <div className="flex items-center justify-between mb-4">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: `${borderColor}40` }}>
               <h3
-                className="text-lg font-semibold"
+                className="text-lg font-semibold pr-4"
                 style={{ color: "#ffe4be" }}
               >
-                {selectedIcon.title || "Untitled"}
+                {selectedIcon.title || linkedTimelinePoint?.label || "Untitled"}
               </h3>
               <button
                 onClick={handleIconClose}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors flex-shrink-0"
                 style={{ color: "rgba(255, 228, 190, 0.7)" }}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="mb-3">
-              <p
-                className="text-xs uppercase tracking-wide mb-1"
-                style={{ color: "rgba(255, 228, 190, 0.5)" }}
-              >
-                Country
-              </p>
-              <p
-                className="text-sm font-medium"
-                style={{ color: "rgba(255, 228, 190, 0.9)" }}
-              >
-                {selectedIcon.country}
-              </p>
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(85vh - 180px)' }}>
+              <div className="px-6 py-5 space-y-5">
+                {/* Country */}
+                <div>
+                  <p
+                    className="text-xs uppercase tracking-wide mb-1.5 font-semibold"
+                    style={{ color: "rgba(255, 228, 190, 0.5)" }}
+                  >
+                    Country
+                  </p>
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "rgba(255, 228, 190, 0.9)" }}
+                  >
+                    {selectedIcon.country}
+                  </p>
+                </div>
+
+                {/* Timeline Point Description Section */}
+                <div className="border-t pt-4" style={{ borderColor: `${borderColor}30` }}>
+                  <p
+                    className="text-xs uppercase tracking-wide mb-2 font-semibold"
+                    style={{ color: "rgba(255, 228, 190, 0.5)" }}
+                  >
+                    Event Description
+                  </p>
+                  <div
+                    className="text-sm leading-relaxed prose prose-invert max-w-none"
+                    style={{ color: "rgba(255, 228, 190, 0.85)" }}
+                    dangerouslySetInnerHTML={{
+                      __html: timelineDescription.replace(/^<p>|<\/p>$/g, '').trim()
+                    }}
+                  />
+                </div>
+
+                {/* Theory Analysis Section */}
+                {activeTheory && (
+                  <div className="border-t pt-4" style={{ borderColor: `${borderColor}30` }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p
+                        className="text-xs uppercase tracking-wide font-semibold"
+                        style={{ color: theoryBorderColor }}
+                      >
+                        {activeTheory.charAt(0).toUpperCase() + activeTheory.slice(1)} Analysis
+                      </p>
+                      <div 
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: theoryBorderColor }}
+                      />
+                    </div>
+                    {theoryAnalysis ? (
+                      <div
+                        className="text-sm leading-relaxed prose prose-invert max-w-none"
+                        style={{ color: "rgba(255, 228, 190, 0.85)" }}
+                        dangerouslySetInnerHTML={{
+                          __html: theoryAnalysis.replace(/^<p>|<\/p>$/g, '').trim()
+                        }}
+                      />
+                    ) : (
+                      <p
+                        className="text-sm italic"
+                        style={{ color: "rgba(255, 228, 190, 0.5)" }}
+                      >
+                        No {activeTheory} analysis available for this event.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {!activeTheory && (
+                  <div className="border-t pt-4" style={{ borderColor: `${borderColor}30` }}>
+                    <p
+                      className="text-xs italic"
+                      style={{ color: "rgba(255, 228, 190, 0.5)" }}
+                    >
+                      Select a theory to see its interpretation of this event.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="mb-4">
-              <p
-                className="text-xs uppercase tracking-wide mb-1"
-                style={{ color: "rgba(255, 228, 190, 0.5)" }}
-              >
-                Description
-              </p>
-              <div
-                className="text-sm leading-relaxed prose prose-invert max-w-none"
-                style={{ color: "rgba(255, 228, 190, 0.8)" }}
-                dangerouslySetInnerHTML={{
-                  __html: selectedIcon.description
-                    ? selectedIcon.description.replace(/^<p>|<\/p>$/g, '').trim()
-                    : "No description provided."
-                }}
-              />
-            </div>
-
-            <div className="flex gap-3">
+            {/* Footer with buttons */}
+            <div className="flex gap-3 px-6 py-4 border-t" style={{ borderColor: `${borderColor}40` }}>
               <button
                 onClick={handleIconClose}
                 className="flex-1 px-4 py-2.5 rounded-md transition-all duration-200 font-medium text-sm"

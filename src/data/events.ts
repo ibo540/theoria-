@@ -303,6 +303,9 @@ export interface TimelinePoint {
   focusZoom?: number;
   /** Map visualization data for this timeline point */
   mapData?: TimelineMapData;
+  /** Theory-specific analysis/interpretation of this timeline point */
+  /** Key is theory type (e.g. "realism", "liberalism"), value is the analysis text */
+  theoryAnalysis?: Record<string, string>;
 }
 
 /**
