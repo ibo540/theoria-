@@ -97,6 +97,13 @@ export function VisualMapEditor({ event, setEvent }: VisualMapEditorProps) {
   const [pendingIconCountry, setPendingIconCountry] = useState<string | null>(null);
   const [pendingIconCoords, setPendingIconCoords] = useState<[number, number] | null>(null);
 
+  // Sync countryIcons state with event prop when it changes (e.g., when timeline point adds an icon)
+  useEffect(() => {
+    const newIcons = event.countryIcons || [];
+    setCountryIcons(newIcons);
+    console.log("🔄 VisualMapEditor: Synced countryIcons from event:", newIcons.length, "icons", newIcons.map(i => ({ country: i.country, iconType: i.iconType, coordinates: i.coordinates })));
+  }, [event.countryIcons]);
+
   // Common country list for autocomplete
   const commonCountries = [
     "United States of America", "Russia", "China", "United Kingdom",
