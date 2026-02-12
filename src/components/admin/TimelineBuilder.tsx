@@ -101,6 +101,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
 
         const iconType = getIconTypeFromEventType(point.eventType || "diplomatic");
         console.log(`🎯 Creating icon for event type "${point.eventType}" → icon type "${iconType}"`);
+        console.log(`📍 Country: "${countryName}", Coordinates: [${coords[0]}, ${coords[1]}]`);
         
         const newIcon: CountryIcon = {
           id: existingIconIndex >= 0
@@ -114,15 +115,24 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           timelinePointId: pointId, // REQUIRED: Link to this timeline point
         };
         
-        console.log("✅ Created icon:", { id: newIcon.id, country: newIcon.country, iconType: newIcon.iconType, timelinePointId: newIcon.timelinePointId });
+        console.log("✅ Created icon:", { 
+          id: newIcon.id, 
+          country: newIcon.country, 
+          iconType: newIcon.iconType, 
+          timelinePointId: newIcon.timelinePointId,
+          coordinates: newIcon.coordinates
+        });
 
         if (existingIconIndex >= 0) {
           updatedCountryIcons[existingIconIndex] = newIcon;
+          console.log(`🔄 Updated existing icon at index ${existingIconIndex}`);
         } else {
           updatedCountryIcons.push(newIcon);
+          console.log(`➕ Added new icon. Total icons: ${updatedCountryIcons.length}`);
         }
       } else {
-        console.warn(`Could not find coordinates for country: ${countryName}`);
+        console.error(`❌ Could not find coordinates for country: "${countryName}"`);
+        console.log("Available countries:", Object.keys(COUNTRY_COORDINATES).slice(0, 20));
       }
     }
 
@@ -132,6 +142,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       countryIcons: updatedCountryIcons,
     };
     
+    console.log(`💾 Saving event with ${updatedCountryIcons.length} icons:`, updatedCountryIcons.map(i => ({ country: i.country, iconType: i.iconType })));
     setEvent(updatedEvent);
     
     // Also update the event store immediately so icons appear on the map right away

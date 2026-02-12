@@ -2211,6 +2211,8 @@ function CountryIconsRenderer({
         if (!activeTimelinePointId) return false; // Hide timeline-linked icons if no point is active (viewer mode)
         return icon.timelinePointId === activeTimelinePointId;
       });
+      
+      console.log(`🗺️ VisualMapEditor: Rendering ${visibleIcons.length} of ${icons.length} icons:`, visibleIcons.map(i => ({ country: i.country, iconType: i.iconType, coords: i.coordinates })));
 
       // Remove old markers
       markersRef.current.forEach((marker) => marker.remove());
@@ -2218,6 +2220,13 @@ function CountryIconsRenderer({
 
       // Add new markers
       visibleIcons.forEach((icon) => {
+        console.log(`📍 Creating marker for icon:`, { 
+          id: icon.id, 
+          country: icon.country, 
+          iconType: icon.iconType,
+          coordinates: icon.coordinates 
+        });
+        
         const el = document.createElement("div");
         el.className = "country-icon-marker";
         el.style.width = "40px";
@@ -2226,6 +2235,9 @@ function CountryIconsRenderer({
         el.style.position = "relative";
 
         // Create marker HTML
+        const iconSVG = getIconSVG(icon.iconType);
+        console.log(`🎨 Icon SVG for ${icon.iconType}:`, iconSVG ? "Found" : "NOT FOUND");
+        
         el.innerHTML = `
           <div style="
             width: 40px;
@@ -2247,7 +2259,7 @@ function CountryIconsRenderer({
               align-items: center;
               justify-content: center;
             ">
-              ${getIconSVG(icon.iconType)}
+              ${iconSVG}
             </div>
           </div>
         `;
@@ -2273,11 +2285,15 @@ function CountryIconsRenderer({
         });
 
         // Convert [lat, lng] to [lng, lat] for MapLibre
+        const lngLat: [number, number] = [icon.coordinates[1], icon.coordinates[0]];
+        console.log(`🗺️ Adding marker at [lng, lat]: [${lngLat[0]}, ${lngLat[1]}] for ${icon.country}`);
+        
         const marker = new maplibregl.Marker({ element: el })
-          .setLngLat([icon.coordinates[1], icon.coordinates[0]])
+          .setLngLat(lngLat)
           .addTo(map);
 
         markersRef.current.set(icon.id, marker);
+        console.log(`✅ Marker added successfully for ${icon.country}`);
       });
     };
 
