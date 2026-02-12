@@ -234,11 +234,27 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
-    if (confirm(`Are you sure you want to delete "${eventTitle}"? This action cannot be undone.`)) {
+    const baseId = getBaseEventId(eventId);
+    const allVersions = events.filter(e => getBaseEventId(e.id) === baseId);
+    const hasMultipleVersions = allVersions.length > 1;
+    
+    const confirmMessage = hasMultipleVersions
+      ? `Are you sure you want to delete "${eventTitle}" and all ${allVersions.length} theory version(s)? This action cannot be undone.`
+      : `Are you sure you want to delete "${eventTitle}"? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
       try {
-        await deleteEventFromStorage(eventId);
-        // Remove from current state
-        setEvents(events.filter(e => e.id !== eventId));
+        // Delete all theory versions of this event
+        await deleteEventFromStorage(eventId, true);
+        
+        // Reload events to ensure UI is updated
+        await loadEvents();
+        
+        // Show success message
+        const message = hasMultipleVersions
+          ? `Successfully deleted "${eventTitle}" and all ${allVersions.length} theory version(s).`
+          : `Successfully deleted "${eventTitle}".`;
+        console.log(message);
       } catch (error) {
         console.error("Error deleting event:", error);
         alert("Failed to delete event. Please try again.");

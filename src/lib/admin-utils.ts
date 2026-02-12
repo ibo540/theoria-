@@ -394,31 +394,97 @@ export async function loadAllEventsFromStorage(): Promise<EventData[]> {
 /**
  * Delete event from Supabase database
  * Falls back to localStorage if Supabase is unavailable
+ * If deleteAllVersions is true, deletes all theory versions of the event (by base ID)
  */
-export async function deleteEventFromStorage(eventId: string): Promise<void> {
+export async function deleteEventFromStorage(eventId: string, deleteAllVersions: boolean = false): Promise<void> {
   try {
-    // Try Supabase first
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', eventId);
+    const baseId = getBaseEventId(eventId);
     
-    if (error) {
-      console.error("Error deleting from Supabase, falling back to localStorage:", error);
-      // Fallback to localStorage
-      const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
-      const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
-      localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+    // Try Supabase first
+    if (deleteAllVersions) {
+      // Delete all events with the same base ID
+      // First, get all events that match the base ID pattern
+      const { data: allEvents, error: fetchError } = await supabase
+        .from('events')
+        .select('id');
+      
+      if (!fetchError && allEvents) {
+        // Filter events that match the base ID
+        const eventsToDelete = allEvents.filter(e => {
+          const eventBaseId = getBaseEventId(e.id);
+          return eventBaseId === baseId;
+        });
+        
+        if (eventsToDelete.length > 0) {
+          const idsToDelete = eventsToDelete.map(e => e.id);
+          const { error } = await supabase
+            .from('events')
+            .delete()
+            .in('id', idsToDelete);
+          
+          if (error) {
+            console.error("Error deleting from Supabase, falling back to localStorage:", error);
+            // Fallback to localStorage
+            const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+            const filteredEvents = events.filter((e: EventData) => {
+              const eventBaseId = getBaseEventId(e.id);
+              return eventBaseId !== baseId;
+            });
+            localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+          } else {
+            console.log(`Deleted ${idsToDelete.length} event version(s) from Supabase`);
+          }
+        } else {
+          // No events found in Supabase, try localStorage
+          const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+          const filteredEvents = events.filter((e: EventData) => {
+            const eventBaseId = getBaseEventId(e.id);
+            return eventBaseId !== baseId;
+          });
+          localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+        }
+      } else {
+        // Supabase query failed, fallback to localStorage
+        const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+        const filteredEvents = events.filter((e: EventData) => {
+          const eventBaseId = getBaseEventId(e.id);
+          return eventBaseId !== baseId;
+        });
+        localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+      }
     } else {
-      console.log("Event deleted successfully from Supabase");
+      // Delete only the specific event
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+      
+      if (error) {
+        console.error("Error deleting from Supabase, falling back to localStorage:", error);
+        // Fallback to localStorage
+        const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
+        const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
+        localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+      } else {
+        console.log("Event deleted successfully from Supabase");
+      }
     }
   } catch (error) {
     console.error("Error deleting event:", error);
     // Fallback to localStorage
     try {
       const events = JSON.parse(localStorage.getItem("theoria-events") || "[]");
-      const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
-      localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+      if (deleteAllVersions) {
+        const baseId = getBaseEventId(eventId);
+        const filteredEvents = events.filter((e: EventData) => {
+          const eventBaseId = getBaseEventId(e.id);
+          return eventBaseId !== baseId;
+        });
+        localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+      } else {
+        const filteredEvents = events.filter((e: EventData) => e.id !== eventId);
+        localStorage.setItem("theoria-events", JSON.stringify(filteredEvents));
+      }
     } catch (localError) {
       console.error("Error deleting from localStorage fallback:", localError);
       throw error;

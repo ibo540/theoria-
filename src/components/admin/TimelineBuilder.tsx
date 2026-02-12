@@ -211,9 +211,39 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
   };
 
   const handleDeletePoint = (index: number) => {
-    if (confirm("Are you sure you want to delete this timeline point?")) {
+    const pointToDelete = timelinePoints[index];
+    if (!pointToDelete) return;
+    
+    if (confirm(`Are you sure you want to delete "${pointToDelete.label}"? This will also remove the associated map icon.`)) {
+      // Remove the timeline point
       const updated = timelinePoints.filter((_, i) => i !== index);
-      setEvent({ ...event, timelinePoints: updated });
+      
+      // Also remove the associated country icon if it exists
+      const updatedCountryIcons = (event.countryIcons || []).filter(
+        icon => icon.timelinePointId !== pointToDelete.id
+      );
+      
+      setEvent({ 
+        ...event, 
+        timelinePoints: updated,
+        countryIcons: updatedCountryIcons,
+      });
+      
+      // Also update the event store if this is the active event
+      if (typeof window !== 'undefined') {
+        import("@/stores/useEventStore").then(({ useEventStore }) => {
+          const store = useEventStore.getState();
+          if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
+            useEventStore.setState({ 
+              activeEvent: {
+                ...store.activeEvent,
+                timelinePoints: updated,
+                countryIcons: updatedCountryIcons,
+              } as any 
+            });
+          }
+        }).catch(console.error);
+      }
     }
   };
 
@@ -602,17 +632,21 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
                         <div className="flex gap-2 ml-4">
                           <button
                             onClick={() => handleEditPoint(index)}
-                            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-2 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition-all border border-indigo-200 hover:border-indigo-300 font-medium text-sm"
                             type="button"
+                            title="Edit timeline point"
                           >
                             <Edit2 className="w-4 h-4" />
+                            <span>Edit</span>
                           </button>
                           <button
                             onClick={() => handleDeletePoint(index)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all border border-red-200 hover:border-red-300 font-medium text-sm"
                             type="button"
+                            title="Delete timeline point"
                           >
                             <Trash2 className="w-4 h-4" />
+                            <span>Delete</span>
                           </button>
                         </div>
                       </div>
