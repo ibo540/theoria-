@@ -2196,9 +2196,12 @@ function CountryIconsRenderer({
       }
 
       // Filter icons based on timeline point
+      // In admin mode (activeTimelinePointId === null), show ALL icons
+      // In viewer mode, only show icons for the active timeline point
       const visibleIcons = icons.filter((icon) => {
         if (!icon.timelinePointId) return true; // Always show icons without timeline linkage
-        if (!activeTimelinePointId) return false; // Hide timeline-linked icons if no point is active
+        if (activeTimelinePointId === null) return true; // In admin mode, show all icons
+        if (!activeTimelinePointId) return false; // Hide timeline-linked icons if no point is active (viewer mode)
         return icon.timelinePointId === activeTimelinePointId;
       });
 
