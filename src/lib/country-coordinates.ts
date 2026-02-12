@@ -8,11 +8,14 @@ export const COUNTRY_COORDINATES: Record<string, [number, number]> = {
   "USA": [39.8283, -98.5795],
   "Russia": [61.5240, 105.3188],
   "Russian Federation": [61.5240, 105.3188],
+  "Russian Empire": [61.5240, 105.3188], // Historical
   "China": [35.8617, 104.1954],
   "United Kingdom": [55.3781, -3.4360],
   "UK": [55.3781, -3.4360],
+  "British Empire": [55.3781, -3.4360], // Historical
   "France": [46.2276, 2.2137],
   "Germany": [51.1657, 10.4515],
+  "German Empire": [51.1657, 10.4515], // Historical
   "Japan": [36.2048, 138.2529],
   "India": [20.5937, 78.9629],
   "Brazil": [-14.2350, -51.9253],
@@ -24,6 +27,7 @@ export const COUNTRY_COORDINATES: Record<string, [number, number]> = {
   "Mexico": [23.6345, -102.5528],
   "Indonesia": [-0.7893, 113.9213],
   "Turkey": [38.9637, 35.2433],
+  "Ottoman Empire": [38.9637, 35.2433], // Historical: centered in modern Turkey
   "Saudi Arabia": [23.8859, 45.0792],
   "Iran": [32.4279, 53.6880],
   "Poland": [51.9194, 19.1451],
@@ -51,6 +55,8 @@ export const COUNTRY_COORDINATES: Record<string, [number, number]> = {
   "Belgium": [50.5039, 4.4699],
   "Switzerland": [46.8182, 8.2275],
   "Austria": [47.5162, 14.5501],
+  "Austria-Hungary": [47.5162, 14.5501], // Historical: centered in Austria
+  "Austria Hungary": [47.5162, 14.5501], // Alternative spelling
   "Sweden": [60.1282, 18.6435],
   "Norway": [60.4720, 8.4689],
   "Denmark": [56.2639, 9.5018],
