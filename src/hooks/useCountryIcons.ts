@@ -235,14 +235,17 @@ export function useCountryIcons(
         el.style.cursor = "pointer";
         el.style.position = "absolute"; // Changed from relative to absolute
         el.style.pointerEvents = "auto"; // Ensure clicks work
+        el.style.zIndex = "1000"; // Ensure marker appears above map layers
         
         // Check if this icon is selected
         const isSelected = selectedIconId === icon.id;
         
         // Determine color based on theory - red for Realism, theory color for others
-        let iconColor = "rgba(255, 228, 190, 0.6)"; // Default beige
+        // Default: Always use gold/beige border for unselected icons (matching the drawing)
+        let iconColor = "rgba(255, 228, 190, 0.9)"; // More opaque gold/beige border
         let iconBgColor = "#ffe4be"; // Default beige background
         let iconShadowColor = "rgba(255, 228, 190, 0.6)"; // Default beige shadow
+        let borderWidth = "3px"; // Thicker border for better visibility
         
         if (isSelected && activeTheory) {
           if (activeTheory === "realism") {
@@ -250,6 +253,7 @@ export function useCountryIcons(
             iconColor = "rgba(249, 70, 76, 0.9)"; // #f9464c with opacity
             iconBgColor = "#f9464c";
             iconShadowColor = "rgba(249, 70, 76, 0.8)";
+            borderWidth = "3px";
           } else {
             // Theory color for others
             const theoryColor = getTheoryColor(activeTheory);
@@ -262,19 +266,21 @@ export function useCountryIcons(
               iconColor = `rgba(${r}, ${g}, ${b}, 0.9)`;
               iconBgColor = theoryColor;
               iconShadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+              borderWidth = "3px";
             }
           }
         }
         
         // Create outer container with fixed positioning
+        // Always use diamond shape (no border radius) to match the drawing
         const outerDiv = document.createElement("div");
         outerDiv.style.width = "40px";
         outerDiv.style.height = "40px";
         outerDiv.style.position = "relative";
-        outerDiv.style.transform = isSelected ? "rotate(45deg)" : "rotate(45deg)";
-        outerDiv.style.border = isSelected ? `2px solid rgba(0, 0, 0, 0.3)` : `2px solid ${iconColor}`;
+        outerDiv.style.transform = "rotate(45deg)"; // Always rotated to create diamond
+        outerDiv.style.border = `${borderWidth} solid ${iconColor}`; // Thicker, more visible border
         outerDiv.style.backgroundColor = iconBgColor;
-        outerDiv.style.borderRadius = isSelected ? "0" : "4px"; // Diamond shape when selected (no border radius)
+        outerDiv.style.borderRadius = "0"; // Always diamond shape (no rounded corners)
         outerDiv.style.boxShadow = isSelected 
           ? `0 0 20px ${iconShadowColor}, 0 0 30px ${iconShadowColor}80` 
           : `0 0 12px ${iconShadowColor}`;
@@ -282,6 +288,7 @@ export function useCountryIcons(
         outerDiv.style.alignItems = "center";
         outerDiv.style.justifyContent = "center";
         outerDiv.style.transition = "all 0.3s ease"; // Transition all properties for smooth color change
+        outerDiv.style.zIndex = "1000"; // Ensure icons appear above map layers
         
         // Add inner diamond layer when selected
         if (isSelected) {
@@ -296,6 +303,8 @@ export function useCountryIcons(
         innerDiv.style.display = "flex";
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
+        innerDiv.style.width = "100%";
+        innerDiv.style.height = "100%";
         
         // Get icon type - if missing, try to infer from timeline point's eventType
         let iconType = icon.iconType;
@@ -368,6 +377,7 @@ export function useCountryIcons(
         el.addEventListener("click", clickHandler);
         
         // Create marker with proper coordinates
+        console.log(`🗺️ Adding marker to map at [lng, lat]: [${lng}, ${lat}] for ${icon.country} (${icon.iconType})`);
         const marker = new maplibregl.Marker({ 
           element: el,
           anchor: 'center' // Center the marker on the coordinates
@@ -376,6 +386,7 @@ export function useCountryIcons(
           .addTo(map);
 
         markersRef.current.set(icon.id, marker);
+        console.log(`✅ Marker successfully added to map for ${icon.country}. Element visible:`, el.offsetParent !== null || el.offsetWidth > 0);
       });
     };
 
