@@ -132,16 +132,24 @@ export function useCountryIcons(
 
         // If icon is linked to a timeline point, check if we're at that point
         if (icon.timelinePointId && !icon.timelinePointId.startsWith('area-') && !icon.timelinePointId.startsWith('unified-area-')) {
-          // Regular timeline point icon - show only when that point is active
+          // Regular timeline point icon
           // Handle duplicate IDs by stripping index suffix if present
           const cleanActiveId = activeTimelinePointId?.replace(/-index-\d+$/, '') || activeTimelinePointId;
           const cleanIconTimelinePointId = icon.timelinePointId?.replace(/-index-\d+$/, '') || icon.timelinePointId;
           
-          // Match with both clean and original IDs
-          shouldAppear = cleanActiveId === cleanIconTimelinePointId || 
-                        activeTimelinePointId === icon.timelinePointId ||
-                        cleanActiveId === icon.timelinePointId ||
-                        activeTimelinePointId === cleanIconTimelinePointId;
+          // Show icon if:
+          // 1. The timeline point is active, OR
+          // 2. No timeline point is active (show all icons when timeline is not playing)
+          if (!activeTimelinePointId) {
+            // No active timeline point - show all icons
+            shouldAppear = true;
+          } else {
+            // Timeline point is active - show only matching icons
+            shouldAppear = cleanActiveId === cleanIconTimelinePointId || 
+                          activeTimelinePointId === icon.timelinePointId ||
+                          cleanActiveId === icon.timelinePointId ||
+                          activeTimelinePointId === cleanIconTimelinePointId;
+          }
           
           if (!shouldAppear) {
             console.log(`🔍 Icon ${icon.id} (${icon.country}) not visible:`, {
