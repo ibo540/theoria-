@@ -294,6 +294,7 @@ export function useCountryIcons(
         innerDiv.style.width = "100%";
         innerDiv.style.height = "100%";
         innerDiv.style.zIndex = "10"; // Ensure icon is above background
+        innerDiv.style.backgroundColor = "transparent"; // No background - transparent
         // Make SVG icons more visible
         innerDiv.style.filter = "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))";
 
@@ -345,20 +346,31 @@ export function useCountryIcons(
         // Ensure all SVG elements inside have proper styling - make them larger and more visible
         const svgElements = innerDiv.querySelectorAll('svg');
         svgElements.forEach(svg => {
-          // Check if this is a fill-based icon (finance, tank) - has fill paths but no stroke paths
+          // Check if this is a fill-based icon (finance, tank, flag) - has fill paths but no stroke paths
           const hasFillPaths = svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length > 0;
           const hasOnlyStrokePaths = svg.querySelectorAll('path[stroke="currentColor"], path[stroke]:not([stroke="none"]):not([stroke=""])').length > 0 && 
                                      svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length === 0;
           const isFillBased = hasFillPaths && !hasOnlyStrokePaths;
           
-          // Make fill-based icons larger for better visibility
-          if (isFillBased) {
+          // Check if this is the flag icon (diplomatic) - it needs special handling
+          // Flag icon has viewBox "0 0 1500 1499.999933" and uses currentColor fill
+          const isFlagIcon = svg.getAttribute('viewBox')?.includes('1500') || 
+                            (iconType === "flag" && svg.querySelectorAll('path[fill="currentColor"]').length > 0);
+          
+          // Make fill-based icons larger for better visibility, especially flag icon
+          if (isFlagIcon) {
+            svg.style.width = '40px'; // Extra large for flag icon to match original size
+            svg.style.height = '40px';
+          } else if (isFillBased) {
             svg.style.width = '30px'; // Even larger for fill-based icons
             svg.style.height = '30px';
           } else {
             svg.style.width = '26px'; // Standard size for stroke-based icons
             svg.style.height = '26px';
           }
+          
+          // Ensure SVG has transparent background - no black background
+          svg.style.backgroundColor = 'transparent';
           
           svg.style.display = 'block';
           svg.style.color = '#0f172a'; // Darker color for better contrast (#0f172a is slate-900)
@@ -369,15 +381,24 @@ export function useCountryIcons(
             const fill = element.getAttribute('fill');
             const stroke = element.getAttribute('stroke');
             
-            // For fill-based icons (finance, tank), use dark fill with light stroke outline for visibility
+            // For fill-based icons (finance, tank, flag), use dark fill with light stroke outline for visibility
             if (isFillBased) {
-              // Force dark fill for all paths in fill-based icons
-              element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
-              // Add a light stroke outline to make fill-based icons stand out more
-              element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
-              element.setAttribute('stroke-width', '1.2'); // Thicker stroke for better visibility
-              element.setAttribute('stroke-linecap', 'round');
-              element.setAttribute('stroke-linejoin', 'round');
+              // For flag icon, use original beige color from the SVG (#fee4be) but make it darker for visibility
+              if (isFlagIcon) {
+                // Use a darker beige/amber color that's visible on beige background but maintains the original look
+                // Original is #fee4be, we'll use a darker amber #d4a574 for better contrast
+                element.setAttribute('fill', '#d4a574'); // Darker amber/beige for visibility
+                // Remove any stroke to keep it clean like original
+                element.removeAttribute('stroke');
+              } else {
+                // Force dark fill for all paths in other fill-based icons
+                element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
+                // Add a light stroke outline to make fill-based icons stand out more
+                element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
+                element.setAttribute('stroke-width', '1.2'); // Thicker stroke for better visibility
+                element.setAttribute('stroke-linecap', 'round');
+                element.setAttribute('stroke-linejoin', 'round');
+              }
             } else {
               // For non-fill-based icons, just set fill if needed
               if (fill === 'currentColor' || (fill === null && !stroke)) {
