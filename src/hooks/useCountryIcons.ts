@@ -258,36 +258,11 @@ export function useCountryIcons(
         // Check if this icon is selected
         const isSelected = selectedIconId === icon.id;
 
-        // Determine color based on theory - red for Realism, theory color for others
-        // Default: Always use gold/beige border for unselected icons (matching the drawing)
+        // Always use gold/beige colors regardless of theory selection
         let iconColor = "rgba(255, 228, 190, 0.9)"; // More opaque gold/beige border
         let iconBgColor = "#ffe4be"; // Default beige background
         let iconShadowColor = "rgba(255, 228, 190, 0.6)"; // Default beige shadow
         let borderWidth = "3px"; // Thicker border for better visibility
-
-        if (isSelected && activeTheory) {
-          if (activeTheory === "realism") {
-            // Red for Realism
-            iconColor = "rgba(249, 70, 76, 0.9)"; // #f9464c with opacity
-            iconBgColor = "#f9464c";
-            iconShadowColor = "rgba(249, 70, 76, 0.8)";
-            borderWidth = "3px";
-          } else {
-            // Theory color for others
-            const theoryColor = getTheoryColor(activeTheory);
-            if (theoryColor) {
-              // Convert hex to rgba
-              const hex = theoryColor.replace('#', '');
-              const r = parseInt(hex.substring(0, 2), 16);
-              const g = parseInt(hex.substring(2, 4), 16);
-              const b = parseInt(hex.substring(4, 6), 16);
-              iconColor = `rgba(${r}, ${g}, ${b}, 0.9)`;
-              iconBgColor = theoryColor;
-              iconShadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
-              borderWidth = "3px";
-            }
-          }
-        }
 
         // Create outer container with fixed positioning
         // Always use diamond shape (no border radius) to match the drawing
@@ -307,22 +282,20 @@ export function useCountryIcons(
         outerDiv.style.justifyContent = "center";
         outerDiv.style.transition = "all 0.3s ease"; // Transition all properties for smooth color change
         outerDiv.style.zIndex = "1000"; // Ensure icons appear above map layers
-
-        // Add inner diamond layer when selected
-        if (isSelected) {
-          outerDiv.style.position = "relative";
-          outerDiv.style.overflow = "visible";
-        }
+        outerDiv.style.overflow = "visible"; // Ensure icon content is visible
 
         // Create inner div for icon - use iconType from icon data
         const innerDiv = document.createElement("div");
         innerDiv.style.transform = "rotate(-45deg)";
-        innerDiv.style.color = "#1e293b";
+        innerDiv.style.color = "#1e293b"; // Dark color for good contrast against beige background
         innerDiv.style.display = "flex";
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
         innerDiv.style.width = "100%";
         innerDiv.style.height = "100%";
+        innerDiv.style.zIndex = "10"; // Ensure icon is above background
+        // Make SVG icons more visible
+        innerDiv.style.filter = "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))";
 
         // Get icon type - if missing, try to infer from timeline point's eventType
         let iconType = icon.iconType;
@@ -365,8 +338,29 @@ export function useCountryIcons(
           innerDiv.innerHTML = getIconSVG("map-pin");
         } else {
           console.log(`✅ Icon SVG for ${iconType} loaded successfully`);
-          innerDiv.innerHTML = iconSVG;
+          // Wrap SVG in a container to ensure proper styling
+          innerDiv.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${iconSVG}</div>`;
         }
+        
+        // Ensure all SVG elements inside have proper styling
+        const svgElements = innerDiv.querySelectorAll('svg');
+        svgElements.forEach(svg => {
+          svg.style.width = '18px';
+          svg.style.height = '18px';
+          svg.style.display = 'block';
+          svg.style.color = '#1e293b'; // Explicit dark color
+          // Make sure fill and stroke use currentColor properly
+          const paths = svg.querySelectorAll('[fill="currentColor"], [stroke="currentColor"]');
+          paths.forEach(path => {
+            if (path.getAttribute('fill') === 'currentColor') {
+              path.setAttribute('fill', '#1e293b');
+            }
+            if (path.getAttribute('stroke') === 'currentColor') {
+              path.setAttribute('stroke', '#1e293b');
+              path.setAttribute('stroke-width', '2');
+            }
+          });
+        });
 
         outerDiv.appendChild(innerDiv);
         el.appendChild(outerDiv);
@@ -460,79 +454,32 @@ export function useCountryIcons(
         }
 
         const isSelected = iconId === selectedIconId;
-        let iconColor = "rgba(255, 228, 190, 0.6)";
+        // Always use gold/beige colors regardless of theory selection
+        let iconColor = "rgba(255, 228, 190, 0.9)";
         let iconBgColor = "#ffe4be";
         let iconShadowColor = "rgba(255, 228, 190, 0.6)";
 
-        if (isSelected && activeTheory) {
-          console.log(`✨ Icon ${iconId} is selected with theory ${activeTheory}`);
-          if (activeTheory === "realism") {
-            iconColor = "rgba(249, 70, 76, 0.9)";
-            iconBgColor = "#f9464c";
-            iconShadowColor = "rgba(249, 70, 76, 0.8)";
-          } else {
-            const theoryColor = getTheoryColor(activeTheory);
-            if (theoryColor) {
-              const hex = theoryColor.replace('#', '');
-              const r = parseInt(hex.substring(0, 2), 16);
-              const g = parseInt(hex.substring(2, 4), 16);
-              const b = parseInt(hex.substring(4, 6), 16);
-              iconColor = `rgba(${r}, ${g}, ${b}, 0.9)`;
-              iconBgColor = theoryColor;
-              iconShadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
-            }
-          }
-        }
-
-        // Update outer diamond
-        outerDiv.style.border = isSelected ? `2px solid rgba(0, 0, 0, 0.3)` : `2px solid ${iconColor}`;
+        // Update outer diamond - always gold/beige
+        outerDiv.style.border = `3px solid ${iconColor}`;
         outerDiv.style.backgroundColor = iconBgColor;
-        outerDiv.style.borderRadius = isSelected ? "0" : "4px"; // Diamond shape when selected
+        outerDiv.style.borderRadius = "0"; // Always diamond shape
         outerDiv.style.boxShadow = isSelected
           ? `0 0 20px ${iconShadowColor}, 0 0 30px ${iconShadowColor}80`
           : `0 0 12px ${iconShadowColor}`;
+        outerDiv.style.overflow = "visible"; // Ensure icon content is visible
 
-        // Update or create inner diamond
-        if (isSelected && activeTheory) {
-          let innerDiamond = outerDiv.querySelector('.inner-diamond') as HTMLElement;
-          if (!innerDiamond) {
-            innerDiamond = document.createElement("div");
-            innerDiamond.className = "inner-diamond";
-            innerDiamond.style.position = "absolute";
-            innerDiamond.style.width = "60%";
-            innerDiamond.style.height = "60%";
-            innerDiamond.style.transform = "rotate(45deg)";
-            innerDiamond.style.borderRadius = "0";
-            innerDiamond.style.zIndex = "1";
-            outerDiv.appendChild(innerDiamond);
-          }
-
-          innerDiamond.style.backgroundColor = activeTheory === "realism"
-            ? "rgba(200, 30, 40, 0.9)" // Darker red for inner diamond
-            : (() => {
-              const theoryColor = getTheoryColor(activeTheory);
-              if (theoryColor) {
-                const hex = theoryColor.replace('#', '');
-                const r = Math.max(0, parseInt(hex.substring(0, 2), 16) - 30);
-                const g = Math.max(0, parseInt(hex.substring(2, 4), 16) - 30);
-                const b = Math.max(0, parseInt(hex.substring(4, 6), 16) - 30);
-                return `rgb(${r}, ${g}, ${b})`;
-              }
-              return "rgba(200, 30, 40, 0.9)";
-            })();
-        } else {
-          // Remove inner diamond if not selected
-          const innerDiamond = outerDiv.querySelector('.inner-diamond');
-          if (innerDiamond) {
-            innerDiamond.remove();
-          }
+        // Remove inner diamond if it exists (no theory color effects)
+        const innerDiamond = outerDiv.querySelector('.inner-diamond');
+        if (innerDiamond) {
+          innerDiamond.remove();
         }
 
-        // Update inner icon color
-        const innerDiamondEl = outerDiv.querySelector('.inner-diamond') as HTMLElement;
+        // Update inner icon color - always dark for visibility against beige background
         const innerIcon = outerDiv.querySelector('div:not(.inner-diamond)') as HTMLElement;
-        if (innerIcon && innerIcon !== innerDiamondEl) {
-          innerIcon.style.color = isSelected ? "#ffffff" : "#1e293b";
+        if (innerIcon) {
+          innerIcon.style.color = "#1e293b"; // Dark color for good contrast
+          innerIcon.style.filter = "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))"; // Make icon more visible
+          innerIcon.style.zIndex = "10"; // Ensure icon is above background
         }
 
         console.log(`✅ Updated icon ${iconId} - isSelected: ${isSelected}, color: ${iconBgColor}`);
