@@ -350,10 +350,11 @@ export function useCountryIcons(
           svg.style.display = 'block';
           svg.style.color = '#0f172a'; // Darker color for better contrast (#0f172a is slate-900)
           
-          // Check if this is a fill-based icon (finance, tank) or stroke-based (flag, users, etc.)
-          const hasFillPaths = svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"])').length > 0;
-          const hasStrokePaths = svg.querySelectorAll('path[stroke="currentColor"], path[stroke]:not([stroke="none"])').length > 0;
-          const isFillBased = hasFillPaths && !hasStrokePaths;
+          // Check if this is a fill-based icon (finance, tank) - has fill paths but no stroke paths
+          const hasFillPaths = svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length > 0;
+          const hasOnlyStrokePaths = svg.querySelectorAll('path[stroke="currentColor"], path[stroke]:not([stroke="none"]):not([stroke=""])').length > 0 && 
+                                     svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length === 0;
+          const isFillBased = hasFillPaths && !hasOnlyStrokePaths;
           
           // Make sure fill and stroke use explicit dark colors for better visibility
           const allPaths = svg.querySelectorAll('path, circle, polygon, line, rect');
@@ -362,21 +363,27 @@ export function useCountryIcons(
             const stroke = element.getAttribute('stroke');
             
             // For fill-based icons (finance, tank), use dark fill with light stroke outline for visibility
-            if (isFillBased && (fill === 'currentColor' || fill === null || fill === 'none' || fill !== 'none')) {
-              element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
+            if (isFillBased) {
+              if (fill === 'currentColor' || fill === null || fill === '' || fill === 'none') {
+                element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
+              }
               // Add a light stroke outline to make fill-based icons stand out
-              if (!element.getAttribute('stroke') || element.getAttribute('stroke') === 'none') {
+              const currentStroke = element.getAttribute('stroke');
+              if (!currentStroke || currentStroke === 'none' || currentStroke === '') {
                 element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
-                element.setAttribute('stroke-width', '0.5');
+                element.setAttribute('stroke-width', '0.8');
                 element.setAttribute('stroke-linecap', 'round');
                 element.setAttribute('stroke-linejoin', 'round');
               }
-            } else if (!isFillBased && (fill === 'currentColor' || fill === null || fill === 'none')) {
-              element.setAttribute('fill', '#0f172a');
+            } else {
+              // For non-fill-based icons, just set fill if needed
+              if (fill === 'currentColor' || (fill === null && !stroke)) {
+                element.setAttribute('fill', '#0f172a');
+              }
             }
             
             // For stroke-based icons (flag, users, zap, globe), use thicker, darker strokes
-            if (stroke === 'currentColor' || (stroke && stroke !== 'none')) {
+            if (stroke === 'currentColor' || (stroke && stroke !== 'none' && stroke !== '')) {
               element.setAttribute('stroke', '#0f172a'); // Very dark stroke
               const currentStrokeWidth = element.getAttribute('stroke-width');
               const strokeWidth = currentStrokeWidth ? Math.max(3, parseFloat(currentStrokeWidth) * 1.5) : 3;
