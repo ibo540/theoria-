@@ -345,16 +345,23 @@ export function useCountryIcons(
         // Ensure all SVG elements inside have proper styling - make them larger and more visible
         const svgElements = innerDiv.querySelectorAll('svg');
         svgElements.forEach(svg => {
-          svg.style.width = '26px'; // Increased to 26px for better visibility
-          svg.style.height = '26px'; // Increased to 26px for better visibility
-          svg.style.display = 'block';
-          svg.style.color = '#0f172a'; // Darker color for better contrast (#0f172a is slate-900)
-          
           // Check if this is a fill-based icon (finance, tank) - has fill paths but no stroke paths
           const hasFillPaths = svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length > 0;
           const hasOnlyStrokePaths = svg.querySelectorAll('path[stroke="currentColor"], path[stroke]:not([stroke="none"]):not([stroke=""])').length > 0 && 
                                      svg.querySelectorAll('path[fill="currentColor"], path[fill]:not([fill="none"]):not([fill=""])').length === 0;
           const isFillBased = hasFillPaths && !hasOnlyStrokePaths;
+          
+          // Make fill-based icons larger for better visibility
+          if (isFillBased) {
+            svg.style.width = '30px'; // Even larger for fill-based icons
+            svg.style.height = '30px';
+          } else {
+            svg.style.width = '26px'; // Standard size for stroke-based icons
+            svg.style.height = '26px';
+          }
+          
+          svg.style.display = 'block';
+          svg.style.color = '#0f172a'; // Darker color for better contrast (#0f172a is slate-900)
           
           // Make sure fill and stroke use explicit dark colors for better visibility
           const allPaths = svg.querySelectorAll('path, circle, polygon, line, rect');
@@ -364,17 +371,13 @@ export function useCountryIcons(
             
             // For fill-based icons (finance, tank), use dark fill with light stroke outline for visibility
             if (isFillBased) {
-              if (fill === 'currentColor' || fill === null || fill === '' || fill === 'none') {
-                element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
-              }
-              // Add a light stroke outline to make fill-based icons stand out
-              const currentStroke = element.getAttribute('stroke');
-              if (!currentStroke || currentStroke === 'none' || currentStroke === '') {
-                element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
-                element.setAttribute('stroke-width', '0.8');
-                element.setAttribute('stroke-linecap', 'round');
-                element.setAttribute('stroke-linejoin', 'round');
-              }
+              // Force dark fill for all paths in fill-based icons
+              element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
+              // Add a light stroke outline to make fill-based icons stand out more
+              element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
+              element.setAttribute('stroke-width', '1.2'); // Thicker stroke for better visibility
+              element.setAttribute('stroke-linecap', 'round');
+              element.setAttribute('stroke-linejoin', 'round');
             } else {
               // For non-fill-based icons, just set fill if needed
               if (fill === 'currentColor' || (fill === null && !stroke)) {
