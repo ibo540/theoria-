@@ -16,9 +16,9 @@ interface TimelineBuilderProps {
 // Map event types to icon types
 function getIconTypeFromEventType(eventType: string): string {
   const mapping: Record<string, string> = {
-    military: "shield",        // Military events → Shield icon
+    military: "tank",        // Military events → Tank icon
     diplomatic: "flag",         // Diplomatic events → Flag icon
-    economic: "building",      // Economic events → Building icon
+    economic: "finance",      // Economic events → Building icon
     ideological: "users",      // Ideological events → Users icon (people/community)
     technological: "zap",      // Technological events → Zap icon (lightning/energy)
     mixed: "globe",            // Mixed events → Globe icon
@@ -49,7 +49,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       alert("Please fill in at least Label and Date");
       return;
     }
-    
+
     if (!selectedCountry || !selectedCountry.trim()) {
       alert("Please select a country. This field is required.");
       return;
@@ -69,7 +69,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       pointId = uniqueId;
       console.log(`⚠️ Timeline point ID "${newPoint.id}" already exists, using "${pointId}" instead`);
     }
-    
+
     const point: TimelinePoint = {
       id: pointId,
       label: newPoint.label,
@@ -102,7 +102,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
         const iconType = getIconTypeFromEventType(point.eventType || "diplomatic");
         console.log(`🎯 Creating icon for event type "${point.eventType}" → icon type "${iconType}"`);
         console.log(`📍 Country: "${countryName}", Coordinates: [${coords[0]}, ${coords[1]}]`);
-        
+
         const newIcon: CountryIcon = {
           id: existingIconIndex >= 0
             ? updatedCountryIcons[existingIconIndex].id
@@ -114,11 +114,11 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
           description: point.description || "", // Use timeline point description
           timelinePointId: pointId, // REQUIRED: Link to this timeline point
         };
-        
-        console.log("✅ Created icon:", { 
-          id: newIcon.id, 
-          country: newIcon.country, 
-          iconType: newIcon.iconType, 
+
+        console.log("✅ Created icon:", {
+          id: newIcon.id,
+          country: newIcon.country,
+          iconType: newIcon.iconType,
           timelinePointId: newIcon.timelinePointId,
           coordinates: newIcon.coordinates
         });
@@ -141,26 +141,62 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
       timelinePoints: [...timelinePoints, point],
       countryIcons: updatedCountryIcons,
     };
-    
+
     console.log(`💾 Saving event with ${updatedCountryIcons.length} icons:`, updatedCountryIcons.map(i => ({ country: i.country, iconType: i.iconType })));
     setEvent(updatedEvent);
-    
+
     // Also update the event store immediately so icons appear on the map right away
     // (without waiting for save)
+    console.log("🔄 Attempting to update event store...");
     if (typeof window !== 'undefined') {
       import("@/stores/useEventStore").then(({ useEventStore }) => {
         const store = useEventStore.getState();
-        // Only update if this is the currently active event
-        if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
+        console.log("🔍 Checking event store state:", {
+          hasActiveEvent: !!store.activeEvent,
+          activeEventId: store.activeEvent?.id,
+          editingEventId: event.id,
+          iconsCount: updatedCountryIcons.length,
+          iconDetails: updatedCountryIcons.map(i => ({ id: i.id, country: i.country, iconType: i.iconType, timelinePointId: i.timelinePointId }))
+        });
+
+        // Always update the activeEvent if it matches, or if there's no active event, set this one
+        const shouldUpdate = !store.activeEvent ||
+          store.activeEvent.id === event.id ||
+          store.activeEvent.id?.startsWith(event.id || '') ||
+          event.id?.startsWith(store.activeEvent.id || '');
+
+        if (shouldUpdate) {
           console.log("🔄 Updating active event in store with new icons...", {
-            storeEventId: store.activeEvent.id,
+            storeEventId: store.activeEvent?.id,
             editingEventId: event.id,
             iconsCount: updatedCountryIcons.length
           });
           // Update the store's activeEvent directly
-          useEventStore.setState({ activeEvent: updatedEvent as any });
+          useEventStore.setState({
+            activeEvent: updatedEvent as any,
+            activeEventId: event.id || store.activeEventId
+          });
+          const newState = useEventStore.getState();
+          console.log("✅ Event store updated. New activeEvent has", newState.activeEvent?.countryIcons?.length || 0, "icons");
+          console.log("✅ New activeEvent ID:", newState.activeEvent?.id);
+          console.log("✅ New activeEvent countryIcons:", newState.activeEvent?.countryIcons?.map(i => ({ country: i.country, iconType: i.iconType, timelinePointId: i.timelinePointId })));
+        } else {
+          console.warn("⚠️ Event IDs don't match - not updating store. Active:", store.activeEvent?.id, "Editing:", event.id);
+          console.warn("💡 Try selecting this event on the map view to see the icons");
+          // Force update anyway if no active event OR always update to ensure icons show
+          console.log("🔄 Forcing update to ensure icons are visible...");
+          useEventStore.setState({
+            activeEvent: updatedEvent as any,
+            activeEventId: event.id
+          });
+          const newState = useEventStore.getState();
+          console.log("✅ Event store force-updated. New activeEvent has", newState.activeEvent?.countryIcons?.length || 0, "icons");
         }
-      }).catch(console.error);
+      }).catch((error) => {
+        console.error("❌ Error updating event store:", error);
+      });
+    } else {
+      console.warn("⚠️ Window is undefined, cannot update event store");
     }
 
     // Reset form but keep position incrementing for convenience
@@ -224,33 +260,33 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
   const handleDeletePoint = (index: number) => {
     const pointToDelete = timelinePoints[index];
     if (!pointToDelete) return;
-    
+
     if (confirm(`Are you sure you want to delete "${pointToDelete.label}"? This will also remove the associated map icon.`)) {
       // Remove the timeline point
       const updated = timelinePoints.filter((_, i) => i !== index);
-      
+
       // Also remove the associated country icon if it exists
       const updatedCountryIcons = (event.countryIcons || []).filter(
         icon => icon.timelinePointId !== pointToDelete.id
       );
-      
-      setEvent({ 
-        ...event, 
+
+      setEvent({
+        ...event,
         timelinePoints: updated,
         countryIcons: updatedCountryIcons,
       });
-      
+
       // Also update the event store if this is the active event
       if (typeof window !== 'undefined') {
         import("@/stores/useEventStore").then(({ useEventStore }) => {
           const store = useEventStore.getState();
           if (store.activeEvent && (store.activeEvent.id === event.id || store.activeEvent.id?.startsWith(event.id || ''))) {
-            useEventStore.setState({ 
+            useEventStore.setState({
               activeEvent: {
                 ...store.activeEvent,
                 timelinePoints: updated,
                 countryIcons: updatedCountryIcons,
-              } as any 
+              } as any
             });
           }
         }).catch(console.error);
@@ -368,7 +404,7 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
                 const allCountries = Object.keys(COUNTRY_COORDINATES)
                   .filter(key => !shortAliases.has(key))
                   .sort();
-                
+
                 return allCountries.map(country => (
                   <option key={country} value={country} />
                 ));
@@ -541,6 +577,48 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           />
                         </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Position (0-100)</label>
+                        <div className="number-input-wrapper">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={point.position || 0}
+                            onChange={(e) => handleUpdatePoint(index, "position", parseFloat(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          />
+                          <div className="number-spinner">
+                            <button
+                              type="button"
+                              className="number-spinner-button"
+                              onClick={() => {
+                                const current = point.position || 0;
+                                if (current < 100) {
+                                  handleUpdatePoint(index, "position", Math.min(100, current + 1));
+                                }
+                              }}
+                              disabled={(point.position || 0) >= 100}
+                            >
+                              <ChevronUp />
+                            </button>
+                            <button
+                              type="button"
+                              className="number-spinner-button"
+                              onClick={() => {
+                                const current = point.position || 0;
+                                if (current > 0) {
+                                  handleUpdatePoint(index, "position", Math.max(0, current - 1));
+                                }
+                              }}
+                              disabled={(point.position || 0) <= 0}
+                            >
+                              <ChevronDown />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Controls order on timeline</p>
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
