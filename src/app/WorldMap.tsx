@@ -1059,7 +1059,7 @@ export default function WorldMap() {
                   </p>
                   <div
                     className="text-sm leading-relaxed prose prose-invert max-w-none"
-                    style={{ color: "white" }}
+                    style={{ color: "rgba(255, 228, 190, 0.85)" }}
                     dangerouslySetInnerHTML={{
                       __html: timelineDescription.replace(/^<p>|<\/p>$/g, '').trim()
                     }}
@@ -1084,7 +1084,7 @@ export default function WorldMap() {
                     {theoryAnalysis ? (
                       <div
                         className="text-sm leading-relaxed prose prose-invert max-w-none"
-                        style={{ color: "white" }}
+                        style={{ color: "rgba(255, 228, 190, 0.85)" }}
                         dangerouslySetInnerHTML={{
                           __html: theoryAnalysis.replace(/^<p>|<\/p>$/g, '').trim()
                         }}

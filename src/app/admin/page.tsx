@@ -37,6 +37,8 @@ export default function AdminDashboard() {
   const [showAddTheoryModal, setShowAddTheoryModal] = useState(false);
   const [selectedBaseEvent, setSelectedBaseEvent] = useState<EventData | null>(null);
   const [existingTheoriesForSelected, setExistingTheoriesForSelected] = useState<string[]>([]);
+  const [showEditTheoryModal, setShowEditTheoryModal] = useState(false);
+  const [selectedEventForEdit, setSelectedEventForEdit] = useState<{ baseId: string; theories: string[]; allEvents: EventData[]; title: string } | null>(null);
 
   // Check authentication on mount
   useEffect(() => {
@@ -299,6 +301,27 @@ export default function AdminDashboard() {
       console.error("Error creating new theory:", error);
       alert("Failed to create new theory. Please try again.");
     }
+  };
+
+  const handleEditEvent = (baseId: string, theories: string[], allEvents: EventData[], title: string) => {
+    setSelectedEventForEdit({ baseId, theories, allEvents, title });
+    setShowEditTheoryModal(true);
+  };
+
+  const handleSelectTheoryToEdit = (theoryId: string) => {
+    if (!selectedEventForEdit) return;
+    
+    // Find the event with this theory
+    const eventToEdit = selectedEventForEdit.allEvents.find(e => e.theory === theoryId);
+    if (eventToEdit) {
+      router.push(`/admin/events/${eventToEdit.id}`);
+    } else {
+      // If no event found, create the ID manually
+      const eventId = createEventIdWithTheory(selectedEventForEdit.baseId, theoryId);
+      router.push(`/admin/events/${eventId}`);
+    }
+    setShowEditTheoryModal(false);
+    setSelectedEventForEdit(null);
   };
 
 
@@ -571,13 +594,13 @@ export default function AdminDashboard() {
 
                     <div className="px-6 py-4 bg-slate-800/50 border-t border-slate-600/50 flex flex-col gap-2 rounded-b-xl">
                       <div className="flex items-center justify-between gap-3">
-                        <Link
-                          href={`/admin/events/${representative.id}`}
+                        <button
+                          onClick={() => handleEditEvent(baseId, theories, allEvents, representative.title)}
                           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/80 to-blue-600/80 border border-blue-500/50 text-white rounded-lg hover:from-blue-500 hover:to-blue-600 hover:border-blue-400 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                         >
                           <Edit className="w-3.5 h-3.5" />
                           Edit
-                        </Link>
+                        </button>
 
                         <div className="flex gap-2">
                           <Link
@@ -676,6 +699,75 @@ export default function AdminDashboard() {
                   );
                 })}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Theory Selection Modal */}
+      {showEditTheoryModal && selectedEventForEdit && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl border border-slate-600/50 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slideUp">
+            <div className="p-6 border-b border-slate-600/50 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">Select Theory to Edit</h2>
+              <button
+                onClick={() => {
+                  setShowEditTheoryModal(false);
+                  setSelectedEventForEdit(null);
+                }}
+                className="p-2 text-gray-400 hover:text-white hover:bg-slate-600 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-300 mb-6">
+                Select which theory you want to edit for <span className="font-semibold text-white">{selectedEventForEdit.title}</span>.
+              </p>
+
+              {selectedEventForEdit.theories.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-400 mb-4">No theories have been added yet for this event.</p>
+                  <p className="text-sm text-gray-500">Use "Add Theory" to create a new theory version.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {selectedEventForEdit.theories.map((theoryId) => {
+                    const theory = THEORIES.find(t => t.id === theoryId);
+                    if (!theory) return null;
+
+                    return (
+                      <button
+                        key={theoryId}
+                        onClick={() => handleSelectTheoryToEdit(theoryId)}
+                        className="p-4 rounded-lg border-2 transition-all text-left border-slate-600/50 bg-slate-800/30 hover:border-blue-500/50 hover:bg-blue-500/10 hover:scale-105"
+                        style={{
+                          borderColor: THEORY_COLORS[theoryId as keyof typeof THEORY_COLORS] + '40',
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-12 h-12 rounded-lg flex items-center justify-center"
+                            style={{
+                              backgroundColor: THEORY_COLORS_DARK[theoryId as keyof typeof THEORY_COLORS_DARK] + '40',
+                              border: `2px solid ${THEORY_COLORS[theoryId as keyof typeof THEORY_COLORS]}`,
+                            }}
+                          >
+                            <span className="text-lg font-bold" style={{ color: THEORY_COLORS[theoryId as keyof typeof THEORY_COLORS] }}>
+                              {theory.name.charAt(0)}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-white mb-1">{theory.name}</h3>
+                            <p className="text-xs text-gray-400">Click to edit</p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
