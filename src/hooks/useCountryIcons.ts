@@ -383,11 +383,10 @@ export function useCountryIcons(
             
             // For fill-based icons (finance, tank, flag), use dark fill with light stroke outline for visibility
             if (isFillBased) {
-              // For flag icon, use original beige color from the SVG (#fee4be) but make it darker for visibility
+              // For flag icon, use original beige color exactly as provided (#fee4be)
               if (isFlagIcon) {
-                // Use a darker beige/amber color that's visible on beige background but maintains the original look
-                // Original is #fee4be, we'll use a darker amber #d4a574 for better contrast
-                element.setAttribute('fill', '#d4a574'); // Darker amber/beige for visibility
+                // Use the exact original beige color from the SVG
+                element.setAttribute('fill', '#fee4be'); // Original beige color exactly as provided
                 // Remove any stroke to keep it clean like original
                 element.removeAttribute('stroke');
               } else {
