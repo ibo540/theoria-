@@ -579,6 +579,22 @@ export function TimelineBuilder({ event, setEvent }: TimelineBuilderProps) {
                         </div>
                       </div>
                       <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Event Type</label>
+                        <select
+                          value={point.eventType || "diplomatic"}
+                          onChange={(e) => handleUpdatePoint(index, "eventType", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        >
+                          <option value="military">Military</option>
+                          <option value="diplomatic">Diplomatic</option>
+                          <option value="economic">Economic</option>
+                          <option value="ideological">Ideological</option>
+                          <option value="technological">Technological</option>
+                          <option value="mixed">Mixed</option>
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Changing this will update the map icon symbol</p>
+                      </div>
+                      <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Position (0-100)</label>
                         <div className="number-input-wrapper">
                           <input

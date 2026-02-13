@@ -297,38 +297,38 @@ export function useCountryIcons(
         // Make SVG icons more visible
         innerDiv.style.filter = "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))";
 
-        // Get icon type - if missing, try to infer from timeline point's eventType
-        let iconType = icon.iconType;
+        // Always determine icon type from timeline point's eventType (most reliable source)
+        // This ensures icons update correctly when event type changes
+        let iconType = "map-pin"; // Default fallback
+        
+        if (icon.timelinePointId && activeEvent?.timelinePoints) {
+          // Find the timeline point linked to this icon
+          const linkedPoint = activeEvent.timelinePoints.find(
+            (p: any) => p.id === icon.timelinePointId ||
+              p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
+          );
 
-        // If iconType is missing or is "map-pin" (default), try to infer from timeline point
-        if (!iconType || iconType === "" || iconType === "map-pin") {
-          if (icon.timelinePointId && activeEvent?.timelinePoints) {
-            // Find the timeline point linked to this icon
-            const linkedPoint = activeEvent.timelinePoints.find(
-              (p: any) => p.id === icon.timelinePointId ||
-                p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
-            );
-
-            if (linkedPoint?.eventType) {
-              // Map event type to icon type (must match TimelineBuilder mapping)
-              const eventTypeToIconType: Record<string, string> = {
-                military: "tank",
-                diplomatic: "flag",
-                economic: "finance",  // Match TimelineBuilder - economic uses finance icon
-                ideological: "users",
-                technological: "zap",
-                mixed: "globe",
-              };
-              iconType = eventTypeToIconType[linkedPoint.eventType] || "map-pin";
-              console.log(`🔄 Inferred iconType "${iconType}" from timeline point eventType "${linkedPoint.eventType}" for icon ${icon.id}`);
-            } else {
-              iconType = "map-pin";
-              console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType and linked timeline point has no eventType, defaulting to map-pin`);
-            }
+          if (linkedPoint?.eventType) {
+            // Map event type to icon type (must match TimelineBuilder mapping)
+            const eventTypeToIconType: Record<string, string> = {
+              military: "tank",
+              diplomatic: "flag",
+              economic: "finance",  // Match TimelineBuilder - economic uses finance icon
+              ideological: "users",
+              technological: "zap",
+              mixed: "globe",
+            };
+            iconType = eventTypeToIconType[linkedPoint.eventType] || icon.iconType || "map-pin";
+            console.log(`🎯 Using iconType "${iconType}" from timeline point eventType "${linkedPoint.eventType}" for icon ${icon.id}`);
           } else {
-            iconType = "map-pin";
-            console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no iconType and no linked timeline point, defaulting to map-pin`);
+            // Fallback to icon's stored iconType if timeline point has no eventType
+            iconType = icon.iconType || "map-pin";
+            console.warn(`⚠️ Icon ${icon.id} (${icon.country}) - timeline point has no eventType, using stored iconType: ${iconType}`);
           }
+        } else {
+          // Fallback to icon's stored iconType if no timeline point link
+          iconType = icon.iconType || "map-pin";
+          console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no timeline point link, using stored iconType: ${iconType}`);
         }
 
         console.log(`🎨 Rendering icon ${icon.id} (${icon.country}) with type: ${iconType}`);
