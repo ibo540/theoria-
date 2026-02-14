@@ -13,10 +13,10 @@ interface TimelineBuilderProps {
   setEvent: (event: Partial<EventData>) => void;
 }
 
-// Map event types to icon types
+// Map event types to icon types (map uses "military" for crossed-swords symbol on map)
 function getIconTypeFromEventType(eventType: string): string {
   const mapping: Record<string, string> = {
-    military: "tank",        // Military events → Tank icon
+    military: "military",     // Military events → crossed swords on map
     diplomatic: "flag",         // Diplomatic events → Flag icon
     economic: "finance",      // Economic events → Building icon
     ideological: "users",      // Ideological events → Users icon (people/community)
