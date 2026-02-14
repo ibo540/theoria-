@@ -36,19 +36,14 @@ export const useAuthStore = create<AuthState>()(
         let userRole: UserRole = 'contributor';
         let isValid = false;
 
-        // Check if it's admin login
-        if (password === ADMIN_PASSWORD) {
+        // Admin: only when admin mode is selected AND admin password is correct
+        if (role === 'admin' && password === ADMIN_PASSWORD) {
           userRole = 'admin';
           isValid = true;
-        } 
-        // Check if it's contributor login
-        else if (password === CONTRIBUTOR_PASSWORD || role === 'contributor') {
-          userRole = 'contributor';
-          isValid = true;
         }
-        // Allow explicit role override
-        else if (role) {
-          userRole = role;
+        // Contributor: only when contributor mode is selected AND contributor password is correct
+        else if (role === 'contributor' && password === CONTRIBUTOR_PASSWORD) {
+          userRole = 'contributor';
           isValid = true;
         }
 
