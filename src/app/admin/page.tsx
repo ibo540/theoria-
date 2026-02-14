@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Edit, Eye, MapPin, RefreshCw, Calendar, FileText, Clock, Sparkles, Trash2, X, LogOut, User } from "lucide-react";
+import { Plus, Edit, Eye, MapPin, RefreshCw, Calendar, FileText, Clock, Sparkles, Trash2, X, LogOut, User, CheckCircle } from "lucide-react";
 import { EventData } from "@/data/events";
 import {
   loadAllEventsFromStorage,
@@ -276,10 +276,12 @@ export default function AdminDashboard() {
     }
     setSelectedBaseEvent(baseEvent);
     setShowAddTheoryModal(true);
-    // Load existing theories for this event
+    // Use current events in state (same source as the dashboard) so API/localStorage are both respected
     const baseId = getBaseEventId(baseEvent.id);
-    const theories = await getTheoriesForBaseEvent(baseId);
-    setExistingTheoriesForSelected(theories);
+    const existingTheoryIds = events
+      .filter((e) => getBaseEventId(e.id) === baseId && e.theory)
+      .map((e) => e.theory!);
+    setExistingTheoriesForSelected(Array.from(new Set(existingTheoryIds)));
   };
 
   const handleSelectTheory = async (theoryId: string) => {
@@ -696,7 +698,7 @@ export default function AdminDashboard() {
                       onClick={() => !isExisting && handleSelectTheory(theory.id)}
                       disabled={isExisting}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${isExisting
-                        ? 'border-slate-600/30 bg-slate-800/50 opacity-50 cursor-not-allowed'
+                        ? 'border-slate-600/30 bg-slate-800/50 opacity-70 cursor-not-allowed'
                         : 'border-slate-600/50 bg-slate-800/30 hover:border-blue-500/50 hover:bg-blue-500/10 hover:scale-105'
                         }`}
                       style={!isExisting ? {
@@ -705,20 +707,27 @@ export default function AdminDashboard() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center"
+                          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
                           style={{
                             backgroundColor: THEORY_COLORS_DARK[theory.id as keyof typeof THEORY_COLORS_DARK] + '40',
                             border: `2px solid ${THEORY_COLORS[theory.id as keyof typeof THEORY_COLORS]}`,
                           }}
                         >
-                          <span className="text-lg font-bold" style={{ color: THEORY_COLORS[theory.id as keyof typeof THEORY_COLORS] }}>
-                            {theory.name.charAt(0)}
-                          </span>
+                          {isExisting ? (
+                            <CheckCircle className="w-6 h-6 text-emerald-400" style={{ color: THEORY_COLORS[theory.id as keyof typeof THEORY_COLORS] }} />
+                          ) : (
+                            <span className="text-lg font-bold" style={{ color: THEORY_COLORS[theory.id as keyof typeof THEORY_COLORS] }}>
+                              {theory.name.charAt(0)}
+                            </span>
+                          )}
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-white mb-1">{theory.name}</h3>
                           {isExisting && (
-                            <p className="text-xs text-gray-400">Already added</p>
+                            <p className="text-xs text-emerald-400/90 flex items-center gap-1">
+                              <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                              Already added — cannot select again
+                            </p>
                           )}
                         </div>
                       </div>
