@@ -381,15 +381,14 @@ export function useCountryIcons(
             const fill = element.getAttribute('fill');
             const stroke = element.getAttribute('stroke');
             
-            // For fill-based icons (finance, tank, flag), use dark fill with light stroke outline for visibility
+            // For flag icon, don't modify anything - use exactly as provided
+            if (isFlagIcon) {
+              // Skip all modifications - the SVG is already correct with fill="#fee4be"
+              return; // Don't modify flag icon paths at all
+            }
+            
+            // For fill-based icons (finance, tank), use dark fill with light stroke outline for visibility
             if (isFillBased) {
-              // For flag icon, use original beige color exactly as provided (#fee4be)
-              if (isFlagIcon) {
-                // Use the exact original beige color from the SVG
-                element.setAttribute('fill', '#fee4be'); // Original beige color exactly as provided
-                // Remove any stroke to keep it clean like original
-                element.removeAttribute('stroke');
-              } else {
                 // Force dark fill for all paths in other fill-based icons
                 element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
                 // Add a light stroke outline to make fill-based icons stand out more
