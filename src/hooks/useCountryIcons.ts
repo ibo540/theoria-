@@ -378,25 +378,24 @@ export function useCountryIcons(
           // Make sure fill and stroke use explicit dark colors for better visibility
           const allPaths = svg.querySelectorAll('path, circle, polygon, line, rect');
           allPaths.forEach(element => {
-            const fill = element.getAttribute('fill');
-            const stroke = element.getAttribute('stroke');
-            
             // For flag icon, don't modify anything - use exactly as provided
             if (isFlagIcon) {
               // Skip all modifications - the SVG is already correct with fill="#fee4be"
               return; // Don't modify flag icon paths at all
             }
             
+            const fill = element.getAttribute('fill');
+            const stroke = element.getAttribute('stroke');
+            
             // For fill-based icons (finance, tank), use dark fill with light stroke outline for visibility
             if (isFillBased) {
-                // Force dark fill for all paths in other fill-based icons
-                element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
-                // Add a light stroke outline to make fill-based icons stand out more
-                element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
-                element.setAttribute('stroke-width', '1.2'); // Thicker stroke for better visibility
-                element.setAttribute('stroke-linecap', 'round');
-                element.setAttribute('stroke-linejoin', 'round');
-              }
+              // Force dark fill for all paths in other fill-based icons
+              element.setAttribute('fill', '#0f172a'); // Very dark for good contrast
+              // Add a light stroke outline to make fill-based icons stand out more
+              element.setAttribute('stroke', '#ffe4be'); // Light beige stroke for contrast
+              element.setAttribute('stroke-width', '1.2'); // Thicker stroke for better visibility
+              element.setAttribute('stroke-linecap', 'round');
+              element.setAttribute('stroke-linejoin', 'round');
             } else {
               // For non-fill-based icons, just set fill if needed
               if (fill === 'currentColor' || (fill === null && !stroke)) {
