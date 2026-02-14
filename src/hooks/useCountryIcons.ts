@@ -258,67 +258,87 @@ export function useCountryIcons(
         // Check if this icon is selected
         const isSelected = selectedIconId === icon.id;
 
-        // Always use gold/beige colors regardless of theory selection
-        let iconColor = "rgba(255, 228, 190, 0.9)"; // More opaque gold/beige border
-        let iconBgColor = "#ffe4be"; // Default beige background
-        let iconShadowColor = "rgba(255, 228, 190, 0.6)"; // Default beige shadow
-        let borderWidth = "3px"; // Thicker border for better visibility
-
-        // Create outer container with fixed positioning
-        // Always use diamond shape (no border radius) to match the drawing
+        // Use exact timeline icon structure - outer diamond with border only
         const outerDiv = document.createElement("div");
         outerDiv.style.width = "40px";
         outerDiv.style.height = "40px";
         outerDiv.style.position = "relative";
-        outerDiv.style.transform = "rotate(45deg)"; // Always rotated to create diamond
-        outerDiv.style.border = `${borderWidth} solid ${iconColor}`; // Thicker, more visible border
-        outerDiv.style.backgroundColor = iconBgColor;
-        outerDiv.style.borderRadius = "0"; // Always diamond shape (no rounded corners)
-        outerDiv.style.boxShadow = isSelected
-          ? `0 0 20px ${iconShadowColor}, 0 0 30px ${iconShadowColor}80`
-          : `0 0 12px ${iconShadowColor}`;
         outerDiv.style.display = "flex";
         outerDiv.style.alignItems = "center";
         outerDiv.style.justifyContent = "center";
-        outerDiv.style.transition = "all 0.3s ease"; // Transition all properties for smooth color change
-        outerDiv.style.zIndex = "1000"; // Ensure icons appear above map layers
-        outerDiv.style.overflow = "visible"; // Ensure icon content is visible
+        outerDiv.style.zIndex = "1000";
+        outerDiv.style.cursor = "pointer";
+        
+        // Outer diamond - exactly like timeline (border only, rotated 45deg)
+        const outerDiamond = document.createElement("div");
+        outerDiamond.style.position = "absolute";
+        outerDiamond.style.width = "24px";
+        outerDiamond.style.height = "24px";
+        outerDiamond.style.border = "2px solid rgba(255, 228, 190, 0.9)";
+        outerDiamond.style.backgroundColor = "transparent";
+        outerDiamond.style.borderRadius = "0";
+        outerDiamond.style.top = "50%";
+        outerDiamond.style.left = "50%";
+        outerDiamond.style.transform = "translate(-50%, -50%) rotate(45deg)";
+        outerDiamond.style.boxShadow = isSelected
+          ? "0 0 18px rgba(255, 228, 190, 0.6), 0 0 30px rgba(255, 228, 190, 0.4)"
+          : "0 0 12px rgba(255, 228, 190, 0.6)";
+        outerDiamond.style.pointerEvents = "none";
+        outerDiv.appendChild(outerDiamond);
 
-        // Create inner div for icon - use iconType from icon data
+        // Inner diamond - exactly like timeline (with background, rotated 45deg)
+        const innerDiamond = document.createElement("div");
+        innerDiamond.style.width = "14px";
+        innerDiamond.style.height = "14px";
+        innerDiamond.style.backgroundColor = "#ffe4be";
+        innerDiamond.style.border = "none";
+        innerDiamond.style.borderRadius = "0";
+        innerDiamond.style.transform = "rotate(45deg)";
+        innerDiamond.style.boxShadow = isSelected
+          ? "0 0 12px rgba(255, 228, 190, 0.8), 0 0 20px rgba(255, 228, 190, 0.6)"
+          : "none";
+        innerDiamond.style.position = "relative";
+        innerDiamond.style.display = "flex";
+        innerDiamond.style.alignItems = "center";
+        innerDiamond.style.justifyContent = "center";
+        innerDiamond.style.zIndex = "10";
+        innerDiamond.style.overflow = "visible";
+        
+        // Inner div for symbol - counter-rotate to show symbol upright
         const innerDiv = document.createElement("div");
         innerDiv.style.transform = "rotate(-45deg)";
-        innerDiv.style.color = "#1e293b"; // Dark color for good contrast against beige background
         innerDiv.style.display = "flex";
         innerDiv.style.alignItems = "center";
         innerDiv.style.justifyContent = "center";
         innerDiv.style.width = "100%";
         innerDiv.style.height = "100%";
-        innerDiv.style.zIndex = "10"; // Ensure icon is above background
-        innerDiv.style.backgroundColor = "transparent"; // No background - transparent
-        // Make SVG icons more visible
-        innerDiv.style.filter = "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))";
+        innerDiv.style.position = "absolute";
+        innerDiv.style.top = "0";
+        innerDiv.style.left = "0";
+        innerDiamond.appendChild(innerDiv);
+        outerDiv.appendChild(innerDiamond);
 
         // Always determine icon type from timeline point's eventType (most reliable source)
         // This ensures icons update correctly when event type changes
         let iconType = "map-pin"; // Default fallback
-        
-        if (icon.timelinePointId && activeEvent?.timelinePoints) {
-          // Find the timeline point linked to this icon
-          const linkedPoint = activeEvent.timelinePoints.find(
-            (p: any) => p.id === icon.timelinePointId ||
-              p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
-          );
 
-          if (linkedPoint?.eventType) {
+          if (icon.timelinePointId && activeEvent?.timelinePoints) {
+            // Find the timeline point linked to this icon
+            const linkedPoint = activeEvent.timelinePoints.find(
+              (p: any) => p.id === icon.timelinePointId ||
+                p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
+            );
+
+            if (linkedPoint?.eventType) {
             // Map event type to icon type (must match TimelineBuilder mapping)
-            const eventTypeToIconType: Record<string, string> = {
-              military: "tank",
-              diplomatic: "flag",
+              const eventTypeToIconType: Record<string, string> = {
+                military: "tank",
+                diplomatic: "flag",
               economic: "finance",  // Match TimelineBuilder - economic uses finance icon
-              ideological: "users",
-              technological: "zap",
-              mixed: "globe",
-            };
+                ideological: "users",
+                technological: "zap",
+                mixed: "globe",
+              };
             iconType = eventTypeToIconType[linkedPoint.eventType] || icon.iconType || "map-pin";
             console.log(`🎯 Using iconType "${iconType}" from timeline point eventType "${linkedPoint.eventType}" for icon ${icon.id}`);
           } else {
@@ -359,14 +379,15 @@ export function useCountryIcons(
           
           // Make fill-based icons larger for better visibility, especially flag icon
           if (isFlagIcon) {
-            svg.style.width = '40px'; // Extra large for flag icon to match original size
-            svg.style.height = '40px';
+            // For flag icon, make it fill the inner diamond area nicely
+            svg.style.width = '24px'; // Size to fit nicely in 28px inner diamond
+            svg.style.height = '24px';
           } else if (isFillBased) {
-            svg.style.width = '30px'; // Even larger for fill-based icons
-            svg.style.height = '30px';
+            svg.style.width = '20px'; // Size for other fill-based icons
+            svg.style.height = '20px';
           } else {
-            svg.style.width = '26px'; // Standard size for stroke-based icons
-            svg.style.height = '26px';
+            svg.style.width = '18px'; // Standard size for stroke-based icons
+            svg.style.height = '18px';
           }
           
           // Ensure SVG has transparent background - no black background
@@ -522,9 +543,9 @@ export function useCountryIcons(
         outerDiv.style.overflow = "visible"; // Ensure icon content is visible
 
         // Remove inner diamond if it exists (no theory color effects)
-        const innerDiamond = outerDiv.querySelector('.inner-diamond');
-        if (innerDiamond) {
-          innerDiamond.remove();
+          const innerDiamond = outerDiv.querySelector('.inner-diamond');
+          if (innerDiamond) {
+            innerDiamond.remove();
         }
 
         // Update inner icon color - always dark for visibility against beige background
