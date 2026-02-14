@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { saveUserToSupabase } from "@/lib/user-utils";
 import { saveContributorToSupabase } from "@/lib/contributor-utils";
-import { Lock, User, UserCircle, Shield } from "lucide-react";
+import { Lock, User, UserCircle, Shield, Mail, Phone } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginMode, setLoginMode] = useState<"admin" | "contributor">("contributor");
@@ -35,14 +37,20 @@ export default function LoginPage() {
       return;
     }
 
+    if (loginMode === "contributor" && (!email.trim() || !phone.trim())) {
+      setError("As a contributor, please provide your email and phone number");
+      setIsLoading(false);
+      return;
+    }
+
     const success = login(username, password, name, loginMode);
     
     if (success) {
       // Save user/contributor to Supabase (don't block login if this fails)
       try {
         if (loginMode === "contributor") {
-          // Save as contributor
-          await saveContributorToSupabase(username, name, "contributor");
+          // Save as contributor (with email and phone)
+          await saveContributorToSupabase(username, name, "contributor", email.trim(), phone.trim());
         } else {
           // Save as admin (existing logic)
           await saveUserToSupabase(username, name);
@@ -171,6 +179,50 @@ export default function LoginPage() {
                 required
               />
             </div>
+
+            {/* Email & Phone - only for contributors */}
+            {loginMode === "contributor" && (
+              <>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-[#ffe4be]/80 mb-2">
+                    <Mail className="w-4 h-4 inline mr-2 text-[#ffe4be]/70" />
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
+                    style={{ 
+                      color: '#ffe4be',
+                      backgroundColor: 'rgba(20, 22, 26, 0.5)',
+                    }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-[#ffe4be]/80 mb-2">
+                    <Phone className="w-4 h-4 inline mr-2 text-[#ffe4be]/70" />
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Enter your phone number"
+                    className="w-full px-4 py-3 bg-[#14161a]/50 border border-[#ffe4be]/20 rounded-lg text-[#ffe4be] placeholder-[#ffe4be]/40 focus:outline-none focus:ring-2 focus:ring-[#ffe4be]/50 focus:border-[#ffe4be]/40 transition-all"
+                    style={{ 
+                      color: '#ffe4be',
+                      backgroundColor: 'rgba(20, 22, 26, 0.5)',
+                    }}
+                    required
+                  />
+                </div>
+              </>
+            )}
 
             {/* Error Message */}
             {error && (

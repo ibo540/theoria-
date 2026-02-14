@@ -9,6 +9,7 @@ export interface Contributor {
   username: string;
   name: string;
   email?: string;
+  phone?: string;
   event_count: number;
   role: "contributor" | "admin";
   created_at?: string;
@@ -18,11 +19,14 @@ export interface Contributor {
 
 /**
  * Save or update a contributor in Supabase
+ * Email and phone are optional (used for contributors; admins don't provide them)
  */
 export async function saveContributorToSupabase(
   username: string,
   name: string,
-  role: "contributor" | "admin" = "contributor"
+  role: "contributor" | "admin" = "contributor",
+  email?: string,
+  phone?: string
 ): Promise<Contributor | null> {
   try {
     // Check if contributor already exists
@@ -38,16 +42,19 @@ export async function saveContributorToSupabase(
     }
 
     const now = new Date().toISOString();
+    const updatePayload: Record<string, unknown> = {
+      name,
+      role,
+      updated_at: now,
+    };
+    if (email !== undefined) updatePayload.email = email;
+    if (phone !== undefined) updatePayload.phone = phone;
 
     if (existing) {
       // Update existing contributor
       const { data, error } = await supabase
         .from("contributors")
-        .update({
-          name: name,
-          role: role,
-          updated_at: now,
-        })
+        .update(updatePayload)
         .eq("username", username)
         .select()
         .single();
@@ -60,16 +67,20 @@ export async function saveContributorToSupabase(
       return data as Contributor;
     } else {
       // Create new contributor
+      const insertPayload: Record<string, unknown> = {
+        username,
+        name,
+        role,
+        event_count: 0,
+        created_at: now,
+        updated_at: now,
+      };
+      if (email !== undefined) insertPayload.email = email;
+      if (phone !== undefined) insertPayload.phone = phone;
+
       const { data, error } = await supabase
         .from("contributors")
-        .insert({
-          username: username,
-          name: name,
-          role: role,
-          event_count: 0,
-          created_at: now,
-          updated_at: now,
-        })
+        .insert(insertPayload)
         .select()
         .single();
 

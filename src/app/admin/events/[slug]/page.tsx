@@ -26,7 +26,7 @@ const THEORIES = [
 export default function EventEditor() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isContributor } = useAuthStore();
   const slug = params.slug as string;
   const isNew = slug === "new";
 
@@ -271,6 +271,32 @@ export default function EventEditor() {
               Back to Dashboard
             </Link>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Contributors cannot edit existing events
+  if (!isNew && isContributor()) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-slate-800/95 to-slate-700/95 backdrop-blur-md border border-amber-500/50 rounded-2xl shadow-2xl p-8 max-w-md w-full animate-fadeIn">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center border-2 border-amber-500/50">
+              <X className="w-6 h-6 text-amber-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white">Access restricted</h2>
+          </div>
+          <p className="text-gray-300 mb-6">
+            As a contributor you can create new events only. You do not have permission to edit existing events.
+          </p>
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500/20 border border-amber-500/50 text-amber-200 rounded-lg hover:bg-amber-500/30 transition-colors font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Link>
         </div>
       </div>
     );

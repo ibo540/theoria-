@@ -29,7 +29,7 @@ const THEORIES = [
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { isAuthenticated, getCurrentUser, logout } = useAuthStore();
+  const { isAuthenticated, getCurrentUser, logout, isContributor } = useAuthStore();
   const [events, setEvents] = useState<EventData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -39,6 +39,7 @@ export default function AdminDashboard() {
   const [existingTheoriesForSelected, setExistingTheoriesForSelected] = useState<string[]>([]);
   const [showEditTheoryModal, setShowEditTheoryModal] = useState(false);
   const [selectedEventForEdit, setSelectedEventForEdit] = useState<{ baseId: string; theories: string[]; allEvents: EventData[]; title: string } | null>(null);
+  const [showContributorAccessDenied, setShowContributorAccessDenied] = useState(false);
 
   // Check authentication on mount
   useEffect(() => {
@@ -236,6 +237,10 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
+    if (isContributor()) {
+      setShowContributorAccessDenied(true);
+      return;
+    }
     const baseId = getBaseEventId(eventId);
     const allVersions = events.filter(e => getBaseEventId(e.id) === baseId);
     const hasMultipleVersions = allVersions.length > 1;
@@ -265,6 +270,10 @@ export default function AdminDashboard() {
   };
 
   const handleAddTheory = async (baseEvent: EventData) => {
+    if (isContributor()) {
+      setShowContributorAccessDenied(true);
+      return;
+    }
     setSelectedBaseEvent(baseEvent);
     setShowAddTheoryModal(true);
     // Load existing theories for this event
@@ -304,6 +313,10 @@ export default function AdminDashboard() {
   };
 
   const handleEditEvent = (baseId: string, theories: string[], allEvents: EventData[], title: string) => {
+    if (isContributor()) {
+      setShowContributorAccessDenied(true);
+      return;
+    }
     setSelectedEventForEdit({ baseId, theories, allEvents, title });
     setShowEditTheoryModal(true);
   };
@@ -594,40 +607,54 @@ export default function AdminDashboard() {
 
                     <div className="px-6 py-4 bg-slate-800/50 border-t border-slate-600/50 flex flex-col gap-2 rounded-b-xl">
                       <div className="flex items-center justify-between gap-3">
-                        <button
-                          onClick={() => handleEditEvent(baseId, theories, allEvents, representative.title)}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/80 to-blue-600/80 border border-blue-500/50 text-white rounded-lg hover:from-blue-500 hover:to-blue-600 hover:border-blue-400 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                          Edit
-                        </button>
-
-                        <div className="flex gap-2">
+                        {!isContributor() ? (
+                          <>
+                            <button
+                              onClick={() => handleEditEvent(baseId, theories, allEvents, representative.title)}
+                              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/80 to-blue-600/80 border border-blue-500/50 text-white rounded-lg hover:from-blue-500 hover:to-blue-600 hover:border-blue-400 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                              Edit
+                            </button>
+                            <div className="flex gap-2">
+                              <Link
+                                href={`/?event=${representative.id}`}
+                                target="_blank"
+                                className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-500/50 hover:scale-110"
+                                title="Preview"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Link>
+                              <button
+                                onClick={() => handleDeleteEvent(representative.id, representative.title)}
+                                className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-300 border border-transparent hover:border-red-500/50 hover:scale-110"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </>
+                        ) : (
                           <Link
                             href={`/?event=${representative.id}`}
                             target="_blank"
-                            className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-500/50 hover:scale-110"
-                            title="Preview"
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-600/50 border border-slate-500/50 text-gray-300 rounded-lg hover:bg-slate-600/70 transition-all duration-300 text-sm font-medium"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
+                            Preview
                           </Link>
-                          <button
-                            onClick={() => handleDeleteEvent(representative.id, representative.title)}
-                            className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-300 border border-transparent hover:border-red-500/50 hover:scale-110"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        )}
                       </div>
 
-                      <button
-                        onClick={() => handleAddTheory(representative)}
-                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/80 to-purple-600/80 border border-purple-500/50 text-white rounded-lg hover:from-purple-500 hover:to-purple-600 hover:border-purple-400 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        Add Theory
-                      </button>
+                      {!isContributor() && (
+                        <button
+                          onClick={() => handleAddTheory(representative)}
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/80 to-purple-600/80 border border-purple-500/50 text-white rounded-lg hover:from-purple-500 hover:to-purple-600 hover:border-purple-400 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Theory
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -769,6 +796,29 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contributor access denied modal */}
+      {showContributorAccessDenied && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl border border-amber-500/50 shadow-2xl max-w-md w-full p-6 animate-slideUp">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center border-2 border-amber-500/50">
+                <X className="w-6 h-6 text-amber-400" />
+              </div>
+              <h2 className="text-xl font-bold text-white">Access restricted</h2>
+            </div>
+            <p className="text-gray-300 mb-6">
+              As a contributor you can create new events only. You do not have permission to edit existing events, delete events, or add new theory versions to existing events.
+            </p>
+            <button
+              onClick={() => setShowContributorAccessDenied(false)}
+              className="w-full py-2.5 px-4 bg-amber-500/20 border border-amber-500/50 text-amber-200 rounded-lg hover:bg-amber-500/30 transition-colors font-medium"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
