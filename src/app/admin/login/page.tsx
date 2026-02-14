@@ -242,13 +242,8 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center text-sm text-[#ffe4be]/50 space-y-1">
+          <div className="mt-6 text-center text-sm text-[#ffe4be]/50">
             <p>Protected Admin Area</p>
-            {loginMode === "contributor" && (
-              <p className="text-xs text-[#ffe4be]/40">
-                Use password: <code className="px-1 py-0.5 bg-[#ffe4be]/10 rounded">contributor2024</code>
-              </p>
-            )}
           </div>
         </div>
       </div>
