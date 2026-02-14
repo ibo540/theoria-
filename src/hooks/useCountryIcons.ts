@@ -259,9 +259,47 @@ export function useCountryIcons(
         // Check if this icon is selected
         const isSelected = selectedIconId === icon.id;
 
+        // Resolve linked timeline point, icon type, and turning-point status (before building diamonds)
+        let iconType = "map-pin";
+        let linkedPoint: { isTurningPoint?: boolean; eventType?: string } | undefined;
+        if (icon.timelinePointId && activeEvent?.timelinePoints) {
+          linkedPoint = activeEvent.timelinePoints.find(
+            (p: any) => p.id === icon.timelinePointId ||
+              p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
+          ) as { isTurningPoint?: boolean; eventType?: string } | undefined;
+          if (linkedPoint?.eventType) {
+            const eventTypeToIconType: Record<string, string> = {
+              military: "military",
+              diplomatic: "flag",
+              economic: "finance",
+              ideological: "users",
+              technological: "zap",
+              mixed: "globe",
+            };
+            const normalizedEventType = (linkedPoint.eventType || "").toLowerCase();
+            iconType = eventTypeToIconType[normalizedEventType] || icon.iconType || "map-pin";
+            if (iconType === "tank") iconType = "military";
+          } else {
+            iconType = icon.iconType || "map-pin";
+          }
+        } else {
+          iconType = icon.iconType || "map-pin";
+        }
+        if (iconType === "tank") iconType = "military";
+
+        const isTurningPoint = Boolean(linkedPoint?.isTurningPoint);
+        const theoryForColor = activeTheory ?? activeEvent?.theory;
+        const theoryColor = isTurningPoint && theoryForColor ? getTheoryColor(theoryForColor as import("@/stores/useTheoryStore").TheoryType) : null;
+        const hexToRgba = (hex: string, alpha: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r},${g},${b},${alpha})`;
+        };
+
         // Same structure as timeline: container has no background/border; only the two diamonds are visible
         const outerDiv = document.createElement("div");
-        outerDiv.className = "country-icon-marker-inner";
+        outerDiv.className = "country-icon-marker-inner" + (isTurningPoint ? " map-icon-turning-point" : "");
         outerDiv.style.width = "52px";
         outerDiv.style.height = "52px";
         outerDiv.style.position = "relative";
@@ -273,25 +311,29 @@ export function useCountryIcons(
         outerDiv.style.backgroundColor = "transparent";
         outerDiv.style.border = "none";
 
-        // Outer diamond - border only, rotated 45deg so it looks like a diamond (not a square)
+        const borderColor = theoryColor ? hexToRgba(theoryColor, 0.95) : "rgba(255, 228, 190, 0.9)";
+        const fillColor = theoryColor || "#ffe4be";
+        const glowColor = theoryColor ? hexToRgba(theoryColor, 0.6) : "rgba(255, 228, 190, 0.6)";
+
+        // Outer diamond - border only, rotated 45deg; use theory color for turning points
         const outerDiamond = document.createElement("div");
         outerDiamond.className = "map-outer-diamond";
         outerDiamond.style.position = "absolute";
         outerDiamond.style.width = "42px";
         outerDiamond.style.height = "42px";
-        outerDiamond.style.border = "2px solid rgba(255, 228, 190, 0.9)";
+        outerDiamond.style.border = `2px solid ${borderColor}`;
         outerDiamond.style.backgroundColor = "transparent";
         outerDiamond.style.borderRadius = "0";
         outerDiamond.style.top = "50%";
         outerDiamond.style.left = "50%";
         outerDiamond.style.transform = "translate(-50%, -50%) rotate(45deg)";
         outerDiamond.style.boxShadow = isSelected
-          ? "0 0 18px rgba(255, 228, 190, 0.6), 0 0 30px rgba(255, 228, 190, 0.4)"
-          : "0 0 12px rgba(255, 228, 190, 0.6)";
+          ? `0 0 18px ${glowColor}, 0 0 30px ${theoryColor ? hexToRgba(theoryColor, 0.4) : "rgba(255, 228, 190, 0.4)"}`
+          : `0 0 12px ${glowColor}`;
         outerDiamond.style.pointerEvents = "none";
         outerDiv.appendChild(outerDiamond);
 
-        // Inner diamond - filled, rotated 45deg so it looks like a diamond
+        // Inner diamond - filled; use theory color for turning points
         const innerDiamond = document.createElement("div");
         innerDiamond.className = "map-inner-diamond";
         innerDiamond.style.position = "absolute";
@@ -300,11 +342,11 @@ export function useCountryIcons(
         innerDiamond.style.top = "50%";
         innerDiamond.style.left = "50%";
         innerDiamond.style.transform = "translate(-50%, -50%) rotate(45deg)";
-        innerDiamond.style.backgroundColor = "#ffe4be";
+        innerDiamond.style.backgroundColor = fillColor;
         innerDiamond.style.border = "none";
         innerDiamond.style.borderRadius = "0";
         innerDiamond.style.boxShadow = isSelected
-          ? "0 0 12px rgba(255, 228, 190, 0.8), 0 0 20px rgba(255, 228, 190, 0.6)"
+          ? `0 0 12px ${glowColor}, 0 0 20px ${glowColor}`
           : "none";
         innerDiamond.style.display = "flex";
         innerDiamond.style.alignItems = "center";
@@ -326,45 +368,6 @@ export function useCountryIcons(
         innerDiv.style.left = "0";
         innerDiamond.appendChild(innerDiv);
         outerDiv.appendChild(innerDiamond);
-
-        // Always determine icon type from timeline point's eventType (most reliable source)
-        // This ensures icons update correctly when event type changes
-        let iconType = "map-pin"; // Default fallback
-
-          if (icon.timelinePointId && activeEvent?.timelinePoints) {
-            // Find the timeline point linked to this icon
-            const linkedPoint = activeEvent.timelinePoints.find(
-              (p: any) => p.id === icon.timelinePointId ||
-                p.id?.replace(/-index-\d+$/, '') === icon.timelinePointId?.replace(/-index-\d+$/, '')
-            );
-
-            if (linkedPoint?.eventType) {
-            // Map event type to icon type. Military uses dedicated military-only symbol on map.
-              const eventTypeToIconType: Record<string, string> = {
-                military: "military", // Military-only symbol (crossed swords) on map
-                diplomatic: "flag",
-                economic: "finance",
-                ideological: "users",
-                technological: "zap",
-                mixed: "globe",
-              };
-              const normalizedEventType = (linkedPoint.eventType || "").toLowerCase();
-            iconType = eventTypeToIconType[normalizedEventType] || icon.iconType || "map-pin";
-            // Legacy: stored "tank" was used for military → show crossed swords on map
-            if (iconType === "tank") iconType = "military";
-            console.log(`🎯 Using iconType "${iconType}" from timeline point eventType "${linkedPoint.eventType}" for icon ${icon.id}`);
-          } else {
-            // Fallback to icon's stored iconType if timeline point has no eventType
-            iconType = icon.iconType || "map-pin";
-            console.warn(`⚠️ Icon ${icon.id} (${icon.country}) - timeline point has no eventType, using stored iconType: ${iconType}`);
-          }
-          } else {
-          // Fallback to icon's stored iconType if no timeline point link
-          iconType = icon.iconType || "map-pin";
-          console.warn(`⚠️ Icon ${icon.id} (${icon.country}) has no timeline point link, using stored iconType: ${iconType}`);
-        }
-        // Legacy: stored "tank" was used for military → show crossed swords on map
-        if (iconType === "tank") iconType = "military";
 
         console.log(`🎨 Rendering icon ${icon.id} (${icon.country}) with type: ${iconType}`);
         const iconSVG = getIconSVG(iconType);

@@ -766,3 +766,19 @@ html[data-admin="true"] {
   background-size: 200% 200%;
   animation: gradient-x 3s ease infinite;
 }
+
+/* Map icon: turning point pulse so it stands out as important */
+@keyframes mapTurningPointPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.95;
+  }
+}
+
+.map-icon-turning-point {
+  animation: mapTurningPointPulse 2s ease-in-out infinite;
+}
